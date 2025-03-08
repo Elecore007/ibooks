@@ -1,0 +1,438 @@
+button.ui {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+button.add:hover, #enum > button:hover, .td:hover, .td.on, #sphd {
+    background-color: #0003;
+}
+aside:nth-child(1), .top, .bottom, #enum, .h, #dftr, #pcwp button, #pcmn, #tot, #spmn > div:nth-child(4) {
+    display: flex;
+}
+section, .thead, .td, #bio, .wrp, .grde {
+    display: grid;
+}
+button.add, .top, .bottom, #enum, #sphd, #dftr, .h, #pcwp button, #pcmn, .grde, #tot, #spmn > div:nth-child(4) {
+    align-items: center;
+}
+#pcmn {
+    flex-direction: column;
+    gap: .5em;
+}
+button.add, #enum, .pdfx, #tot {
+    justify-content: center;
+}
+#sphd, #dftr {
+    justify-content: space-between;
+}
+.top, #bio, .bottom, #enum, .pdfx, #tot {
+    gap: 2em;
+}
+#pchd {
+    gap: 3em;
+}
+.thead, #sphd {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+button.add {
+    height: 3em;
+    width: 3em;
+    border-radius: 50%;
+}
+button.add > ion-icon {
+    height: 1.5em;
+    width: 1.5em;
+}
+aside:nth-child(1) {
+    /* padding: 1em 0 1em 0; */
+    padding: 1em 0;
+    font-size: 90%;
+    overflow: hidden;
+}
+aside:nth-child(1) > * {
+    align-items: stretch;
+    transition: .3s;
+}
+aside:nth-child(1) > div {
+    flex: 1;
+    overflow: auto;
+}
+section {
+    border-left: 1px solid #fff3;
+    grid-template-rows: minmax(1em, auto) 1fr minmax(1em, auto);
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s;
+}
+section > *:not(.bottom) {
+    padding: 1em 2em;
+}
+aside:nth-child(1) > section.on {
+    pointer-events: all;
+    width: var(--pry-fx-wdh);
+    opacity: 1;
+}
+.thead > span,
+.td > span {
+    text-align: center;
+}
+.thead, .td {
+    padding: .7em 1em;
+    grid-template-columns: 50% 10% 20% 20%;
+    align-items: center;
+    opacity: .9;
+}
+.thead {
+    padding: 1em;
+    font-weight: 500;
+}
+.td {
+    margin: .5em 0;
+    cursor: pointer;
+    position: relative;
+}
+.td > * {
+    pointer-events: none;
+}
+.td > span:nth-child(1) {
+    text-align: left;
+    padding-left: 6em;
+}
+.td > span:nth-child(1)::after {
+    content: attr(data-abbr);
+    position: absolute;
+    left: 2em;
+    display: grid;
+    place-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 2.5em;
+    width: 2.5em;
+    border-radius: 50%;
+    background-color: #0003;
+    font-weight: 500;
+}
+.centre {
+    overflow-y: auto;
+}
+.centre .umg {
+    height: 48px;
+    width: 48px;
+    margin: 1em auto;
+}
+.centre > form > .gp {
+    margin: 2em 1em;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #1b3049;
+    position: relative;
+    padding: 12px 16px;
+}
+.centre > form > .gp::after {
+    content: attr(data-name);
+    position: absolute;
+    left: 10px;
+    top: -50%;
+    transform: translateY(50%);
+    opacity: .7;
+}
+.centre > form > .gp > *:not(#eid) {
+    flex: 1 0 50%;
+    background-color: inherit;
+}
+#eid {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    padding: 0 1em;
+    background-color: #0002;
+    opacity: .5;
+}
+#eid:hover {
+    opacity: 1;
+}
+.gp.db > input {
+    width: 50%;
+    text-align: center;
+}
+.gp.db[data-name="Salary"]::after {
+    top: -22%;
+}
+.gp.db[data-name="Salary"] > input {
+    padding: .5em 0;
+}
+input#gpm {
+    border-top: 1px solid #fff1;
+}
+.centre > div > button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    padding: 12px 0;
+    border-radius: 5px;
+    background-color: #66339977;
+}
+.centre > div > button:hover {
+    background-color: #663399;
+}
+#bio {
+    padding: 1em 0;
+    grid-template-columns: 30% 1fr;
+}
+#bio > span:nth-child(odd) {
+    opacity: .7;
+}
+#bio > span:nth-child(even) {
+    justify-self: flex-end;
+}
+.bottom {
+    padding: 1em;
+}
+.bottom > button {
+    flex: 1;
+    border-radius: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5em;
+    background-color: #3880ff55;
+    padding: .7em 0;
+}
+.bottom > button:hover {
+    background-color: var(--btn-bg-clr);
+}
+.bottom > button > span {
+    line-height: 1;
+}
+#enum > button, #enum + span > button {
+    height: 3em;
+    width: 3em;
+    border-radius: 50%;
+}
+#enum > span i {
+    font-size: 120%;
+}
+#enum + span {
+    display: flex;
+    align-items: center;
+    gap: 3em;
+}
+#slip, .wrp {
+    height: 100%;
+    width: 100%;
+}
+.wrp {
+    background-color: #0009;
+    grid-template-rows: minmax(8%, auto) 1fr;
+    overflow-y: auto !important;
+}
+#sphd {
+    padding: 0 2em;
+}
+#sphd > span:nth-of-type(1) > div {
+    font-size: 120%;
+    color: #fff;
+}
+#sphd small {
+    font-size: initial;
+    color: #fff;
+}
+#spmn {
+    width: 40%;
+    aspect-ratio: 7/9;
+    margin: 0 auto 2%;
+    padding: 50px;
+    font-size: 90%;
+    background-color: #fff;
+    position: relative;
+}
+#spmn * {
+    color: #555;
+}
+#spmn > div:nth-child(1) > * {
+    text-align: center;
+}
+#spmn > div:nth-child(1) > div {
+    font-weight: 500;
+    font-size: 110%;
+}
+#spmn > div:nth-child(2) {
+    width: 70%;
+    margin: 0 auto;
+}
+#spmn > div:nth-child(2) > span:nth-child(odd) {
+    font-weight: 500;
+}
+#spmn > .grde {
+    padding: 2em 0;
+}
+.grde {
+    grid-template-columns: 1fr 1fr;
+    row-gap: .7em;
+}
+#spmn > div:nth-child(3) span:nth-child(even) {
+    justify-self: flex-end;
+}
+#spmn > div:nth-child(3) {
+    margin: 3em 0;
+    padding: 2em 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    column-gap: 2em;
+    border: solid #777;
+    border-width: 2px 0;
+}
+#spmn > div:nth-child(3) > .grde {
+    flex: 1 0 40%;
+    grid-template-columns: auto minmax(30px, auto);
+    gap: 1em;
+}
+#spmn > div:nth-child(3) > .grde > span:nth-child(1) {
+    font-weight: 500;
+}
+#tot {
+    flex: 1 0 100%;
+    padding-top: 3em;
+}
+#spmn > div:nth-child(4) {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
+    justify-content: center;
+    gap: 1em;
+    opacity: .5;
+}
+#dwrp, #pcwp {
+    background-color: #0009;
+}
+#dwrp *, #pcwp * {
+    color: #fff;
+}
+#dwrp {
+    max-width: 300px;
+}
+#dwrp > div, #pcwp > * {
+    padding: 1em 2em;
+}
+#dftr > button {
+    width: 40%;
+    padding: 1em 0;
+    border-radius: 24px;
+    font-weight: 500;
+}
+#pcwp {
+    width: 600px;
+    aspect-ratio: 4/3;
+    position: relative;
+}
+#pchd > span {
+    margin-right: auto;
+}
+.pdfx {
+    padding: 1em 2em;
+    border-radius: 24px;
+    background-color: #66339955;
+}
+.bg0::after, #pchd > .pdfx:hover {
+    background-color: #663399 !important;
+}
+.bg1::after, #pcmn > .pdfx, #dftr > button:hover, #enum > button:hover, #enum + span > button:hover {
+    background-color: #b8860b55 !important;
+}
+.bg2::after, #pcmn > .pdfx:hover {
+    background-color: #b8860b !important;
+}
+#pcmn > .umg {
+    scale: 1;
+    height: 10em;
+    width: 10em;
+}
+#pcwp > .note {
+    background-color: #0005;
+}
+.bg3::after {
+    background-color: #1a73e8 !important;
+}
+.bg4::after {
+    background-color: #1a73e855 !important;
+}
+.bg5::after {
+    background-color: #009578 !important;
+}
+.bg6::after {
+    background-color: #006f59 !important;
+}
+.bg7::after {
+    background-color: #ffa500 !important;
+}
+@media (width <= 768px) {
+    ::-webkit-scrollbar {
+        width: 0;
+    }
+    section, button.add {
+        position: fixed;
+    }
+    section {
+        right: 100%;
+        top: 0;
+        height: 100%;
+        background-color: #0009;
+        z-index: 1;
+    }
+    section.on {
+        right: 0%;
+    }
+    button.add {
+        right: 1em;
+        bottom: 4em;
+        display: flex;
+        align-items: center;
+        gap: .5em;
+        height: auto;
+        width: auto;
+        padding: .7em 1em;
+        border-radius: 3em;
+        background-color: #663399;
+        box-shadow: 0 8px 24px #66339999;
+        z-index: 1;
+    }
+    .thead {
+        display: none;
+    }
+    .td {
+        grid-template-columns: 40% 1fr 10%;
+        column-gap: .3em;
+    }
+    .td > span {
+        text-align: left;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .td > span:nth-child(1) {
+        padding-left: 4em;
+        grid-column: span 2;
+    }
+    .td > span:nth-child(1)::after {
+        left: 1em;
+    }
+    .td > span:nth-child(2) {
+        text-align: right;
+        grid-row: span 2;
+    }
+    .td > span:nth-child(3) {
+        padding-left: 4em;
+    }
+    .td > span:nth-child(n + 2) {
+        opacity: .5;
+    }
+}

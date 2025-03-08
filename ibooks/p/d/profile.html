@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="../../img/book-outline.svg">
+    <title>ibooks | Profile</title>
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+    <div id="top">
+        <div id="athr">
+            <p>
+                <ion-icon name="book-outline"></ion-icon>
+                <span>iBOOKs</span>
+            </p>
+        </div>
+        <div id="prof_btns">
+            <button type="button" popovertarget="photo" popovertargetaction="show">
+                <ion-icon name="camera-outline"></ion-icon>
+                <div>Change Photo</div>
+            </button>
+            <button type="button" popovertarget="verify" popovertargetaction="show" id="editBtn">
+                <ion-icon name="person-outline"></ion-icon>
+                <div>Edit Profile</div>
+            </button>
+            <button type="button">
+                <ion-icon name="bag-check-outline"></ion-icon>
+                <div>View Plan</div>
+            </button>
+            <button type="button" data-mgr="2" popovertarget="newmgr" popovertargetaction="show">
+                <ion-icon name="people-outline"></ion-icon>
+                <div>Add New Manager</div>
+            </button>
+        </div>
+    </div>
+    <div id="bottom">
+        bottom
+    </div>
+    <div id="photo" popover="manual">
+        <div class="wrp">
+            <div class="hdr">
+                <span>Change Photo</span>
+                <button type="button" class="ui" popovertarget="photo" popovertargetaction="hide">
+                    <ion-icon name="add-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="bdy">
+                <div id="img"></div>
+                <button type="button" id="file">Pick a photo</button>
+                <small>Max: 200 KB</small>
+                <button type="button" id="submit_file">UPDATE PHOTO</button>
+            </div>
+        </div>
+    </div>
+    <div id="profile" popover>
+        <div class="wrp">
+            <div class="hdr">
+                <span>Edit Profile</span>
+                <button type="button" class="ui" popovertarget="profile" popovertargetaction="hide">
+                    <ion-icon name="add-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="bdy">
+                <form name="edit" autocomplete="off">
+                    <div class="fmi" data-fd="Name">
+                        <input type="text" name="uname" placeholder="Edit Name" required>
+                    </div>
+                    <div class="fmi" data-fd="Email">
+                        <input type="email" name="umail" placeholder="Edit Email" required>
+                    </div>
+                    <div class="fmi" data-fd="Password">
+                        <input type="password" name="upass" placeholder="Edit Password" required>
+                        <button type="button" class="eyed">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="fmi">
+                        <button id="update">UPDATE PROFILE</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="newmgr" popover>
+        <div class="wrp">
+            <div class="hdr">
+                <span>Add New Manager</span>
+                <button type="button" class="ui" popovertarget="newmgr" popovertargetaction="hide">
+                    <ion-icon name="add-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="bdy">
+                <form name="newmgr" autocomplete="off">
+                    <div class="fmi" data-fd="Name">
+                        <input type="text" name="uname" placeholder="Enter Your Name" required>
+                    </div>
+                    <div class="fmi" data-fd="Gender">
+                        <select name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                    <div class="fmi" data-fd="Email">
+                        <input type="email" name="umail" placeholder="Enter Your Email" required>
+                    </div>
+                    <div class="fmi" data-fd="Password">
+                        <input type="password" name="upass" placeholder="Enter Your Password" required>
+                        <button type="button" class="eyed">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="fmi" data-fd="Confirm Password">
+                        <input type="password" name="upass" placeholder="Confirm Your Password" required>
+                        <button type="button" class="eyed">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="fmi">
+                        <button id="create">CREATE MANAGER</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- <button type="button">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+    </button> -->
+    <div id="verify" popover>
+        <div class="wrp">
+            <ion-icon name="person-outline"></ion-icon>
+            <div>Verify your account</div>
+            <form name="vfy" id="vfy" class="pak">
+                <input type="password" name="pak" placeholder="Enter key" required>
+                <button type="button" class="eyed">
+                    <ion-icon name="eye-off-outline"></ion-icon>
+                </button>
+            </form>
+            <button form="vfy">VERIFY</button>
+            <button type="button" popovertarget="verify" popovertargetaction="hide">CANCEL</button>
+        </div>
+    </div>
+    <div id="note" popover>
+        <div>
+            <ion-icon name="close-outline"></ion-icon>
+            <span></span>
+        </div>
+    </div>
+    <div id="lodr"></div>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="../js/profile.js"></script>
+</body>
+</html>
