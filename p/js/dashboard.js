@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, addDoc, setDoc, doc, collection, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, datePeriod, projectConfigs } from "../../lb/wc.js";
@@ -152,10 +152,18 @@ if (id) {
                 // document.getElementById('edrem').showPopover();
             }
         });
-        // firebaseConfig = JSON.parse(who.cfg);
+        let userConfig = JSON.parse(who.cfg);
         // const worker = new Worker('worker.js');
         // worker.postMessage()
+        function redoApp (config) {
+            deleteApp(app);
+            app = initializeApp(config);
+            db = getFirestore(app);
+        }
+        //add caps
+        document.getElementById('cap').textContent = `Cap: ${who.ibooks.quoMgrAuth[0]}`;
         try {
+            redoApp(userConfig);
             //get employees
             const ec = await getCountFromServer(collection(db, 'ibooks', who.fbid, currYr));
             const employeeCount = ec.data().count;
@@ -173,6 +181,7 @@ if (id) {
             const gross = gpm.data().totalGross;
             insertIndexes(3, gross);
             //get tsi
+            redoApp(firebaseConfig);
         } catch (error) {
             alert("Server error.");
             console.log(error);

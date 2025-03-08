@@ -124,8 +124,8 @@ if (id) {
                         const tdOn = book.querySelector('.td.on');
                         if (tdOn) tdOn.classList.remove('on');
                         // set edit mode and populate form
-                        employeeFormMode('person-outline','Edit Employee', 'edit');
-                        insertEmployeeDetails(res[ix]);
+                        // employeeFormMode('person-outline','Edit Employee', 'edit');
+                        // insertEmployeeDetails(res[ix]);
                         [td, ...sections].forEach((elem, idx) => elem.classList.toggle('on', idx === 2 ? false : true));
                     }
                 });
