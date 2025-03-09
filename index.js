@@ -287,7 +287,7 @@ forms.namedItem('login').addEventListener('submit', (event) => {
     let id = pbk(str);
     
     //first check indexedDB
-    let openDB = indexedDB.open('ibooks', 1);
+    let openDB = indexedDB.open('ibooks', 3);
     openDB.onerror = (err) => {
         lodr.hidePopover();
         event.submitter.disabled = false;

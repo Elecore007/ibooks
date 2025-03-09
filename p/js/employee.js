@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDocs, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 // const mainConfig = {
@@ -48,7 +48,7 @@ if (id) {
     }
 
     let person = null, idb = null, yr;
-    let openDB = indexedDB.open('ibooks', 1);
+    let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
         console.log("Database opened.");
         idb = e.target.result;
@@ -84,9 +84,11 @@ if (id) {
             let wkrReq = wkrStore.getAll();
             wkrReq.onsuccess = async (e) => {
                 let res = e.target.result;
-                if (res.length) {
+
+                if (sessionStorage.getItem('synced')) {
                     //populate DOM with employees using function
                     addEmployees(res);
+                    // sessionStorage.removeItem('synced');
                 } else {
                     yr = datePeriod(Date.now()).getFullYear().toString();
                     const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr));
@@ -108,7 +110,7 @@ if (id) {
                             wkrRe.onsuccess = (e) => {
                                 console.log("Employees added to Database.");
                                 //populate DOM with employees using function
-                                // addEmployees(data);
+                                addEmployees(data);
                             }
                             wkrRe.onerror = (err) => {
                                 alert("Database error: add employees.");
@@ -267,6 +269,9 @@ if (id) {
                         let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
                         return n;
                     });
+                    const dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                    const earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+
                     let details = {
                         'dedn': {
                             [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
@@ -278,23 +283,29 @@ if (id) {
                     data['ename'] = fd.getAll('ename');
                     data['gpm'] = gpm;
                     data['lastMod'] = dt;
+                    console.log(data, details);
                     if (e.submitter.form.dataset.mode === 'add') {
                         data['creatOn'] = dt;
+                        data['earn'] = earn;
+                        data['dedn'] = dedn;
                         try {
                             const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
-                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
+                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
+                            await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
                             notify('checkmark-outline', 'New Employee Added.');
                             e.target.reset();
                         } catch (err) {
+                            console.log(err);
                             notify('alert-circle-outline', 'Server error.');
                         } finally {
                             loader(e.submitter, !1);
                             e.target.reset();
+                            sessionStorage.setItem('synced',true);
                         }
                     } else if (e.submitter.form.dataset.mode === 'edit') {
                         // Edit mode
                         console.log(data, details);
-                        /*
+                        
                         try {
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
@@ -305,8 +316,8 @@ if (id) {
                         } finally {
                             loader(e.submitter, !1);
                             e.target.reset();
+                            sessionStorage.setItem('synced',true);
                         }
-                        */
                     }
                 });
             } else {
@@ -342,15 +353,32 @@ if (id) {
         //delete employee
         delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
             loader(false);
-            let fbTX = await runTransaction(db, tranx => {
-                tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
-                tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
-            });
-            fbTX.commit();
-            loader(false, !1);
-            notify('checkmark-outline', 'Employee deleted.');
-            // await deleteDoc();
-            // await deleteDoc(doc(db, 'ibooks', person.fbid, yr, empID));
+            try {
+                let fbTX = await runTransaction(db, async (tranx) => {
+                    await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
+                    await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
+                });
+                loader(false, !1);
+                notify('checkmark-outline', 'Employee deleted.');
+                //delete from idb
+                let delTX = idb.transaction('wkr', 'readwrite');
+                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                delTX.onerror = (err) => console.log(err);
+    
+                let Store = delTX.objectStore('wkr');
+                let delReq = Store.delete(id);
+                delReq.onsuccess = (e) => {
+                    console.log("Delete succeeded.");
+                }
+                delReq.onerror = (err) => {
+                    console.log(err);
+                }
+            } catch (err) {
+                console.log(err);
+                notify('alert-circle-outline', 'Server error.')
+            } finally {
+                loader(false, !1);
+            }
         });
     }
     openDB.onupgradeneeded = (e) => {

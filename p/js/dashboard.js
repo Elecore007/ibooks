@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, setDoc, doc, collection, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, setDoc, doc, collection, collectionGroup, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, datePeriod, projectConfigs } from "../../lb/wc.js";
 const firebaseConfig = {
@@ -26,7 +26,7 @@ function send() {
 }
 if (id) {
     let person = null, idb = null;
-    let openDB = indexedDB.open('ibooks', 1);
+    let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
         console.log("Database opened.");
         idb = e.target.result;
@@ -169,15 +169,15 @@ if (id) {
             const employeeCount = ec.data().count;
             insertIndexes(0, employeeCount);
             //get deductions
-            const dd = await getAggregateFromServer(collection(db, 'ibooks', who.fbid, currYr), { totalDed: sum('gpm')});
+            const dd = await getAggregateFromServer(collectionGroup(db, currYr), { totalDed: sum('dedn')});
             const dedn = dd.data().totalDed;
             insertIndexes(1, dedn);
             //get earnings
-            const en = await getAggregateFromServer(collection(db, 'ibooks', who.fbid, currYr), { totalEarn: sum('gpm')});
+            const en = await getAggregateFromServer(collectionGroup(db, currYr), { totalEarn: sum('earn')});
             const earn = en.data().totalEarn;
             insertIndexes(2, earn);
             //get gpm
-            const gpm = await getAggregateFromServer(collection(db, 'ibooks', who.fbid, currYr), { totalGross: sum('gpm')});
+            const gpm = await getAggregateFromServer(collectionGroup(db, currYr), { totalGross: sum('gpm')});
             const gross = gpm.data().totalGross;
             insertIndexes(3, gross);
             //get tsi
