@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDocs, getAggregateFromServer, getCountFromServer, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, getDocs, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 // const mainConfig = {
@@ -20,13 +20,33 @@ let app, db;
 
 const _enum = document.getElementById('enum');
 const enumBtns = _enum.querySelectorAll('button');
-let empIdx = 0;
+let empIdx = 0, empID;
 
 //get ibooks config
 let id = sessionStorage.getItem('ssid'); //which is a session item
 
 if (id) {
     const mainNote = document.querySelector('main > .note');
+    const delpop = document.querySelector('#delpop');
+    const sections = document.querySelectorAll('section');
+    function notify(ico, txt) {
+        mainNote.querySelector('ion-icon').setAttribute('name', ico);
+        mainNote.querySelector('span').textContent = txt;
+        mainNote.classList.add('on');
+        setTimeout(() => {
+            mainNote.classList.remove('on');
+        }, 5000);
+    }
+    function loader (s, l=!0) {
+        if (l) {
+            lodr.showPopover();
+            s ? s.disabled = true : false;
+        } else {
+            s ? s.disabled = false : false;
+            lodr.hidePopover();
+        }
+    }
+
     let person = null, idb = null, yr;
     let openDB = indexedDB.open('ibooks', 1);
     openDB.onsuccess = (e) => {
@@ -124,8 +144,29 @@ if (id) {
                         const tdOn = book.querySelector('.td.on');
                         if (tdOn) tdOn.classList.remove('on');
                         // set edit mode and populate form
-                        // employeeFormMode('person-outline','Edit Employee', 'edit');
-                        // insertEmployeeDetails(res[ix]);
+                        let {ename, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
+                        empID = id;
+                        let obj0 = [
+                            ename.join(' '),
+                            gender,
+                            dept || 'Nil',
+                            post || 'Nil',
+                            city && state ? `${city}, ${state}` : 'Nil',
+                            uid || 'Nil',
+                            resume || 'Nil',
+                            level || 'Nil',
+                            step || 'Nil',
+                            bank,
+                            acct
+                        ]
+                        let obj1 = [
+                            ename[0], ename[1], ename[2] || '',
+                            gender, dept || '', post || '', resume || '', uid, 
+                            city || '', state || '', level || '', step || '', gpm,
+                            bank, acct
+                        ]
+                        insertEmployeeDetails(...obj0);
+                        employeeFormMode('person-outline','Edit Employee', 'edit', obj1);
                         [td, ...sections].forEach((elem, idx) => elem.classList.toggle('on', idx === 2 ? false : true));
                     }
                 });
@@ -146,24 +187,31 @@ if (id) {
                 });
             });
             //show/hide sections
-            const sections = document.querySelectorAll('section');
-            function employeeFormMode(icon, btn_txt, mod) {
+            function employeeFormMode(icon, btn_txt, mod, obj=[]) {
                 document.querySelector('button#fm_sb > ion-icon').setAttribute('name', icon);
                 document.querySelector('button#fm_sb > span').textContent = btn_txt;
                 sections[1].querySelector('.top > span').textContent = btn_txt;
                 employee_form.setAttribute('data-mode', mod);
+                if (obj.length) {
+                    obj.forEach((val, idx) => employee_form.querySelectorAll('input, select')[idx].value = val);
+                }
                 sections.forEach((sect, idx) => sect.classList.toggle('on', idx));
             }
+            const bio = document.querySelector('#bio');
             function insertEmployeeDetails(obj) {
-                //insert ename, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct
-                let {ename: [lname, fname, oname], gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct} = obj;
-                employee_form.querySelectorAll('input', 'select').forEach((elem, ind) => {
-                    elem.value = [lname, fname, oname, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct][ind];
-                });
+                bio.querySelectorAll('div:nth-child(even)').forEach(even => even.textContent = ''); // clear old details
+                let x = 0;
+                for (const args of arguments) {
+                    //insert name into delpop; then insert details into bio
+                    if (!x) delpop.querySelector('span').textContent = `${args}'s account?`;
+                    bio.querySelectorAll('div:nth-child(even)')[x].textContent = args;
+                    x++;
+                }
             }
             // add button handler
             document.querySelector('button.add').onclick = (e) => {
                 employeeFormMode('person-add-outline','Add Employee', 'add');
+                employee_form.reset();
             };
             document.querySelectorAll('.top > .rota').forEach(btn => {
                 btn.onclick = () => {
@@ -177,10 +225,6 @@ if (id) {
                 e.target.previousElementSibling.value = t;
             }
             const lodr = document.getElementById('lodr');
-            //setup worker.js
-            // const wk = new Worker(new URL('worker.js', import.meta.url));
-            //add employee handler
-
             let structure = JSON.parse(person.structure);
             structure.unshift(0);
             let gpm;
@@ -188,11 +232,13 @@ if (id) {
             const salaryIpts = document.querySelectorAll('[data-name="Salary"] > input');
             [salaryIpts[0], salaryIpts[1]].forEach((ipt, idx, arr) => {
                 ipt.addEventListener('change', (e) => {
-                    let v1 = parseInt(arr[0].value), v2 = parseInt(arr[1].value);
-                    if (v1 && v2 && v1 * v2 <= person.lvl * person.step) {
-                        gpm = structure[person.lvl * v2 - (person.lvl - v1)];
-                        salaryIpts[2].value = gpm;
+                    let lv = parseInt(arr[0].value), st = parseInt(arr[1].value);
+                    if ((lv > 0 && st > 0) === (lv <= person.lvl && st <= person.step)) {
+                        gpm = structure[person.lvl * st - (person.lvl - lv)];
+                    } else {
+                        gpm = 0;
                     }
+                    salaryIpts[2].value = gpm || 0;
                 });
             });
             // formatting the gpm
@@ -200,68 +246,112 @@ if (id) {
                 gpm = Number(e.target.value.replaceAll(',',''));
                 salaryIpts[2].value = Intl.NumberFormat('en-us', {notation: 'standard'}).format(gpm);
             });
-            employee_form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                // console.log()
-                loader(e.submitter);
-                let data = Object.create(null);
-                const fd = new FormData(e.target);
-                const dt = Date.now();
-
-                for (const [k, v] of fd.entries()) {
-                    data[k] = v;
-                }
-                data['ename'] = fd.getAll('ename');
-                data['gpm'] = gpm;
-                data['creatOn'] = dt;
-                data['lastMod'] = dt;
-                if (e.submitter.form.dataset.mode === 'add') {
-                    try {
-                        const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
-                        const snapForId = await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { id: snapAdd.id });
-                        notify('checkmark-outline', 'New Employee Added.');
-                        e.target.reset();
-                    } catch (err) {
-                        notify('alert-circle-outline', 'Server error.');
-                    } finally {
-                        loader(e.submitter, !1);
+            if (person.is == 'superManager'.split('').map(m => m.codePointAt(0)).join('-') || person.is == 'manager'.split('').map(m => m.codePointAt(0)).join('-')) {
+                employee_form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    // console.log()
+                    loader(e.submitter);
+                    let data = Object.create(null);
+                    const fd = new FormData(e.target);
+                    const dt = Date.now();
+    
+                    for (const [k, v] of fd.entries()) {
+                        data[k] = v;
                     }
-                } else if (e.submitter.form.dataset.mode === 'edit') {
-                    console.log("Edit mode.");
-                    // const snapEdit = await updateDoc(doc(db, 'ibooks', person.fbid, yr, ))
-                }
-            });
-            function notify(ico, txt) {
-                mainNote.querySelector('ion-icon').setAttribute('name', ico);
-                mainNote.querySelector('span').textContent = txt;
-                mainNote.classList.add('on');
-                setTimeout(() => {
-                    mainNote.classList.remove('on');
-                }, 5000);
+                    //calculate gpm's breakdown
+                    let dn = Object.entries(person.paydedn).map(m => {
+                        let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                        return n;
+                    });
+                    let en = Object.entries(person.payearn).map(m => {
+                        let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                        return n;
+                    });
+                    let details = {
+                        'dedn': {
+                            [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
+                        },
+                        'earn': {
+                            [new Date(dt).getMonth()]: en.length ? [...en] : {}
+                        }
+                    }
+                    data['ename'] = fd.getAll('ename');
+                    data['gpm'] = gpm;
+                    data['lastMod'] = dt;
+                    if (e.submitter.form.dataset.mode === 'add') {
+                        data['creatOn'] = dt;
+                        try {
+                            const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
+                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
+                            notify('checkmark-outline', 'New Employee Added.');
+                            e.target.reset();
+                        } catch (err) {
+                            notify('alert-circle-outline', 'Server error.');
+                        } finally {
+                            loader(e.submitter, !1);
+                            e.target.reset();
+                        }
+                    } else if (e.submitter.form.dataset.mode === 'edit') {
+                        // Edit mode
+                        console.log(data, details);
+                        /*
+                        try {
+                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
+                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+                            notify('checkmark-outline', 'Employee Updated.');
+                        } catch (err) {
+                            console.log(err);
+                            notify('alert-circle-outline', 'Server error.');
+                        } finally {
+                            loader(e.submitter, !1);
+                            e.target.reset();
+                        }
+                        */
+                    }
+                });
+            } else {
+                notify('alert-circle-outline', 'Permission denied.');
             }
-            function loader (s, l=!0) {
-                if (l) {
-                    lodr.showPopover();
-                    s.disabled = true;
-                } else {
-                    s.disabled = false;
-                    lodr.hidePopover();
-                }
-            }
-            //payslip and delete btns
-            const bottomBtns = document.querySelectorAll('.bottom > button');
-            bottomBtns.forEach((btn, idx) => {
-                btn.onclick = () => {
-                    console.log('Employee index:', empIdx);
-                    [...document.querySelectorAll('#slip, #delpop')].reverse()[idx].showPopover();
-                };
-            });
+            // //payslip and delete btns
+            // const bottomBtns = document.querySelectorAll('.bottom > button');
+            // bottomBtns.forEach((btn, idx) => {
+            //     btn.onclick = () => {
+            //         console.log('Employee index:', empIdx);
+            //         [...document.querySelectorAll('#slip, #delpop')].reverse()[idx].showPopover();
+            //     };
+            // });
         }
         mgrReq.onerror = (err) => {
             alert("Database Get Request Error.");
             console.log(err);
         }
-    
+        //show/hide details menu
+        const drpdwn = document.querySelector('.top > .drpdwn');
+        document.querySelector('.top > button.ui').onclick = (e) => drpdwn.classList.toggle('on');
+        // document.querySelector('.top > button.ui').onblur = (e) => drpdwn.classList.remove('on');
+        drpdwn.querySelectorAll('button').forEach((btn, idx) => {
+            btn.addEventListener('click', (e) => {
+                drpdwn.classList.remove('on');
+                if (idx) {
+                    delpop.showPopover();
+                } else {
+                    sections.forEach((sect, idx) => idx ? sect.classList.add('on') : sect.classList.remove('on'));
+                }
+            });
+        });
+        //delete employee
+        delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
+            loader(false);
+            let fbTX = await runTransaction(db, tranx => {
+                tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
+                tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
+            });
+            fbTX.commit();
+            loader(false, !1);
+            notify('checkmark-outline', 'Employee deleted.');
+            // await deleteDoc();
+            // await deleteDoc(doc(db, 'ibooks', person.fbid, yr, empID));
+        });
     }
     openDB.onupgradeneeded = (e) => {
         console.log("Database updated.")

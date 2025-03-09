@@ -42,7 +42,7 @@
         <main>
             <header>
                 <button type="button" class="mq0 menu">
-                    <ion-icon name="arrow-down-outline"></ion-icon>
+                    <ion-icon name="menu-outline"></ion-icon>
                 </button>
                 <ion-icon name="people-outline" class="mq"></ion-icon>
                 <span id="page">Employees
@@ -93,7 +93,7 @@
                     </div>
                 </div>
                 <button type="button" class="mq0 more">
-                    <ion-icon name="arrow-down-outline"></ion-icon>
+                    <ion-icon name="grid-outline"></ion-icon>
                 </button>
             </header>
             <div>
@@ -127,10 +127,17 @@
                                 <ion-icon name="arrow-down-outline"></ion-icon>
                             </button>
                             <span>Details</span>
+                            <button type="button" class="ui">
+                                <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                            </button>
+                            <div class="drpdwn">
+                                <button type="button">Edit</button>
+                                <button type="button">Delete</button>
+                            </div>
                         </div>
                         <div class="centre">
                             <div class="umg">
-                                <button type="button">
+                                <button type="button" class="ui">
                                     <ion-icon name="create-outline"></ion-icon>
                                 </button>
                             </div>
@@ -161,39 +168,33 @@
                                 </div>
                             </div>
                             <div id="bio">
-                                <span>Name</span><span>Last First Others</span>
-                                <span>Gender</span><span>F</span>
-                                <span>Department</span><span>Justice</span>
-                                <span>Position</span><span>Waitress</span>
-                                <span>Location</span><span>Eagle Pass, TX</span>
-                                <span>ID</span><span>A1B2C3D4</span>
-                                <span>Resumption Date</span><span>2 Feb, 2025</span>
+                                <div>Name</div><div></div>
+                                <div>Gender</div><div></div>
+                                <div>Department</div><div></div>
+                                <div>Position</div><div></div>
+                                <div>Location</div><div></div>
+                                <div>ID</div><div></div>
+                                <div>Resumption Date</div><div></div>
+                                <div>Level</div><div></div>
+                                <div>Step</div><div></div>
+                                <div>Bank</div><div></div>
+                                <div>Account Number</div><div></div>
                             </div>
                         </div>
-                        <div class="bottom">
-                            <button type="button">
-                                <ion-icon name="document-outline"></ion-icon>
-                                <span>View Payslip</span>
-                            </button>
-                            <button type="button">
-                                <ion-icon name="trash-outline"></ion-icon>
-                                <span>Delete Account</span>
-                            </button>
-                            <div popover id="delpop">
-                                <div id="dwrp">
-                                    <div id="dwhd">Delete Account</div>
-                                    <div id="dwmn">This will utterly erase <span>Paula Byrne's account.</span></div>
-                                    <div id="dftr">
-                                        <button type="button" popovertarget="delpop" popovertargetaction="hide">CANCEL</button>
-                                        <button type="button">OK</button>
-                                    </div>
+                        <div popover="manual" id="delpop">
+                            <div id="dwrp">
+                                <div id="dwhd">Delete Account</div>
+                                <div id="dwmn">This will utterly erase <span></span></div>
+                                <div id="dftr">
+                                    <button type="button" popovertarget="delpop" popovertargetaction="hide">CANCEL</button>
+                                    <button type="button">DELETE</button>
                                 </div>
                             </div>
                         </div>
                     </section>
                     <section>
                         <div class="top">
-                            <button type="button" class="mq0 rota">
+                            <button type="button" class="rota">
                                 <ion-icon name="arrow-down-outline"></ion-icon>
                             </button>
                             <span></span>
@@ -226,7 +227,7 @@
                                     <input type="date" name="resume">
                                 </div>
                                 <div class="gp" data-name="ID">
-                                    <input value="SCHID0001" type="text" name="id" required>
+                                    <input value="SCHID0001" type="text" name="uid" required>
                                     <button type="button" id="eid">Auto</button>
                                 </div>
                                 <div class="gp db" data-name="Location">
@@ -287,8 +288,6 @@
                 </div>
                 <div id="athr"><span>Powered by <i>Dynamax</i></span>|<span>2025</span></div>
             </footer>
-            <!-- <ion-icon name="help-outline"></ion-icon>
-            <ion-icon name="chatbubble-ellipses-outline"></ion-icon> -->
             <div class="note">
                 <ion-icon></ion-icon>
                 <span></span>

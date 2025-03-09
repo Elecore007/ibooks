@@ -299,7 +299,7 @@ if (id) {
                 alert('Invalid text input.');
             }
         };
-        if (who.is == 'superManager'.split('').map(m => m.codePointAt(0)).join('-')) {
+        if (who.is == 'superManager'.split('').map(m => m.codePointAt(0)).join('-') || who.is == 'manager'.split('').map(m => m.codePointAt(0)).join('-')) {
             paySetBtns.forEach((btn, idx) => {
                 btn.addEventListener('click', async (e) => {
                     foils.forEach((foil, ndx) => foil.classList.toggle('on', ndx));

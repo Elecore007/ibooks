@@ -176,8 +176,8 @@ document.querySelector('.pllx.confm > button').addEventListener('click', async (
         subscriber['lvl'] = null;
         subscriber['step'] = null;
         subscriber['structure'] = null;
-        subscriber['payearn'] = null;
-        subscriber['paydedn'] = null;
+        subscriber['payearn'] = {};
+        subscriber['paydedn'] = {};
         const usersRef = await addDoc(collection(db, 'ibooks', subsRef.id, 'users'), subscriber);
         subscriber['uid'] = usersRef.id;
         const usid = await updateDoc(doc(db, 'ibooks', subsRef.id, 'users', usersRef.id), subscriber);

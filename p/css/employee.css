@@ -9,7 +9,7 @@ button.add:hover, #enum > button:hover, .td:hover, .td.on, #sphd {
 aside:nth-child(1), .top, .bottom, #enum, .h, #dftr, #pcwp button, #pcmn, #tot, #spmn > div:nth-child(4) {
     display: flex;
 }
-section, .thead, .td, #bio, .wrp, .grde {
+section, .thead, .td, .wrp, .grde {
     display: grid;
 }
 button.add, .top, .bottom, #enum, #sphd, #dftr, .h, #pcwp button, #pcmn, .grde, #tot, #spmn > div:nth-child(4) {
@@ -25,7 +25,7 @@ button.add, #enum, .pdfx, #tot {
 #sphd, #dftr {
     justify-content: space-between;
 }
-.top, #bio, .bottom, #enum, .pdfx, #tot {
+.top, .bottom, #enum, .pdfx, #tot {
     gap: 2em;
 }
 #pchd {
@@ -46,7 +46,6 @@ button.add > ion-icon {
     width: 1.5em;
 }
 aside:nth-child(1) {
-    /* padding: 1em 0 1em 0; */
     padding: 1em 0;
     font-size: 90%;
     overflow: hidden;
@@ -68,12 +67,52 @@ section {
     transition: .2s;
 }
 section > *:not(.bottom) {
-    padding: 1em 2em;
+    padding: .5em 2em;
 }
 aside:nth-child(1) > section.on {
     pointer-events: all;
     width: var(--pry-fx-wdh);
     opacity: 1;
+}
+.top {
+    position: relative;
+}
+.top > button.ui,
+.centre > .umg > button.ui {
+    margin-left: auto;
+    border: 1px solid transparent;
+    height: 2.5em;
+    width: 2.5em;
+    border-radius: 50%;
+    background-color: #0003;
+    &:focus,
+    &:hover {
+        border-color: #fff5;
+    }
+}
+.top > .drpdwn {
+    position: absolute;
+    top: 100%;
+    right: 2em;
+    transform: scale(0);
+    transform-origin: top right;
+    background-color: #0005;
+    box-shadow: 0 8px 24px #0004;
+    width: 30%;
+    transition: transform .2s;
+}
+.top > .drpdwn.on {
+    transform: scale(1);
+}
+.top > .drpdwn > button {
+    display: block;
+    width: 100%;
+    padding: .7em 2em;
+    text-align: left;
+    font-weight: 500;
+    &:hover {
+        background-color: #1a73e822;
+    }
 }
 .thead > span,
 .td > span {
@@ -119,9 +158,9 @@ aside:nth-child(1) > section.on {
     overflow-y: auto;
 }
 .centre .umg {
-    height: 48px;
-    width: 48px;
-    margin: 1em auto;
+    height: 5em;
+    width: 5em;
+    margin: 0 auto;
 }
 .centre > form > .gp {
     margin: 2em 1em;
@@ -170,7 +209,7 @@ aside:nth-child(1) > section.on {
 input#gpm {
     border-top: 1px solid #fff1;
 }
-.centre > div > button {
+/* .centre > .umg > button {
     width: 100%;
     display: flex;
     align-items: center;
@@ -179,19 +218,35 @@ input#gpm {
     padding: 12px 0;
     border-radius: 5px;
     background-color: #66339977;
+} */
+button#fm_sb {
+    width: 80%;
+    margin: .5em auto;
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    border-radius: 24px;
+    background-color: #006f59;
 }
-.centre > div > button:hover {
-    background-color: #663399;
+button#fm_sb:hover {
+    background-color: #009578;
+}
+button#fm_sb > span {
+    font-size: 110%;
+    font-weight: 500;
 }
 #bio {
     padding: 1em 0;
-    grid-template-columns: 30% 1fr;
 }
-#bio > span:nth-child(odd) {
-    opacity: .7;
+#bio > div:nth-child(odd) {
+    opacity: .4;
 }
-#bio > span:nth-child(even) {
-    justify-self: flex-end;
+#bio > div:nth-child(even) {
+    font-size: 110%;
+    font-weight: 500;
+    margin-bottom: 1em;
 }
 .bottom {
     padding: 1em;
@@ -312,16 +367,26 @@ input#gpm {
     opacity: .5;
 }
 #dwrp, #pcwp {
-    background-color: #0009;
+    background-color: #0005;
 }
 #dwrp *, #pcwp * {
     color: #fff;
 }
 #dwrp {
     max-width: 300px;
+    padding: 1em;
+}
+#dwhd {
+    font-weight: 500;
+}
+#dwmn {
+    opacity: .8;
+}
+#dwmn > span {
+    font-size: 110%;
 }
 #dwrp > div, #pcwp > * {
-    padding: 1em 2em;
+    padding: 1em;
 }
 #dftr > button {
     width: 40%;
