@@ -93,98 +93,233 @@
             </header>
             <div>
                 <aside>
-                    <div id="pages">
+                    <!--div id="pages">
                         <button type="button">Payroll</button>
-                        <!-- <button type="button">Settings</button> -->
+                        <button type="button">Settings</button>
                         <div id="slider"></div>
-                    </div>
+                    </div-->
                     <div id="content">
                         <!-- <template> -->
-                        <div class="td">
+                        <!--div class="td">
                             <span data-abbr="B">Paula Byrne</span>
                             <span>M</span>
                             <span>Justice</span>
                             <span>Attorney General</span>
+                        </div-->
+                    </div>
+                    <div id="roll" popover="manual">
+                        <div id="board">
+                            <div>
+                                <button type="button" popovertarget="roll" popovertargetaction="hide" class="mq">
+                                    <ion-icon name="chevron-back-outline"></ion-icon>
+                                </button>
+                                <span>DAVID SUCHET</span>
+                                <button type="button" popovertarget="mnth" popovertargetaction="show">
+                                    <span>JAN</span>
+                                    <ion-icon name="chevron-back-outline"></ion-icon>
+                                </button>
+                                <div id="mnth" class="resz" popover>
+                                    <menu>
+                                        <li>JAN</li>
+                                        <li>FEB</li>
+                                        <li>MAR</li>
+                                        <li>APR</li>
+                                        <li>MAY</li>
+                                        <li>JUN</li>
+                                        <li>JUL</li>
+                                        <li>AUG</li>
+                                        <li>SEP</li>
+                                        <li>OCT</li>
+                                        <li>NOV</li>
+                                        <li>DEC</li>
+                                    </menu>
+                                </div>
+                                <button type="button" popovertarget="earded" popovertargetaction="show">
+                                    <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                                </button>
+                                <div id="earded" class="resz" popover>
+                                    <menu>
+                                        <li><button type="button" popovertarget="newpaye" popovertargetaction="show">Earnings</button></li>
+                                        <li><button type="button" popovertarget="newpaye" popovertargetaction="show">Deductions</button></li>
+                                    </menu>
+                                </div>
+                                <button type="button" popovertarget="roll" popovertargetaction="hide" class="resp">
+                                    <ion-icon name="close-outline"></ion-icon>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="on">EARNINGS</button>
+                                <button type="button">DEDUCTIONS</button>
+                                <div id="payearn">
+                                    <!-- <span>Earning 1</span><span>1000000</span>
+                                    <span>Earning 1</span><span>1000000</span>
+                                    <span>Earning 1</span><span>1000000</span>
+                                    <span>Earning 1</span><span>1000000</span>
+                                    <span>Earning 1</span><span>1000000</span> -->
+                                </div>
+                                <div id="paydedn">
+                                    <!-- <span>Deduction 1</span><span>30000</span>
+                                    <span>Deduction 1</span><span>30000</span>
+                                    <span>Deduction 1</span><span>30000</span>
+                                    <span>Deduction 1</span><span>30000</span>
+                                    <span>Deduction 1</span><span>30000</span> -->
+                                </div>
+                            </div>
+                            <div>
+                                <small id="net">Net Pay: <span>&#8358;1000000000</span></small><br>
+                                <small>Fiscal Yr. 2025</small>
+                            </div>
                         </div>
-                        <div id="roll" popover="manual">
-                            <div id="board">
+                    </div>
+                    <div id="newpaye" popover>
+                        <div>
+                            <div class="nghd">
+                                <span>PAYE Earnings</span>
+                                <button type="button" popovertarget="newpaye" popovertargetaction="hide">
+                                    <ion-icon name="chevron-back-outline"></ion-icon>
+                                </button>
+                            </div>
+                            <form action="#" autocomplete="off">
+                                <div class="fdset">
+                                    <select name="payetype" id="payetype" required>
+                                        <option value="">Choose category</option>
+                                        <option value="Meal">Meal</option>
+                                        <option value="Transportation">Transportation</option>
+                                        <option value="New">New</option>
+                                    </select>
+                                    <ion-icon name="chevron-back-outline"></ion-icon>
+                                </div>
+                                <div class="fdset">
+                                    <input type="text" name="other" placeholder="Specify Other" readonly required>
+                                </div>
+                                <div class="fdset">
+                                    <input type="number" name="amt" placeholder="Amount (NGN)" required>
+                                </div>
+                                <div class="fdset">
+                                    <input type="date" name="time" placeholder="Date of Effect" required>
+                                </div>
+                                <button>UPDATE PAYE</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- </template> -->
+                    <template id="tempset">
+                        <div class="gears">
+                            <label class="g0" for="earn">
+                                <input type="checkbox" checked name="set" id="earn">
+                                <span>Earnings</span>
+                                <button type="button" title="Add New Earning" popovertarget="newgear" popoovertargetaction="show">
+                                    <ion-icon name="add-outline"></ion-icon>
+                                </button>
+                                <ion-icon name="chevron-back-outline"></ion-icon>
+                            </label>
+                            <div class="g1">
                                 <div>
-                                    <button type="button" popovertarget="roll" popovertargetaction="hide" class="mq">
+                                    <button type="button">
+                                        <span>Basic</span>
                                         <ion-icon name="chevron-back-outline"></ion-icon>
                                     </button>
-                                    <span>DAVID SUCHET</span>
-                                    <button type="button" popovertarget="mnth" popovertargetaction="show">
-                                        <span>JAN</span>
+                                    <input type="checkbox" name="cb0" id="cb0" class="toggle"/>
+                                    <label for="cb0"></label>
+                                </div>
+                                <div>
+                                    <button type="button">
+                                        <span>Housing</span>
                                         <ion-icon name="chevron-back-outline"></ion-icon>
                                     </button>
-                                    <div id="mnth" class="resz" popover>
-                                        <menu>
-                                            <li class="on">JAN</li>
-                                            <li>FEB</li>
-                                            <li>MAR</li>
-                                            <li>APR</li>
-                                            <li>MAY</li>
-                                            <li>JUN</li>
-                                            <li>JUL</li>
-                                            <li>AUG</li>
-                                            <li>SEP</li>
-                                            <li>OCT</li>
-                                            <li>NOV</li>
-                                            <li>DEC</li>
-                                        </menu>
-                                    </div>
-                                    <button type="button" popovertarget="earded" popovertargetaction="show">
-                                        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
-                                    </button>
-                                    <div id="earded" class="resz" popover>
-                                        <menu>
-                                            <li><button type="button" popovertarget="newpaye" popovertargetaction="show">Earnings</button></li>
-                                            <li><button type="button" popovertarget="newpaye" popovertargetaction="show">Deductions</button></li>
-                                        </menu>
-                                    </div>
-                                    <button type="button" popovertarget="roll" popovertargetaction="hide" class="resp">
-                                        <ion-icon name="close-outline"></ion-icon>
-                                    </button>
+                                    <input type="checkbox" name="cb1" id="cb1" class="toggle"/>
+                                    <label for="cb1"></label>
                                 </div>
                                 <div>
-                                    <button type="button" class="on">EARNINGS</button>
-                                    <button type="button">DEDUCTIONS</button>
-                                    <div>
-                                        <span>Earning 1</span><span>1000000</span>
-                                        <span>Earning 1</span><span>1000000</span>
-                                        <span>Earning 1</span><span>1000000</span>
-                                        <span>Earning 1</span><span>1000000</span>
-                                        <span>Earning 1</span><span>1000000</span>
-                                    </div>
-                                    <div>
-                                        <span>Deduction 1</span><span>30000</span>
-                                        <span>Deduction 1</span><span>30000</span>
-                                        <span>Deduction 1</span><span>30000</span>
-                                        <span>Deduction 1</span><span>30000</span>
-                                        <span>Deduction 1</span><span>30000</span>
-                                    </div>
+                                    <button type="button">
+                                        <span>Transportation</span>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    </button>
+                                    <input type="checkbox" name="cb2" id="cb2" class="toggle"/>
+                                    <label for="cb2"></label>
                                 </div>
                                 <div>
-                                    <small>Net Pay: <span>&#8358;1000000000</span></small><br>
-                                    <small>Fiscal Yr. 2025</small>
+                                    <button type="button">
+                                        <span>Transportation</span>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div id="newpaye" popover>
+                        <div class="gears">
+                            <label class="g0" for="ded">
+                                <input type="checkbox" checked name="set" id="ded">
+                                <span>Deductions</span>
+                                <button type="button" title="Add New Deduction" popovertarget="newgear" popoovertargetaction="show">
+                                    <ion-icon name="add-outline"></ion-icon>
+                                </button>
+                                <ion-icon name="chevron-back-outline"></ion-icon>
+                            </label>
+                            <div class="g1">
+                                <div>
+                                    <button type="button">
+                                        <span>Loan</span>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    </button>
+                                    <input type="checkbox" name="cb3" id="cb3" class="toggle"/>
+                                    <label for="cb3"></label>
+                                </div>
+                                <div>
+                                    <button type="button">
+                                        <span>Cooperative</span>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    </button>
+                                    <input type="checkbox" name="cb4" id="cb4" class="toggle"/>
+                                    <label for="cb4"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="popgear" popover>
+                            <div>EARNING</div>
+                            <p>This setting is calculated as <span>8% of the Gross.</span></p>
+                            <div>
+                                <button type="button">
+                                    <span>Edit Settings</span>
+                                </button>
+                                <button type="button" popovertarget="delgear" popovertargetaction="show">
+                                    <span>Delete Settings</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="delgear" popover>
+                            <div>DELETE EARNING</div>
+                            <p>Continue to delete <span>MEAL</span>?</p>
+                            <div>
+                                <button type="button" popovertarget="delgear" popovertargetaction="hide">
+                                    <span>CANCEL</span>
+                                </button>
+                                <button type="button">
+                                    <span>DELETE</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="newgear" popover>
                             <div>
                                 <div class="nghd">
-                                    <span>PAYE Earnings</span>
-                                    <button type="button" popovertarget="newpaye" popovertargetaction="hide">
-                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    <span>Settings for</span>
+                                    <button type="button" popovertarget="newgear" popovertargetaction="hide">
+                                        <ion-icon name="close-outline"></ion-icon>
                                     </button>
                                 </div>
                                 <form action="#" autocomplete="off">
                                     <div class="fdset">
-                                        <select name="payetype" id="payetype" required>
+                                        <select name="earnings" id="earnings" required>
+                                            <option value="">Choose PAYE</option>
+                                            <option value="Earnings">Earnings</option>
+                                            <option value="Deductions">Deductions</option>
+                                        </select>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
+                                    </div>
+                                    <div class="fdset">
+                                        <select name="category" id="category" required>
                                             <option value="">Choose category</option>
                                             <option value="Meal">Meal</option>
                                             <option value="Transportation">Transportation</option>
-                                            <option value="New">New</option>
                                         </select>
                                         <ion-icon name="chevron-back-outline"></ion-icon>
                                     </div>
@@ -192,156 +327,21 @@
                                         <input type="text" name="other" placeholder="Specify Other" readonly required>
                                     </div>
                                     <div class="fdset">
-                                        <input type="number" name="amt" placeholder="Amount (NGN)" required>
+                                        <input type="number" name="amt" placeholder="Enter Amount" required>
                                     </div>
                                     <div class="fdset">
-                                        <input type="date" name="time" placeholder="Date of Effect" required>
+                                        <select name="unit" id="unit" required>
+                                            <option value="">Choose Unit of Amount</option>
+                                            <option value="%">Percentage</option>
+                                            <option value="&#8358;">Flat sum</option>
+                                        </select>
+                                        <ion-icon name="chevron-back-outline"></ion-icon>
                                     </div>
-                                    <button>UPDATE PAYE</button>
+                                    <button>SAVE PAYE</button>
                                 </form>
                             </div>
                         </div>
-                        <!-- </template> -->
-                        <template id="tempset">
-                            <div class="gears">
-                                <label class="g0" for="earn">
-                                    <input type="checkbox" checked name="set" id="earn">
-                                    <span>Earnings</span>
-                                    <button type="button" title="Add New Earning" popovertarget="newgear" popoovertargetaction="show">
-                                        <ion-icon name="add-outline"></ion-icon>
-                                    </button>
-                                    <ion-icon name="chevron-back-outline"></ion-icon>
-                                </label>
-                                <div class="g1">
-                                    <div>
-                                        <button type="button">
-                                            <span>Basic</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                        <input type="checkbox" name="cb0" id="cb0" class="toggle"/>
-                                        <label for="cb0"></label>
-                                    </div>
-                                    <div>
-                                        <button type="button">
-                                            <span>Housing</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                        <input type="checkbox" name="cb1" id="cb1" class="toggle"/>
-                                        <label for="cb1"></label>
-                                    </div>
-                                    <div>
-                                        <button type="button">
-                                            <span>Transportation</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                        <input type="checkbox" name="cb2" id="cb2" class="toggle"/>
-                                        <label for="cb2"></label>
-                                    </div>
-                                    <div>
-                                        <button type="button">
-                                            <span>Transportation</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="gears">
-                                <label class="g0" for="ded">
-                                    <input type="checkbox" checked name="set" id="ded">
-                                    <span>Deductions</span>
-                                    <button type="button" title="Add New Deduction" popovertarget="newgear" popoovertargetaction="show">
-                                        <ion-icon name="add-outline"></ion-icon>
-                                    </button>
-                                    <ion-icon name="chevron-back-outline"></ion-icon>
-                                </label>
-                                <div class="g1">
-                                    <div>
-                                        <button type="button">
-                                            <span>Loan</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                        <input type="checkbox" name="cb3" id="cb3" class="toggle"/>
-                                        <label for="cb3"></label>
-                                    </div>
-                                    <div>
-                                        <button type="button">
-                                            <span>Cooperative</span>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </button>
-                                        <input type="checkbox" name="cb4" id="cb4" class="toggle"/>
-                                        <label for="cb4"></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="popgear" popover>
-                                <div>EARNING</div>
-                                <p>This setting is calculated as <span>8% of the Gross.</span></p>
-                                <div>
-                                    <button type="button">
-                                        <span>Edit Settings</span>
-                                    </button>
-                                    <button type="button" popovertarget="delgear" popovertargetaction="show">
-                                        <span>Delete Settings</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="delgear" popover>
-                                <div>DELETE EARNING</div>
-                                <p>Continue to delete <span>MEAL</span>?</p>
-                                <div>
-                                    <button type="button" popovertarget="delgear" popovertargetaction="hide">
-                                        <span>CANCEL</span>
-                                    </button>
-                                    <button type="button">
-                                        <span>DELETE</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div id="newgear" popover>
-                                <div>
-                                    <div class="nghd">
-                                        <span>Settings for</span>
-                                        <button type="button" popovertarget="newgear" popovertargetaction="hide">
-                                            <ion-icon name="close-outline"></ion-icon>
-                                        </button>
-                                    </div>
-                                    <form action="#" autocomplete="off">
-                                        <div class="fdset">
-                                            <select name="earnings" id="earnings" required>
-                                                <option value="">Choose PAYE</option>
-                                                <option value="Earnings">Earnings</option>
-                                                <option value="Deductions">Deductions</option>
-                                            </select>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </div>
-                                        <div class="fdset">
-                                            <select name="category" id="category" required>
-                                                <option value="">Choose category</option>
-                                                <option value="Meal">Meal</option>
-                                                <option value="Transportation">Transportation</option>
-                                            </select>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </div>
-                                        <div class="fdset">
-                                            <input type="text" name="other" placeholder="Specify Other" readonly required>
-                                        </div>
-                                        <div class="fdset">
-                                            <input type="number" name="amt" placeholder="Enter Amount" required>
-                                        </div>
-                                        <div class="fdset">
-                                            <select name="unit" id="unit" required>
-                                                <option value="">Choose Unit of Amount</option>
-                                                <option value="%">Percentage</option>
-                                                <option value="&#8358;">Flat sum</option>
-                                            </select>
-                                            <ion-icon name="chevron-back-outline"></ion-icon>
-                                        </div>
-                                        <button>SAVE PAYE</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+                    </template>
                 </aside>
                 <aside>
                     <button type="button" title="Print">
@@ -375,20 +375,13 @@
     </div>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="../../main/main.js"></script>
-    <!-- <script src="../../lb/wc.js"></script> -->
-    <!-- <script src="../js/payroll.js"></script> -->
+    <script type="module" src="../../main/main.js"></script>
+    <!-- <script type="module" src="../../lb/wc.js"></script> -->
+    <script type="module" src="../js/payroll.js"></script>
     <script>
         document.querySelectorAll('.g1 > div').forEach(btn => {
             btn.onclick = (e) => {
                 if (e.target.tagName == 'BUTTON') document.querySelector('#popgear').showPopover();
-            }
-        });
-
-        //show roll
-        document.querySelectorAll('.td').forEach(td => {
-            td.onclick = function () {
-                document.querySelector('[popover]#roll').showPopover();
             }
         });
         //resize window

@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 // const mainConfig = {
@@ -91,7 +91,7 @@ if (id) {
                     // sessionStorage.removeItem('synced');
                 } else {
                     yr = datePeriod(Date.now()).getFullYear().toString();
-                    const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr));
+                    const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
                     if (empRef.size) {
                         //then store copy in indexedDB
                         let data = empRef.docs.map(m => m.data());

@@ -295,9 +295,9 @@ forms.namedItem('login').addEventListener('submit', (event) => {
     }
     openDB.onupgradeneeded = (e) => {
         idb = e.target.result;
-        ['mgr', 'wkr'].forEach((stor, idx) => {
+        ['mgr', 'wkr', 'stat'].forEach((stor, idx) => {
             if (!idb.objectStoreNames.contains(stor)) {
-                idb.createObjectStore(stor, {keyPath: ['pbk','id'][idx]});
+                idb.createObjectStore(stor, {keyPath: ['pbk','id','id'][idx]});
             }
         });
     }

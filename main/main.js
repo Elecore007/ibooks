@@ -1,3 +1,4 @@
+export const ssid = sessionStorage.getItem('ssid');
 window.addEventListener('message', (e) => {
     if (e.data.navigable) {
         //navigate pages
