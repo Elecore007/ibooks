@@ -292,6 +292,20 @@ if (id) {
                             const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
                             await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
+                            //add to idb
+                            let delTX = idb.transaction('wkr', 'readwrite');
+                            delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                            delTX.onerror = (err) => console.log(err);
+                
+                            let Store = delTX.objectStore('wkr');
+                            data['id'] = snapAdd.id;
+                            let delReq = Store.add(data);
+                            delReq.onsuccess = (e) => {
+                                console.log("Add succeeded.");
+                            }
+                            delReq.onerror = (err) => {
+                                console.log(err);
+                            }
                             notify('checkmark-outline', 'New Employee Added.');
                             e.target.reset();
                         } catch (err) {
@@ -300,7 +314,7 @@ if (id) {
                         } finally {
                             loader(e.submitter, !1);
                             e.target.reset();
-                            sessionStorage.setItem('synced',true);
+                            sessionStorage.removeItem('synced');
                         }
                     } else if (e.submitter.form.dataset.mode === 'edit') {
                         // Edit mode
@@ -309,6 +323,20 @@ if (id) {
                         try {
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+                            //update idb
+                            let delTX = idb.transaction('wkr', 'readwrite');
+                            delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                            delTX.onerror = (err) => console.log(err);
+                
+                            let Store = delTX.objectStore('wkr');
+                            data['id'] = empID;
+                            let delReq = Store.put(data);
+                            delReq.onsuccess = (e) => {
+                                console.log("Update succeeded.");
+                            }
+                            delReq.onerror = (err) => {
+                                console.log(err);
+                            }
                             notify('checkmark-outline', 'Employee Updated.');
                         } catch (err) {
                             console.log(err);
@@ -316,7 +344,7 @@ if (id) {
                         } finally {
                             loader(e.submitter, !1);
                             e.target.reset();
-                            sessionStorage.setItem('synced',true);
+                            sessionStorage.removeItem('synced');
                         }
                     }
                 });
@@ -352,6 +380,7 @@ if (id) {
         });
         //delete employee
         delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
+            console.log(empID)
             loader(false);
             try {
                 let fbTX = await runTransaction(db, async (tranx) => {
@@ -359,6 +388,7 @@ if (id) {
                     await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
                 });
                 loader(false, !1);
+                delpop.hidePopover();
                 notify('checkmark-outline', 'Employee deleted.');
                 //delete from idb
                 let delTX = idb.transaction('wkr', 'readwrite');
@@ -366,7 +396,7 @@ if (id) {
                 delTX.onerror = (err) => console.log(err);
     
                 let Store = delTX.objectStore('wkr');
-                let delReq = Store.delete(id);
+                let delReq = Store.delete(empID);
                 delReq.onsuccess = (e) => {
                     console.log("Delete succeeded.");
                 }
