@@ -163,9 +163,12 @@ if (ssid) {
         newpaye.querySelector('form').addEventListener('submit', (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
+            let data = {};
             for (const [k, v] of fd.entries()) {
-                console.log(k, v);
+                data[k] = v;
             }
+            data['dur'] = Date.now() + (1000 * 3600 * 24 * 31 * 2);
+            console.log(data);
         });
         //set up payslip
         async function enterPayslip (m) {

@@ -25,20 +25,6 @@ let empIdx = 0, empID;
 
 //get ibooks config
 if (ssid) {
-    // //navigate pages
-    // document.querySelectorAll('#nav_menu > a').forEach(a => {
-    //     a.addEventListener('click', (e) => {
-    //         e.preventDefault();
-    //         location.href = e.target.href;  // isDashboard is unused
-    //     });
-    // });
-    // //logout
-    // document.querySelector('button#lgt').onclick = () => {
-    //     lodr.showPopover();
-    //     sessionStorage.removeItem('ssid');
-    //     location.replace('../../index.html');
-    // }
-
     const mainNote = document.querySelector('main > .note');
     const delpop = document.querySelector('#delpop');
     const sections = document.querySelectorAll('section');
@@ -296,11 +282,11 @@ if (ssid) {
                     data['ename'] = fd.getAll('ename');
                     data['gpm'] = gpm;
                     data['lastMod'] = dt;
-                    console.log(data, details);
+                    data['earn'] = earn;
+                    data['dedn'] = dedn;
+                    // console.log(data, details);
                     if (e.submitter.form.dataset.mode === 'add') {
                         data['creatOn'] = dt;
-                        data['earn'] = earn;
-                        data['dedn'] = dedn;
                         try {
                             const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
@@ -331,8 +317,8 @@ if (ssid) {
                         }
                     } else if (e.submitter.form.dataset.mode === 'edit') {
                         // Edit mode
-                        console.log(data, details);
-                        
+                        data['gpm'] = Number(fd.get('gpm'));
+                        // console.log(data, details);
                         try {
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                             await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
