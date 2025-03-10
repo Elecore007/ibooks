@@ -4,6 +4,9 @@ import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.
 import { ssid } from "../../main/main.js";
 
 if (ssid) {
+    let obj = {navigable: true};
+    window.postMessage(obj, obj);
+    
     let app, db;
     //open idb
     let idb = null, person = null, empID;

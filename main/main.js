@@ -8,6 +8,12 @@ window.addEventListener('message', (e) => {
                 location.href = e.target.href;  // isDashboard is unused
             });
         });
+        //logout
+        document.querySelector('button#lgt').onclick = () => {
+            lodr.showPopover();
+            sessionStorage.removeItem('ssid');
+            location.replace('../../index.html');
+        }
     }
 });
 //toggler function

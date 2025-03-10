@@ -73,12 +73,6 @@ if (id) {
     async function personReady(who) {
         //welcome message
         document.querySelector('#confgr_paye > p > span').textContent = who.user;
-        //logout
-        document.querySelector('button#lgt').onclick = () => {
-            lodr.showPopover();
-            sessionStorage.removeItem('ssid');
-            location.replace('../../index.html');
-        }
         function addOfficerToDOM (off) {
             off.forEach(ofr => {
                 ofcrs.querySelector('.obd').insertAdjacentHTML('beforeend', `

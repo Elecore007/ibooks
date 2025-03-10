@@ -26,6 +26,9 @@ let empIdx = 0, empID;
 let id = sessionStorage.getItem('ssid'); //which is a session item
 
 if (id) {
+    let obj = {navigable: true};
+    window.postMessage(obj, obj);
+    
     const mainNote = document.querySelector('main > .note');
     const delpop = document.querySelector('#delpop');
     const sections = document.querySelectorAll('section');
