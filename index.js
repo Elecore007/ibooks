@@ -175,7 +175,7 @@ document.querySelector('.pllx.confm > button').addEventListener('click', async (
         subscriber['cfg'] = JSON.stringify(projectConfigs[cfgUsed]);
         subscriber['lvl'] = null;
         subscriber['step'] = null;
-        subscriber['structure'] = null;
+        subscriber['structure'] = [];
         subscriber['payearn'] = {};
         subscriber['paydedn'] = {};
         const usersRef = await addDoc(collection(db, 'ibooks', subsRef.id, 'users'), subscriber);

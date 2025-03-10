@@ -75,7 +75,7 @@ if (ssid) {
             console.log(err);
         }
         let mgrStore = tx.objectStore('mgr');
-        let mgrReq = mgrStore.get(id);
+        let mgrReq = mgrStore.get(ssid);
         mgrReq.onsuccess = (e) => {
             person = e.target.result;
             
