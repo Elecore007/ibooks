@@ -43,7 +43,6 @@ if (ssid) {
             const fbConfig = JSON.parse(person.cfg);
             app = initializeApp(fbConfig);
             db = getFirestore(app);
-            // personReady(person);
 
             //get employee info, else from firebase
             let txe = idb.transaction('wkr', 'readwrite');

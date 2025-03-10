@@ -480,7 +480,6 @@ if (id) {
                                         [nm]: perFlat === 'per' ? val/100 : val,
                                     }
                                     console.log(data_name, data);
-                                    // firebaseConfig = JSON.parse(who.cfg);   //REMOVE COMPLETELY
                                     try {
                                         const update = await setDoc(doc(db, 'ibooks', who.fbid, 'users', who.uid), { [data_name]: data }, { merge: true });
                                         succeeded('Salary settings updated.');
