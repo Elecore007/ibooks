@@ -98,6 +98,28 @@ aside:nth-child(1) {
     width: 1000px;
     position: relative;
 }
+#board::after {
+    position: absolute;
+    left: 50%;
+    top: 1em;
+    transform: translate(-50%,0);
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    border: 4px solid;
+    border-color: #fff9 #fff6 #fff3 #fff1;
+    z-index: 1;
+    animation: 1s linear infinite forwards;
+}
+#board.on::after {
+    content: '';
+    animation-name: spin;
+}
+@keyframes spin {
+    100% {
+        transform: translate(-50%, 0) rotate(360deg);
+    }
+}
 #board > div:not(:nth-child(2)) {
     padding: 1em;
 }
@@ -127,7 +149,7 @@ aside:nth-child(1) {
     gap: .7em;
     padding: .7em 1em;
     border-radius: 2em;
-    background-color: #ffa50055;
+    background-color: #ffa50077;
 }
 #board > div:nth-child(1) > button:nth-of-type(2) > ion-icon {
     rotate: z -90deg;
@@ -138,10 +160,17 @@ aside:nth-child(1) {
 #mnth, #earded {
     height: fit-content;
     width: fit-content;
-    box-shadow: 0 7px 14px #0003;
+    box-shadow: 0 7px 14px #5553;
+    border-radius: 16px;
 }
 menu {
     list-style: none;
+}
+#mnth {
+    background-color: #ffa50055;
+}
+#earded {
+    border: 1px solid #fff2;
 }
 #mnth > menu {
     height: 330px;
@@ -170,7 +199,7 @@ menu {
 #mnth > menu > li.on,
 #earded > menu > li:hover,
 #earded > menu > li.on {
-    background-color: #0003;
+    background-color: #0005;
 }
 #board > div:nth-child(2) {
     display: flex;
@@ -211,7 +240,8 @@ menu {
     text-align: center;
 }
 #board > div:nth-child(3) > small {
-    margin: .7em 0;
+    display: block;
+    padding: .7em 0;
     opacity: .7;
     font-weight: 200;
 }
@@ -440,6 +470,42 @@ label > input {
     width: 100%;
     border-radius: 5px;
 }
+#join {
+    width: 320px;
+    background-color: #0005;
+    display: flex;
+    flex-direction: column;
+    gap: .5em;
+    align-items: center;
+    padding: 2em;
+    border-radius: 16px;
+}
+#join > * {
+    font-size: 110%;
+}
+#join > ion-icon {
+    transform: scale(2);
+    color: #5ca3ff;
+}
+#join > p {
+    padding: 2em 0;
+    opacity: .5;
+    font-weight: 300;
+}
+#join > div {
+    text-align: center;
+}
+#join > div > button {
+    padding: .7em;
+    border-radius: 24px;
+    font-weight: 500;
+    width: 100px;
+    margin: 0 5px;
+    border: 1px solid transparent;
+}
+#join > div > button:hover {
+    border-color: #5ca3ff;
+}
 .mq {
     display: none !important;
 }
@@ -467,6 +533,7 @@ label > input {
     .td {
         grid-template-columns: 40% 1fr 10%;
         column-gap: .3em;
+        position: relative;
     }
     .td > span {
         text-align: left;
@@ -475,13 +542,12 @@ label > input {
         overflow: hidden;
     }
     .td > span:nth-child(1) {
+        position: static;
         padding-left: 4em;
         grid-column: span 2;
-        overflow: visible;
     }
     .td > span:nth-child(1)::after {
-        left: 0;
-        top: 100%;
+        left: 1em;
     }
     .td > span:nth-child(2) {
         text-align: right;

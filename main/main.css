@@ -331,7 +331,7 @@ footer {
     background-color: #3338;
     backdrop-filter: blur(7px);
 }
-[popover]:popover-open {
+[popover]:not(#lodr):popover-open {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -343,19 +343,20 @@ footer {
     position: relative;
 }
 #lodr::after {
+    content: '';
     height: 20px;
     width: 20px;
     position: absolute;
     left: 50%;
     top: 50%;
     border-radius: 50%;
-    transform: translate(-50%, -50%) rotate(0);
+    transform: translate(-50%, -50%) rotate(0deg);
     border: 3px solid;
     border-color: #fff #fff3 #fff3 #fff3;
-    animation: spin 1s linear infinite backwards;
+    animation: 1s linear infinite backwards;
 }
 #lodr:popover-open::after {
-    content: '';
+animation-name: spin;
 }
 @keyframes spin {
     100% {

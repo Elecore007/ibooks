@@ -25,8 +25,13 @@ const aside = document.querySelectorAll('aside');
 const moreBtn = document.querySelector('button.more');
 moreBtn.onfocus = () => toggler(aside[1], 'on');
 moreBtn.onblur = () => toggler(aside[1], 'on', false);
-aside[1].querySelectorAll('button').forEach(btn => btn.addEventListener('click', ()=> {
-    alert('No update yet.');
+let sdb;
+aside[1].querySelectorAll('button[title]').forEach((btn, btx) => btn.addEventListener('click', ()=> {
+    if (btn.getAttribute('data-ctx') === 'sync') {
+        console.log("Sync working...");
+    } else {
+        alert("No update yet.");
+    }
 }));
 //toggle nav menu
 const nav = document.querySelector('nav');

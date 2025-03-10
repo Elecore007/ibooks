@@ -53,13 +53,37 @@ if (ssid) {
             }
         }
 
+        const lodr = document.getElementById('lodr');
         const contnt = document.getElementById('content');
+        const board = document.getElementById('board');
         const mnthMenu = document.getElementById('mnth');
         const lis = mnthMenu.querySelectorAll('menu > li');
         const menuBtn = mnthMenu.previousElementSibling;
         const netDiv = document.getElementById('net');
+        const emp = document.getElementById('emp');
+        const fsc = netDiv.nextElementSibling;
         let mnth = new Date().getMonth();
 
+        //listener for toggling payslip popover
+        const resz = document.querySelectorAll('.resz');
+        window.addEventListener('resize', () => resizePop());
+        function resizePop () {
+            resz.forEach(resz => {
+                resz.ontoggle = (e) => {
+                    resz.style.left = resz.previousElementSibling.getBoundingClientRect().right - e.target.clientWidth + 'px';
+                    resz.style.top = resz.previousElementSibling.getBoundingClientRect().y + 50 + 'px';
+                };
+            });
+        };
+        document.getElementById('roll').addEventListener('toggle', (e) => {
+            if (e.oldState === 'closed') {
+                resizePop();
+            } else {
+                [emp, netDiv.querySelector('span'), ...document.querySelectorAll('#payearn, #paydedn')].forEach(elem => elem.innerHTML = '');
+            }
+            [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'none');
+        });
+        
         function addEmployeeDOM (arr) {
             //add to DOM
             arr.forEach(v => {
@@ -83,6 +107,8 @@ if (ssid) {
             document.querySelectorAll('.td').forEach((td, ix) => {
                 td.onclick = async function () {
                     empID = arr[ix].id;
+                    emp.textContent = arr[ix].ename.join(' ');
+                    fsc.textContent = `Fiscal Yr: ${yr}`;
                     document.querySelector('[popover]#roll').showPopover();
                     await enterPayslip(mnth);
                 }
@@ -90,48 +116,48 @@ if (ssid) {
         }
         //set up payslip
         async function enterPayslip (m) {
+            board.classList.add('on');  //loader
             lis.forEach((li, ix) => li.classList.toggle('on', ix === m));
             menuBtn.querySelector('span').textContent = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][m];
             //check idb for data
             let statTX = idb.transaction('stat', 'readwrite');
-            statTX.oncomplete = (e) => {
-                console.log("Transaction to get 'STATS' successful.");
-            }
+            statTX.oncomplete = (e) => {}
             statTX.onerror = (err) => {
                 console.log(err);
             }
             let statStore = statTX.objectStore('stat');
             let statReq = statStore.get(empID);
             statReq.onsuccess = async (e) => {
-                console.log("Successfully retrieved stat.");
                 const res = e.target.result;
-                console.log(res);
                 if (res) {
-                    //run earn/dedn function
                     const {earn, dedn} = res;
-                    netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
+                    netDiv.querySelector('span').innerHTML = '&#8358; ' + setInDOM(earn, dedn);
+                    board.classList.remove('on');   //loader
+                    [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
                 } else {
                     //check backend for data
-                    const statRef = await getDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID));
-                    let data = statRef.data();
-                    data['id'] = empID;
-                    statTX = idb.transaction('stat', 'readwrite');
-                    statTX.oncomplete = (e) => {
-                        console.log("Transaction to get 'STATS' successful.");
+                    try {
+                        const statRef = await getDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID));
+                        let data = statRef.data();
+                        data['id'] = empID;
+                        statTX = idb.transaction('stat', 'readwrite');
+                        statTX.oncomplete = (e) => {}
+                        statTX.onerror = (err) => {
+                            console.log(err);
+                        }
+                        statStore = statTX.objectStore('stat');
+                        let addReq = statStore.add(data);
+                        addReq.onsuccess = (e) => {
+                            const {earn, dedn} = data;
+                            netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
+                            [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
+                        }
+                        addReq.onerror = (err) => console.error(err);
+                    } catch (err) {
+                        console.error(err);
+                    } finally {
+                        board.classList.remove('on');   //loader
                     }
-                    statTX.onerror = (err) => {
-                        console.log(err);
-                    }
-                    statStore = statTX.objectStore('stat');
-                    let addReq = statStore.add(data);
-                    addReq.onsuccess = (e) => {
-                        //run earn/dedn function
-                        console.log(data);
-                        const {earn, dedn} = data;
-                        netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
-                        console.log("Added stat successfully.");
-                    }
-                    addReq.onerror = (err) => console.error(err);
                 }
             }
             statReq.onerror = (err) => {
@@ -139,18 +165,33 @@ if (ssid) {
             }
             //calculate earn and dedn breakdown
             function setInDOM (ea, de) {
+                document.querySelectorAll('#payearn, #paydedn').forEach(elem => elem.innerHTML = '');
                 let en = ea[mnth].map(m => { 
-                    document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358;${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
+                    document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
                     return Object.values(m)[0];
                 });
                 let dn = de[mnth].map(m => {
-                    document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358;${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
+                    document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
                     return Object.values(m)[0];
                 });
-                console.log(en.reduce((acc, val) => acc + val), dn.reduce((acc, val) => acc + val));
-                return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val);
-                // document.getElementById('paydedn');                        
+                return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val); //netpay                       
             }
+        }
+        //sync data
+        //clear 'stat' idb
+        document.querySelector('#syncbtn').onclick = (e) => {
+            lodr.showPopover();
+            let delTX = idb.transaction('stat', 'readwrite');
+            delTX.oncomplete = (e) => {
+                //reload page
+                location.reload();
+            }
+            delTX.onerror = (err) => {
+                lodr.hidePopover();
+                console.log(err);
+            }
+            let store = delTX.objectStore('stat');
+            delReq = store.clear();
         }
     }
 }

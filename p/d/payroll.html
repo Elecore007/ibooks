@@ -98,22 +98,14 @@
                         <button type="button">Settings</button>
                         <div id="slider"></div>
                     </div-->
-                    <div id="content">
-                        <!-- <template> -->
-                        <!--div class="td">
-                            <span data-abbr="B">Paula Byrne</span>
-                            <span>M</span>
-                            <span>Justice</span>
-                            <span>Attorney General</span>
-                        </div-->
-                    </div>
+                    <div id="content"></div>
                     <div id="roll" popover="manual">
-                        <div id="board">
+                        <div id="board" class="on">
                             <div>
                                 <button type="button" popovertarget="roll" popovertargetaction="hide" class="mq">
                                     <ion-icon name="chevron-back-outline"></ion-icon>
                                 </button>
-                                <span>DAVID SUCHET</span>
+                                <span id="emp"></span>
                                 <button type="button" popovertarget="mnth" popovertargetaction="show">
                                     <span>JAN</span>
                                     <ion-icon name="chevron-back-outline"></ion-icon>
@@ -150,23 +142,11 @@
                             <div>
                                 <button type="button" class="on">EARNINGS</button>
                                 <button type="button">DEDUCTIONS</button>
-                                <div id="payearn">
-                                    <!-- <span>Earning 1</span><span>1000000</span>
-                                    <span>Earning 1</span><span>1000000</span>
-                                    <span>Earning 1</span><span>1000000</span>
-                                    <span>Earning 1</span><span>1000000</span>
-                                    <span>Earning 1</span><span>1000000</span> -->
-                                </div>
-                                <div id="paydedn">
-                                    <!-- <span>Deduction 1</span><span>30000</span>
-                                    <span>Deduction 1</span><span>30000</span>
-                                    <span>Deduction 1</span><span>30000</span>
-                                    <span>Deduction 1</span><span>30000</span>
-                                    <span>Deduction 1</span><span>30000</span> -->
-                                </div>
+                                <div id="payearn"></div>
+                                <div id="paydedn"></div>
                             </div>
                             <div>
-                                <small id="net">Net Pay: <span>&#8358;1000000000</span></small><br>
+                                <small id="net">Net Pay: <span></span></small>
                                 <small>Fiscal Yr. 2025</small>
                             </div>
                         </div>
@@ -348,9 +328,9 @@
                         <ion-icon name="print-outline"></ion-icon>
                         <span class="mq0">Print</span>
                     </button>
-                    <button type="button" title="Download">
-                        <ion-icon name="download-outline"></ion-icon>
-                        <span class="mq0">Download</span>
+                    <button type="button" title="Sync Data" data-ctx="sync" popovertarget="syncpop" popovertargetaction="show">
+                        <ion-icon name="sync-outline"></ion-icon>
+                        <span class="mq0">Sync Data</span>
                     </button>
                     <button type="button" title="Chat">
                         <ion-icon name="chatbox-ellipses-outline"></ion-icon>
@@ -360,12 +340,24 @@
                         <ion-icon name="help-circle-outline"></ion-icon>
                         <span class="mq0">Help</span>
                     </button>
+                    <!--popovers for aside buttons-->
+                    <div popover="manual" id="syncpop">
+                        <div id="join">
+                            <ion-icon name="sync-outline"></ion-icon>
+                            <small>Sync Data</small>
+                            <p>Ensure your internet connectivity is stable before syncing.</p>
+                            <div>
+                                <button type="button" popovertarget="syncpop" popovertargetaction="hide">CLOSE</button>
+                                <button type="button" id="syncbtn">SYNC</button>
+                            </div>
+                        </div>
+                    </div>
                 </aside>
             </div>
             <footer>
                 <div id="athr"><span>Powered by <i>Dynamax</i></span>|<span>2025</span></div>
             </footer>
-            <div class="note on">
+            <div class="note">
                 <ion-icon name="checkmark-outline"></ion-icon>
                 <span>New employee added</span>
             </div>
@@ -386,19 +378,7 @@
         });
         //resize window
         const mnthBtn = document.querySelector('#board > div:nth-child(1) > button:nth-of-type(2)');
-        const resz = document.querySelectorAll('.resz');
-        window.addEventListener('resize', () => resizePop());
-        function resizePop () {
-            resz.forEach(resz => {
-                resz.ontoggle = (e) => {
-                    resz.style.left = resz.previousElementSibling.getBoundingClientRect().right - e.target.clientWidth + 'px';
-                    resz.style.top = resz.previousElementSibling.getBoundingClientRect().y + 50 + 'px';
-                };
-            });
-        };
-        document.getElementById('roll').addEventListener('toggle', (e) => {
-            if (e.oldState == 'closed') resizePop();
-        });
+        
     </script>
 </body>
 </html>
