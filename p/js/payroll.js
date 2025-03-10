@@ -4,19 +4,19 @@ import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.
 import { ssid } from "../../main/main.js";
 
 if (ssid) {
-    //navigate pages
-    document.querySelectorAll('#nav_menu > a').forEach(a => {
-        a.addEventListener('click', (e) => {
-            e.preventDefault();
-            location.href = e.target.href;  // isDashboard is unused
-        });
-    });
-    //logout
-    document.querySelector('button#lgt').onclick = () => {
-        lodr.showPopover();
-        sessionStorage.removeItem('ssid');
-        location.replace('../../index.html');
-    }
+    // //navigate pages
+    // document.querySelectorAll('#nav_menu > a').forEach(a => {
+    //     a.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         location.href = e.target.href;  // isDashboard is unused
+    //     });
+    // });
+    // //logout
+    // document.querySelector('button#lgt').onclick = () => {
+    //     lodr.showPopover();
+    //     sessionStorage.removeItem('ssid');
+    //     location.replace('../../index.html');
+    // }
 
     let app, db;
     //open idb

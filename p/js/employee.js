@@ -25,19 +25,19 @@ let empIdx = 0, empID;
 
 //get ibooks config
 if (ssid) {
-    //navigate pages
-    document.querySelectorAll('#nav_menu > a').forEach(a => {
-        a.addEventListener('click', (e) => {
-            e.preventDefault();
-            location.href = e.target.href;  // isDashboard is unused
-        });
-    });
-    //logout
-    document.querySelector('button#lgt').onclick = () => {
-        lodr.showPopover();
-        sessionStorage.removeItem('ssid');
-        location.replace('../../index.html');
-    }
+    // //navigate pages
+    // document.querySelectorAll('#nav_menu > a').forEach(a => {
+    //     a.addEventListener('click', (e) => {
+    //         e.preventDefault();
+    //         location.href = e.target.href;  // isDashboard is unused
+    //     });
+    // });
+    // //logout
+    // document.querySelector('button#lgt').onclick = () => {
+    //     lodr.showPopover();
+    //     sessionStorage.removeItem('ssid');
+    //     location.replace('../../index.html');
+    // }
 
     const mainNote = document.querySelector('main > .note');
     const delpop = document.querySelector('#delpop');

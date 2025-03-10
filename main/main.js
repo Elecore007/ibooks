@@ -1,5 +1,21 @@
 export const ssid = sessionStorage.getItem('ssid');
-
+window.addEventListener('message', (e) => {
+    if (e.data.navigable) {
+        //navigate pages
+        document.querySelectorAll('#nav_menu > a').forEach(a => {
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
+                location.href = e.target.href;  // isDashboard is unused
+            });
+        });
+        //logout
+        document.querySelector('button#lgt').onclick = () => {
+            lodr.showPopover();
+            sessionStorage.removeItem('ssid');
+            location.replace('../../index.html');
+        }
+    }
+});
 //toggler function
 function toggler(e, v, force=true) {
     e.classList.toggle(v, force);

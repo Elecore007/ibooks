@@ -41,7 +41,7 @@ button, input, select {
     border: 0;
     background-color: transparent;
 }
-button > * {
+button > *, #nav_menu > a > * {
     pointer-events: none;
 }
 button/*, .umg*/ {
