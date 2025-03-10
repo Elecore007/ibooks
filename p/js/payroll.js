@@ -4,9 +4,20 @@ import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.
 import { ssid } from "../../main/main.js";
 
 if (ssid) {
-    let obj = {navigable: true};
-    window.postMessage(obj, obj);
-    
+    //navigate pages
+    document.querySelectorAll('#nav_menu > a').forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.href = e.target.href;  // isDashboard is unused
+        });
+    });
+    //logout
+    document.querySelector('button#lgt').onclick = () => {
+        lodr.showPopover();
+        sessionStorage.removeItem('ssid');
+        location.replace('../../index.html');
+    }
+
     let app, db;
     //open idb
     let idb = null, person = null, empID;
@@ -65,6 +76,8 @@ if (ssid) {
         const netDiv = document.getElementById('net');
         const emp = document.getElementById('emp');
         const fsc = netDiv.nextElementSibling;
+        const newpaye = document.querySelector('#newpaye');
+        const payetype = document.querySelector('#payetype');
         let mnth = new Date().getMonth();
 
         //listener for toggling payslip popover
@@ -99,14 +112,14 @@ if (ssid) {
                     </div>
                 `);
             });
-            //add handler for li
+            //add handler for <li> months
             lis.forEach((li, ix) => {
                 li.onclick = async (e) => {
                     await enterPayslip(ix);
                     // lis.forEach(lin => lin.classList.toggle('on', li == lin));
                 }
             })
-            //add handler
+            //add handler for .td
             document.querySelectorAll('.td').forEach((td, ix) => {
                 td.onclick = async function () {
                     empID = arr[ix].id;
@@ -116,7 +129,45 @@ if (ssid) {
                     await enterPayslip(mnth);
                 }
             });
+            //add handler for extra earning or deduction
+            document.querySelectorAll('#earded > menu > li > button').forEach((btn, btx) => {
+                btn.addEventListener('click', (e) => {
+                    if (btx) {
+                        //initiate paydedn
+                        setPaye('PAYE Deductions', person.paydedn);
+                    } else {
+                        //initiate payearn
+                        setPaye('PAYE Earnings', person.payearn);
+                    }
+                    newpaye.showPopover();
+                });
+            });
         }
+        function setPaye (txt, type) {
+            newpaye.querySelector('.nghd > span').textContent = txt;
+            payetype.querySelectorAll(':not([data-def])').forEach(opt => opt.remove());
+            Object.keys(type).forEach(k => payetype.insertAdjacentHTML('beforeend', `<option value="${k}">${k}</option>`));
+        }
+        //reset newpaye form
+        newpaye.addEventListener('toggle', (e) => {
+            if (e.oldState === 'closed') {
+                newpaye.querySelector('form').reset();
+                newpaye.querySelector('form input#other').toggleAttribute('readonly', true);
+            }
+        });
+        //payetype <select> handler
+        payetype.addEventListener('change', (e) => {
+            console.log(e.target.value);
+            newpaye.querySelector('form input#other').toggleAttribute('readonly', e.target.value.toLowerCase() !== 'new');
+        });
+        //newpaye form handler
+        newpaye.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fd = new FormData(e.target);
+            for (const [k, v] of fd.entries()) {
+                console.log(k, v);
+            }
+        });
         //set up payslip
         async function enterPayslip (m) {
             board.classList.add('on');  //loader

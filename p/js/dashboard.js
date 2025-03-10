@@ -177,7 +177,7 @@ if (id) {
             //get tsi
             redoApp(firebaseConfig);
         } catch (error) {
-            alert("Server error.");
+            alert("Offline error.");
             console.log(error);
             cards.forEach(card => card.classList.toggle('ske', false));
         }

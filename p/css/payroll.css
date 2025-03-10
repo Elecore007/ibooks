@@ -133,7 +133,6 @@ aside:nth-child(1) {
     top: 0;
     width: 100%;
     z-index: 1;
-    background-color: #172333;
 }
 #board > div:nth-child(1) > span {
     flex-basis: 50%;
@@ -172,11 +171,16 @@ menu {
 #earded {
     border: 1px solid #fff2;
 }
+#earded > menu > div {
+    padding: .5em 2em;
+    opacity: .5;
+    border-bottom: 1px solid #fff3;
+}
 #mnth > menu {
     height: 330px;
 }
 #mnth > menu > li, #earded > menu > li {
-    padding: .7em 3em;
+    padding: .7em 2em;
     cursor: pointer;
     position: relative;
 }

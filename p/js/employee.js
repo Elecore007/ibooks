@@ -2,6 +2,7 @@ import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.
 import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
+import { ssid } from "../../main/main.js";
 // const mainConfig = {
 //     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
 //     authDomain: "webmart-d7812.firebaseapp.com",
@@ -23,12 +24,21 @@ const enumBtns = _enum.querySelectorAll('button');
 let empIdx = 0, empID;
 
 //get ibooks config
-let id = sessionStorage.getItem('ssid'); //which is a session item
+if (ssid) {
+    //navigate pages
+    document.querySelectorAll('#nav_menu > a').forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            location.href = e.target.href;  // isDashboard is unused
+        });
+    });
+    //logout
+    document.querySelector('button#lgt').onclick = () => {
+        lodr.showPopover();
+        sessionStorage.removeItem('ssid');
+        location.replace('../../index.html');
+    }
 
-if (id) {
-    let obj = {navigable: true};
-    window.postMessage(obj, obj);
-    
     const mainNote = document.querySelector('main > .note');
     const delpop = document.querySelector('#delpop');
     const sections = document.querySelectorAll('section');
