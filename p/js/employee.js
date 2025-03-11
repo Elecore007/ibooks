@@ -282,12 +282,12 @@ if (ssid) {
                             }
                         }
                         data['ename'] = fd.getAll('ename');
-                        data['gpm'] = gpm;
                         data['lastMod'] = dt;
-                        data['earn'] = earn;
-                        data['dedn'] = dedn;
                         // console.log(data, details);
                         if (e.submitter.form.dataset.mode === 'add') {
+                            data['earn'] = earn;
+                            data['dedn'] = dedn;
+                            data['gpm'] = gpm;
                             data['creatOn'] = dt;
                             try {
                                 const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
@@ -319,11 +319,11 @@ if (ssid) {
                             }
                         } else if (e.submitter.form.dataset.mode === 'edit') {
                             // Edit mode
-                            data['gpm'] = Number(fd.get('gpm'));
-                            // console.log(data, details);
                             try {
+                                for (const a of ['level','step']) delete data[a];
+                                // console.log(data, details);
                                 await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
-                                await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+                                // await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
                                 //update idb
                                 let delTX = idb.transaction('wkr', 'readwrite');
                                 delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
