@@ -180,7 +180,6 @@ menu {
     height: 330px;
 }
 #mnth > menu > li, #earded > menu > li {
-    padding: .7em 2em;
     cursor: pointer;
     position: relative;
 }
@@ -204,6 +203,12 @@ menu {
 #earded > menu > li:hover,
 #earded > menu > li.on {
     background-color: #0005;
+}
+#mnth > menu > li > button,
+#earded > menu > li > button {
+    width: 100%;
+    padding: .7em 2em;
+    text-align: left;
 }
 #board > div:nth-child(2) {
     display: flex;

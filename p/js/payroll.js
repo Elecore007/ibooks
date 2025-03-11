@@ -4,21 +4,7 @@ import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.
 import { ssid } from "../../main/main.js";
 
 if (ssid) {
-    // //navigate pages
-    // document.querySelectorAll('#nav_menu > a').forEach(a => {
-    //     a.addEventListener('click', (e) => {
-    //         e.preventDefault();
-    //         location.href = e.target.href;  // isDashboard is unused
-    //     });
-    // });
-    // //logout
-    // document.querySelector('button#lgt').onclick = () => {
-    //     lodr.showPopover();
-    //     sessionStorage.removeItem('ssid');
-    //     location.replace('../../index.html');
-    // }
-
-    let app, db;
+    let app, db, employees;
     //open idb
     let idb = null, person = null, empID;
     let yr = new Date().getFullYear().toString();
@@ -56,10 +42,10 @@ if (ssid) {
             let txeStore = txe.objectStore('wkr');
             let Req = txeStore.getAll();
             Req.onsuccess = (e) => {
-                const res = e.target.result;
+                employees = e.target.result;
 
                 //add employees to DOM
-                addEmployeeDOM(res);
+                addEmployeeDOM(employees);
             }
             Req.onerror = (err) => {
                 console.log(err);
@@ -98,7 +84,7 @@ if (ssid) {
             }
             [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'none');
         });
-        
+        let newIdx;
         function addEmployeeDOM (arr) {
             //add to DOM
             arr.forEach(v => {
@@ -133,16 +119,17 @@ if (ssid) {
                 btn.addEventListener('click', (e) => {
                     if (btx) {
                         //initiate paydedn
-                        setPaye('PAYE Deductions', person.paydedn);
+                        setPaye('PAYE Deductions', person.paydedn, btx);
                     } else {
                         //initiate payearn
-                        setPaye('PAYE Earnings', person.payearn);
+                        setPaye('PAYE Earnings', person.payearn, btx);
                     }
                     newpaye.showPopover();
                 });
             });
         }
-        function setPaye (txt, type) {
+        function setPaye (txt, type, btx) {
+            newIdx = btx;
             newpaye.querySelector('.nghd > span').textContent = txt;
             payetype.querySelectorAll(':not([data-def])').forEach(opt => opt.remove());
             Object.keys(type).forEach(k => payetype.insertAdjacentHTML('beforeend', `<option value="${k}">${k}</option>`));
@@ -156,20 +143,40 @@ if (ssid) {
         });
         //payetype <select> handler
         payetype.addEventListener('change', (e) => {
-            console.log(e.target.value);
             newpaye.querySelector('form input#other').toggleAttribute('readonly', e.target.value.toLowerCase() !== 'new');
         });
         //newpaye form handler
         newpaye.querySelector('form').addEventListener('submit', (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
-            let data = {};
-            for (const [k, v] of fd.entries()) {
-                data[k] = v;
+            let data = {}, u = {}, main;
+            const amt = [Number(fd.get('amt')), Date.now() + (1000 * 3600 * 24 * 31 * fd.get('dur'))];
+            if (fd.get('payetype').toLowerCase() === 'new') {
+                u[fd.get('other')] = amt; 
+            } else {
+                u[fd.get('payetype')] = amt;
             }
-            data['dur'] = Date.now() + (1000 * 3600 * 24 * 31 * 2);
-            console.log(data);
+            const GPM = employees.filter(({id}) => id === empID)[0].gpm;
+            if (!newIdx) {   //new earnings
+                data['oen'] = u;
+                main = newEarnDedn(amt[0], person.payearn, GPM), data;
+            } else {
+                data['odn'] = u;
+                main = newEarnDedn(amt[0], person.paydedn, GPM), data;
+            }
+            //update backend documents
+            // await updateDoc(doc(db, ))
+            //update idb
         });
+        //set up new earn or dedn
+        function newEarnDedn(newAmt, oldPAYE, gpm) {
+            let edn = Object.entries(oldPAYE).map(m => {
+                let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : gpm*m[1]};
+                return n;
+            });
+            const eadn = edn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+            return eadn + newAmt;
+        }
         //set up payslip
         async function enterPayslip (m) {
             board.classList.add('on');  //loader

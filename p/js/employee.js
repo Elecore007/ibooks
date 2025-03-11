@@ -250,100 +250,103 @@ if (ssid) {
             if (person.is == 'superManager'.split('').map(m => m.codePointAt(0)).join('-') || person.is == 'manager'.split('').map(m => m.codePointAt(0)).join('-')) {
                 employee_form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    // console.log()
-                    loader(e.submitter);
-                    let data = Object.create(null);
-                    const fd = new FormData(e.target);
-                    const dt = Date.now();
+                    if (!Array.from(person.payearn).length && !Array.from(person.paydedn).length && !JSON.parse(person.structure).length) {
+                        notify('alert-circle-outline', 'No PAYE settings detected.');
+                    } else {
+                        loader(e.submitter);
+                        let data = Object.create(null);
+                        const fd = new FormData(e.target);
+                        const dt = Date.now();
+        
+                        for (const [k, v] of fd.entries()) {
+                            data[k] = v;
+                        }
+                        //calculate gpm's breakdown
+                        let dn = Object.entries(person.paydedn).map(m => {
+                            let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                            return n;
+                        });
+                        let en = Object.entries(person.payearn).map(m => {
+                            let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                            return n;
+                        });
+                        const dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                        const earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
     
-                    for (const [k, v] of fd.entries()) {
-                        data[k] = v;
-                    }
-                    //calculate gpm's breakdown
-                    let dn = Object.entries(person.paydedn).map(m => {
-                        let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                        return n;
-                    });
-                    let en = Object.entries(person.payearn).map(m => {
-                        let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                        return n;
-                    });
-                    const dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-                    const earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-
-                    let details = {
-                        'dedn': {
-                            [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
-                        },
-                        'earn': {
-                            [new Date(dt).getMonth()]: en.length ? [...en] : {}
-                        }
-                    }
-                    data['ename'] = fd.getAll('ename');
-                    data['gpm'] = gpm;
-                    data['lastMod'] = dt;
-                    data['earn'] = earn;
-                    data['dedn'] = dedn;
-                    // console.log(data, details);
-                    if (e.submitter.form.dataset.mode === 'add') {
-                        data['creatOn'] = dt;
-                        try {
-                            const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
-                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
-                            await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
-                            //add to idb
-                            let delTX = idb.transaction('wkr', 'readwrite');
-                            delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
-                            delTX.onerror = (err) => console.log(err);
-                
-                            let Store = delTX.objectStore('wkr');
-                            data['id'] = snapAdd.id;
-                            let delReq = Store.add(data);
-                            delReq.onsuccess = (e) => {
-                                console.log("Add succeeded.");
+                        let details = {
+                            'dedn': {
+                                [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
+                            },
+                            'earn': {
+                                [new Date(dt).getMonth()]: en.length ? [...en] : {}
                             }
-                            delReq.onerror = (err) => {
-                                console.log(err);
-                            }
-                            notify('checkmark-outline', 'New Employee Added.');
-                            e.target.reset();
-                        } catch (err) {
-                            console.log(err);
-                            notify('alert-circle-outline', 'Server error.');
-                        } finally {
-                            loader(e.submitter, !1);
-                            e.target.reset();
-                            sessionStorage.removeItem('synced');
                         }
-                    } else if (e.submitter.form.dataset.mode === 'edit') {
-                        // Edit mode
-                        data['gpm'] = Number(fd.get('gpm'));
+                        data['ename'] = fd.getAll('ename');
+                        data['gpm'] = gpm;
+                        data['lastMod'] = dt;
+                        data['earn'] = earn;
+                        data['dedn'] = dedn;
                         // console.log(data, details);
-                        try {
-                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
-                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
-                            //update idb
-                            let delTX = idb.transaction('wkr', 'readwrite');
-                            delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
-                            delTX.onerror = (err) => console.log(err);
-                
-                            let Store = delTX.objectStore('wkr');
-                            data['id'] = empID;
-                            let delReq = Store.put(data);
-                            delReq.onsuccess = (e) => {
-                                console.log("Update succeeded.");
-                            }
-                            delReq.onerror = (err) => {
+                        if (e.submitter.form.dataset.mode === 'add') {
+                            data['creatOn'] = dt;
+                            try {
+                                const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
+                                await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
+                                await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
+                                //add to idb
+                                let delTX = idb.transaction('wkr', 'readwrite');
+                                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                                delTX.onerror = (err) => console.log(err);
+                    
+                                let Store = delTX.objectStore('wkr');
+                                data['id'] = snapAdd.id;
+                                let delReq = Store.add(data);
+                                delReq.onsuccess = (e) => {
+                                    console.log("Add succeeded.");
+                                }
+                                delReq.onerror = (err) => {
+                                    console.log(err);
+                                }
+                                notify('checkmark-outline', 'New Employee Added.');
+                                e.target.reset();
+                            } catch (err) {
                                 console.log(err);
+                                notify('alert-circle-outline', 'Server error.');
+                            } finally {
+                                loader(e.submitter, !1);
+                                e.target.reset();
+                                sessionStorage.removeItem('synced');
                             }
-                            notify('checkmark-outline', 'Employee Updated.');
-                        } catch (err) {
-                            console.log(err);
-                            notify('alert-circle-outline', 'Server error.');
-                        } finally {
-                            loader(e.submitter, !1);
-                            e.target.reset();
-                            sessionStorage.removeItem('synced');
+                        } else if (e.submitter.form.dataset.mode === 'edit') {
+                            // Edit mode
+                            data['gpm'] = Number(fd.get('gpm'));
+                            // console.log(data, details);
+                            try {
+                                await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
+                                await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+                                //update idb
+                                let delTX = idb.transaction('wkr', 'readwrite');
+                                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                                delTX.onerror = (err) => console.log(err);
+                    
+                                let Store = delTX.objectStore('wkr');
+                                data['id'] = empID;
+                                let delReq = Store.put(data);
+                                delReq.onsuccess = (e) => {
+                                    console.log("Update succeeded.");
+                                }
+                                delReq.onerror = (err) => {
+                                    console.log(err);
+                                }
+                                notify('checkmark-outline', 'Employee Updated.');
+                            } catch (err) {
+                                console.log(err);
+                                notify('alert-circle-outline', 'Server error.');
+                            } finally {
+                                loader(e.submitter, !1);
+                                e.target.reset();
+                                sessionStorage.removeItem('synced');
+                            }
                         }
                     }
                 });
