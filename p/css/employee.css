@@ -28,9 +28,9 @@ button.add, #enum, .pdfx, #tot {
 .top, .bottom, #enum, .pdfx, #tot {
     gap: 2em;
 }
-#pchd {
+/* #pchd {
     gap: 3em;
-}
+} */
 .thead, #sphd {
     position: sticky;
     top: 0;
@@ -377,6 +377,62 @@ button#fm_sb > span {
 #dwrp *, #pcwp * {
     color: #fff;
 }
+#pcwp {
+    width: 270px;
+    border-radius: 15px;
+    overflow: hidden;
+    padding: 1em;
+}
+#pchd {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+#pchd + div {
+    padding: 1em 0;
+    border-bottom: 1px solid #fff1;
+}
+#pchd + div > * {
+    display: block;
+    margin: 0 auto;
+}
+#pchd + div > *:not(.img, ion-icon) {
+    width: fit-content;
+}
+#pchd + div > *:not(button) {
+    opacity: .5;
+}
+#pchd + div > button {
+    color: #4e92ec;
+    font-size: 110%;
+}
+#pchd + div > .img {
+    margin: .5em auto;
+    height: 7em;
+    width: 7em;
+    border-radius: 50%;
+    border: 1px solid #fff2;
+}
+#pcft {
+    margin-top: 1em;
+}
+#pcft > button {
+    display: block;
+    width: 100%;
+    padding: 1em 0;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .3em;
+    font-weight: 500;
+}
+#pcft > button > * {
+    color: #009578;
+}
+#pcft > button:hover {
+    background-color: #0003;
+}
 #dwrp {
     max-width: 300px;
     padding: 1em;
@@ -390,7 +446,7 @@ button#fm_sb > span {
 #dwmn > span {
     font-size: 110%;
 }
-#dwrp > div, #pcwp > * {
+#dwrp > div {
     padding: 1em;
 }
 #dftr > button {
@@ -399,11 +455,11 @@ button#fm_sb > span {
     border-radius: 24px;
     font-weight: 500;
 }
-#pcwp {
+/* #pcwp {
     width: 600px;
     aspect-ratio: 4/3;
     position: relative;
-}
+} */
 #pchd > span {
     margin-right: auto;
 }

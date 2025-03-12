@@ -1,6 +1,12 @@
 export const ssid = sessionStorage.getItem('ssid');
 window.addEventListener('message', (e) => {
     if (e.data.navigable) {
+        //profile DOM
+        let [usr, is] = e.data.profile;
+        is = is.split('-').map(m => String.fromCodePoint(m)).join('');
+        document.querySelectorAll('#portrait > div > span, #portrait > div > small').forEach((elem, edx) => {
+            elem.textContent = [usr, is][edx];
+        });
         //navigate pages
         document.querySelectorAll('#nav_menu > a').forEach(a => {
             a.addEventListener('click', (e) => {
@@ -8,12 +14,27 @@ window.addEventListener('message', (e) => {
                 location.href = e.target.href;  // isDashboard is unused
             });
         });
-        //logout
-        document.querySelector('button#lgt').onclick = () => {
-            lodr.showPopover();
-            sessionStorage.removeItem('ssid');
-            location.replace('../../index.html');
-        }
+        //edit profile, view plan, logout btns
+        document.querySelectorAll('#bft > button').forEach((btn, idx) => {
+            btn.addEventListener('click', (e) => {
+                btn.disabled = true;
+                lodr.showPopover();
+                switch (idx) {
+                    case 0:
+                        console.log("Edit profile href.");
+                        break;
+                    case 1:
+                        console.log("View plan href.");
+                        break;
+                    case 2:
+                        sessionStorage.removeItem('ssid');
+                        location.replace('../../index.html');
+                        break;
+                    default:
+                        alert("Fraud detected.");
+                }
+            });
+        });
     }
 });
 //toggler function

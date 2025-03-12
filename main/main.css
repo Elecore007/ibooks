@@ -34,6 +34,7 @@ a {
     text-decoration: none;
 }
 button {
+    cursor: pointer;
     transition: .2s;
 }
 button, input, select {
@@ -43,9 +44,6 @@ button, input, select {
 }
 button > *, #nav_menu > a > * {
     pointer-events: none;
-}
-button/*, .umg*/ {
-    cursor: pointer;
 }
 body, #wpr, header, #bhd, #sfm, #sfm > form, footer, #athr, .note { 
     display: flex;
@@ -65,7 +63,7 @@ body, header, #bhd, #athr {
 #ufo {
     position: relative;
 }
-main, nav, #bkt {
+main, nav {
     display: grid;
     grid-template-rows: minmax(10%, auto) 1fr minmax(10%, auto);
 }
@@ -193,23 +191,79 @@ header {
 #sfm > ion-icon {
     cursor: pointer;
 }
-#ufo > div:not(.umg) {
-    width: 250px;
-    position: absolute;
-    right: -1em;
-    top: 100%;
+#bkt {
     scale: 0;
     transform-origin: right top;
-    z-index: 1;
-    background-color: var(--pry-bg-clr);
-    transition: .2s .3s;
-}
-#ufo:hover > div:not(.umg) {
-    scale: 1;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 270px;
+    background-color: #212e47;
     z-index: 2;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px #212e47;
+    transition: scale .2s .2s;
+}
+#bkt > div:not(#bft) {
+    padding: 1em;
+    margin: 0 1em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+#portrait {
+    border: 1px solid;
+    border-color: #fff2 transparent;
+}
+#portrait > span {
+    flex-shrink: 0;
+    height: 2em;
+    width: 2em;
+    border-radius: 50%;
+    border: 1px solid #fff1;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" stroke="%23FFF" class="ionicon" viewBox="0 0 512 512"><path d="M344 144c-3.92 52.87-44 96-88 96s-84.15-43.12-88-96c-4-55 35-96 88-96s92 42 88 96z" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M256 304c-87 0-175.3 48-191.64 138.6C62.39 453.52 68.57 464 80 464h352c11.44 0 17.62-10.48 15.65-21.4C431.3 352 343 304 256 304z" fill="none" stroke-miterlimit="10" stroke-width="32"/></svg>');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+#portrait small {
+    opacity: .7;
+    font-size: 85%;
+}
+#bft {
+    padding: 2em 0 1em;
+}
+#bft > button {
+    width: 100%;
+    padding: .7em 2em;
+    display: flex;
+    gap: 1em;
+    position: relative;
+}
+#bft > button > ion-icon {
+    opacity: .5;
+}
+#bft > button:hover {
+    background-color: #0003;
+}
+#bft > button::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #1a73e8;
+}
+#bft > button:hover::after {
+    content: '';
+}
+#ufo:hover > #bkt {
+    scale: 1;
+    /* z-index: 2; */
 }
 .umg {
-    --img-w-h: 2.5em;
+    --img-w-h: 2em;
     height: var(--img-w-h);
     width: var(--img-w-h);
     border: 1px solid #777;
@@ -219,6 +273,7 @@ header {
     background-position: center;
     background-size: contain;
 }
+/*
 #ufo > .umg {
     scale: .7;
 }
@@ -258,6 +313,7 @@ header {
     width: 100%;
     padding: .5em 1em;
 }
+*/
 /* #bft {
     margin-bottom: 1em;
 } */

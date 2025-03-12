@@ -26,6 +26,9 @@ if (ssid) {
         mgrReq.onsuccess = (e) => {
             person = e.target.result;
             
+            let obj = {navigable: true, profile: [person.user, person.is]};
+            window.postMessage(obj, obj);
+
             const fbConfig = JSON.parse(person.cfg);
             app = initializeApp(fbConfig);
             db = getFirestore(app);

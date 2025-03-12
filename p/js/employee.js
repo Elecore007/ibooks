@@ -64,7 +64,8 @@ if (ssid) {
         let mgrReq = mgrStore.get(ssid);
         mgrReq.onsuccess = (e) => {
             person = e.target.result;
-            
+            let obj = {navigable: true, profile: [person.user, person.is]};
+            window.postMessage(obj, obj);
             const fbConfig = JSON.parse(person.cfg);
             app = initializeApp(fbConfig);
             db = getFirestore(app);
@@ -392,19 +393,33 @@ if (ssid) {
                 loader(false, !1);
                 delpop.hidePopover();
                 notify('checkmark-outline', 'Employee deleted.');
-                //delete from idb
-                let delTX = idb.transaction('wkr', 'readwrite');
-                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
-                delTX.onerror = (err) => console.log(err);
-    
-                let Store = delTX.objectStore('wkr');
-                let delReq = Store.delete(empID);
-                delReq.onsuccess = (e) => {
-                    console.log("Delete succeeded.");
+                //delete from idbs
+                let mgrTx = idb.transaction('stat', 'readwrite');
+                mgrTx.oncomplete = (e) => {
+                    let delTX = idb.transaction('wkr', 'readwrite');
+                    delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                    delTX.onerror = (err) => console.log(err);
+        
+                    let Store = delTX.objectStore('wkr');
+                    let delReq = Store.delete(empID);
+                    delReq.onsuccess = (e) => {
+                        console.log("'wkr' delete succeeded.");
+                    }
+                    delReq.onerror = (err) => {
+                        console.log(err);
+                    }
                 }
-                delReq.onerror = (err) => {
+                mgrTx.onerror = (err) => console.log(err);
+    
+                let mgrstore = mgrTx.objectStore('stat');
+                let mgrReq = mgrstore.delete(empID);
+                mgrReq.onsuccess = (e) => {
+                    console.log("'mgr' delete succeeded.");
+                }
+                mgrReq.onerror = (err) => {
                     console.log(err);
                 }
+                
             } catch (err) {
                 console.log(err);
                 notify('alert-circle-outline', 'Server error.')

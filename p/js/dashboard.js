@@ -42,9 +42,9 @@ if (id) {
         let store = tx.objectStore('mgr');
         let getReq = store.get(id);
         getReq.onsuccess = (e) => {
-            let obj = {navigable: true};
-            window.postMessage(obj, obj);
             person = e.target.result;
+            let obj = {navigable: true, profile: [person.user, person.is]};
+            window.postMessage(obj, obj);
             //use person class?
             personReady(person);
         }

@@ -60,35 +60,30 @@
                 </div>
                 <div id="ufo">
                     <div class="umg"></div>
-                    <div>
-                        <div id="bkt">
-                            <div id="bhd">
-                                <button type="button" class="mq0 rota">
-                                    <ion-icon name="person-remove-outline"></ion-icon>
-                                </button>
-                                <span class="mq"><ion-icon name="person-remove-outline"></ion-icon></span>
-                                <span>Account Info</span>
-                            </div>
-                            <!--div id=bbd>
-                                <div class="umg sc2"></div>
-                                <p>Anthony Trollope Norma Clarke Michael Murpurgo<br><small>Manager</small></p>
-                                <div id="ubn">
-                                    <button type="button">
-                                        <ion-icon name="create-outline"></ion-icon>
-                                        <span>Edit Profile</span>
-                                    </button>
-                                    <button type="button">
-                                        <ion-icon name="create-outline"></ion-icon>
-                                        <span>View Plan</span>
-                                    </button>
-                                </div>
-                            </div-->
-                            <div id="bft">
-                                <button type="button" id="lgt">
-                                    <ion-icon name="log-out-outline"></ion-icon>
-                                    <span>Logout</span>
-                                </button>
-                            </div>
+                    <div id="bkt">
+                        <div id="bhd">
+                            <button type="button" class="mq0">
+                                <ion-icon name="chevron-back-outline"></ion-icon>
+                            </button>
+                            <span>Profile</span>
+                        </div>
+                        <div id="portrait">
+                            <span></span>
+                            <div><span></span><br><small></small></div>
+                        </div>
+                        <div id="bft">
+                            <button type="button">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>Edit Profile</span>
+                            </button>
+                            <button type="button">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>View Plan</span>
+                            </button>
+                            <button type="button">
+                                <ion-icon name="log-out-outline"></ion-icon>
+                                <span>Logout</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -137,13 +132,30 @@
                         </div>
                         <div class="centre">
                             <div class="umg">
-                                <button type="button" class="ui" id="photo">
+                                <button type="button" class="ui" id="photo" popovertarget="picpop" popovertargetaction="show">
                                     <ion-icon name="create-outline"></ion-icon>
                                 </button>
                             </div>
-                            <div popover id="picpop">
+                            <div popover="manual" id="picpop">
                                 <div id="pcwp">
-                                    <div id="pchd" class="h">
+                                    <div id="pchd">
+                                        <button type="button" popovertarget="picpop" popovertargetaction="hide">
+                                            <ion-icon name="close-outline"></ion-icon>
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <div class="img"></div>
+                                        <ion-icon name="camera-outline"></ion-icon>
+                                        <button type="button">Choose Photo</button>
+                                        <samp>Max: 50kb</samp>
+                                    </div>
+                                    <div id="pcft">
+                                        <button type="button">
+                                            <ion-icon name="cloud-upload-outline"></ion-icon>
+                                            <span>UPLOAD</span>
+                                        </button>
+                                    </div>
+                                    <!-- <div id="pchd" class="h">
                                         <span>Name of Employee</span>
                                         <button type="button" class="pdfx">
                                             <ion-icon name="create-outline"></ion-icon>
@@ -164,7 +176,7 @@
                                     <div class="note">
                                         <ion-icon name="create-outline"></ion-icon>
                                         <span>Max photo size excess.</span>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <div id="bio">
