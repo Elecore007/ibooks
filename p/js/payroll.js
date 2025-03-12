@@ -8,6 +8,7 @@ if (ssid) {
     //open idb
     let idb = null, person = null, empID;
     let yr = new Date().getFullYear().toString();
+    /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
         console.log("Database opened.");
@@ -25,14 +26,16 @@ if (ssid) {
         let mgrReq = mgrStore.get(ssid);
         mgrReq.onsuccess = (e) => {
             person = e.target.result;
-            
+            */
+            person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
+
             let obj = {navigable: true, profile: [person.user, person.is]};
             window.postMessage(obj, obj);
 
             const fbConfig = JSON.parse(person.cfg);
             app = initializeApp(fbConfig);
             db = getFirestore(app);
-
+            /*
             //get employee info, else from firebase
             let txe = idb.transaction('wkr', 'readwrite');
             txe.oncomplete = (e) => {
@@ -46,15 +49,22 @@ if (ssid) {
             let Req = txeStore.getAll();
             Req.onsuccess = (e) => {
                 employees = e.target.result;
+                */
 
-                //add employees to DOM
-                addEmployeeDOM(employees);
-            }
+                const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
+                if (empRef.size) {
+                    //add employees to DOM
+                    addEmployeeDOM(employees);
+                } else {
+                    notify('alert-circle-outline', 'No record.');
+                }
+            // }
+            /*
             Req.onerror = (err) => {
                 console.log(err);
             }
         }
-
+    */
         const lodr = document.getElementById('lodr');
         const contnt = document.getElementById('content');
         const board = document.getElementById('board');
@@ -185,6 +195,7 @@ if (ssid) {
             board.classList.add('on');  //loader
             lis.forEach((li, ix) => li.classList.toggle('on', ix === m));
             menuBtn.querySelector('span').textContent = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][m];
+            /*
             //check idb for data
             let statTX = idb.transaction('stat', 'readwrite');
             statTX.oncomplete = (e) => {}
@@ -201,11 +212,13 @@ if (ssid) {
                     board.classList.remove('on');   //loader
                     [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
                 } else {
+                    */
                     //check backend for data
                     try {
                         const statRef = await getDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID));
                         let data = statRef.data();
                         data['id'] = empID;
+                        /*
                         statTX = idb.transaction('stat', 'readwrite');
                         statTX.oncomplete = (e) => {}
                         statTX.onerror = (err) => {
@@ -214,21 +227,24 @@ if (ssid) {
                         statStore = statTX.objectStore('stat');
                         let addReq = statStore.add(data);
                         addReq.onsuccess = (e) => {
+                            */
                             const {earn, dedn} = data;
                             netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
                             [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
-                        }
-                        addReq.onerror = (err) => console.error(err);
+                        // }
+                        // addReq.onerror = (err) => console.error(err);
                     } catch (err) {
                         console.error(err);
                     } finally {
                         board.classList.remove('on');   //loader
                     }
+                    /*
                 }
             }
             statReq.onerror = (err) => {
                 console.error(err);
             }
+            */
             //calculate earn and dedn breakdown
             function setInDOM (ea, de) {
                 document.querySelectorAll('#payearn, #paydedn').forEach(elem => elem.innerHTML = '');
@@ -243,6 +259,7 @@ if (ssid) {
                 return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val); //netpay                       
             }
         }
+        /*
         //sync data
         //clear 'stat' idb
         document.querySelector('#syncbtn').onclick = (e) => {
@@ -259,7 +276,8 @@ if (ssid) {
             let store = delTX.objectStore('stat');
             delReq = store.clear();
         }
-    }
+        */
+    // }
 }
 
 // const mainConfig = {

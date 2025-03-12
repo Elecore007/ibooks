@@ -28,13 +28,14 @@ if (ssid) {
     const mainNote = document.querySelector('main > .note');
     const delpop = document.querySelector('#delpop');
     const sections = document.querySelectorAll('section');
+    const imgIcons = document.querySelectorAll('.umg');     //manager icon, employee icon
     function notify(ico, txt) {
         mainNote.querySelector('ion-icon').setAttribute('name', ico);
         mainNote.querySelector('span').textContent = txt;
         mainNote.classList.add('on');
         setTimeout(() => {
             mainNote.classList.remove('on');
-        }, 5000);
+        }, 4500);
     }
     function loader (s, l=!0) {
         if (l) {
@@ -47,6 +48,7 @@ if (ssid) {
     }
 
     let person = null, idb = null, yr;
+    /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
         console.log("Database opened.");
@@ -54,7 +56,7 @@ if (ssid) {
         //get user info
         let tx = idb.transaction('mgr','readonly');
         tx.oncomplete = (e) => {
-            console.log("Get Transaction completed.");
+            // console.log("Get Transaction completed.");
         }
         tx.onerror = (err) => {
             alert("Get Transaction failed.");
@@ -64,17 +66,22 @@ if (ssid) {
         let mgrReq = mgrStore.get(ssid);
         mgrReq.onsuccess = (e) => {
             person = e.target.result;
+            */
+            person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
+            yr = datePeriod(Date.now()).getFullYear().toString();
+
             let obj = {navigable: true, profile: [person.user, person.is]};
             window.postMessage(obj, obj);
+            
             const fbConfig = JSON.parse(person.cfg);
             app = initializeApp(fbConfig);
             db = getFirestore(app);
             // personReady(person);
-
+/*
             //get employee info, else from firebase
             let txe = idb.transaction('wkr', 'readwrite');
             txe.oncomplete = (e) => {
-                console.log("Get Employee Transaction Completed.");
+                // console.log("Get Employee Transaction Completed.");
             }
             txe.onerror = (err) => {
                 alert("Get Employee Transaction failed.")
@@ -84,22 +91,23 @@ if (ssid) {
             let wkrReq = wkrStore.getAll();
             wkrReq.onsuccess = async (e) => {
                 let res = e.target.result;
-
-                if (sessionStorage.getItem('synced')) {
+                if (res.length && sessionStorage.getItem('synced')) {
                     //populate DOM with employees using function
                     addEmployees(res);
+                    console.log("From cache.")
                     // sessionStorage.removeItem('synced');
                 } else {
-                    yr = datePeriod(Date.now()).getFullYear().toString();
+                    */
                     const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
                     if (empRef.size) {
                         //then store copy in indexedDB
                         let data = empRef.docs.map(m => m.data());
-
+                        
+                        /*
                         data.forEach(d => {
                             let txf = idb.transaction('wkr', 'readwrite');
                             txf.oncomplete = (e) => {
-                                console.log("Set Employee Transaction Completed.");
+                                // console.log("Set Employee Transaction Completed.");
                             }
                             txe.onerror = (err) => {
                                 alert("Set Employee Transaction failed.")
@@ -108,20 +116,24 @@ if (ssid) {
                             let wkstore = txf.objectStore('wkr');
                             let wkrRe = wkstore.put(d);
                             wkrRe.onsuccess = (e) => {
-                                console.log("Employees added to Database.");
+                                */
+                                // console.log("Employees added to Database.");
                                 //populate DOM with employees using function
                                 addEmployees(data);
+                                sessionStorage.setItem('synced', true);
+                                /*
                             }
                             wkrRe.onerror = (err) => {
                                 alert("Database error: add employees.");
                                 console.log(err);
                             }
                         });
+                        */
                     } else {
                         notify('alert-circle-outline', 'No record.');
                     }
-                }
-            }
+                /*}
+            }*/
             //add employees to DOM
             function addEmployees (res) {
                 let pages = Math.ceil(res.length/30);
@@ -146,10 +158,11 @@ if (ssid) {
                         const tdOn = book.querySelector('.td.on');
                         if (tdOn) tdOn.classList.remove('on');
                         // set edit mode and populate form
-                        let {ename, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
+                        let {ename, img='none', gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
                         empID = id;
                         let obj0 = [
                             ename.join(' '),
+                            // img,
                             gender,
                             dept || 'Nil',
                             post || 'Nil',
@@ -167,6 +180,7 @@ if (ssid) {
                             city || '', state || '', level || '', step || '', gpm,
                             bank, acct
                         ]
+                        console.log(img)
                         insertEmployeeDetails(...obj0);
                         employeeFormMode('person-outline','Edit Employee', 'edit', obj1);
                         [td, ...sections].forEach((elem, idx) => elem.classList.toggle('on', idx === 2 ? false : true));
@@ -203,9 +217,16 @@ if (ssid) {
             function insertEmployeeDetails(obj) {
                 bio.querySelectorAll('div:nth-child(even)').forEach(even => even.textContent = ''); // clear old details
                 let x = 0;
+                // if (usrImg) {
+                    // imgIcons[1].style.backgroundImage = `url('${usrImg}')` || 'none';
+                // }
                 for (const args of arguments) {
                     //insert name into delpop; then insert details into bio
                     if (!x) delpop.querySelector('span').textContent = `${args}'s account?`;
+                    // if (x === 1 && args !== 'none') {
+                    //     imgIcons[1].style.backgroundImage = `url('${args}')`;
+                    //     continue;
+                    // }
                     bio.querySelectorAll('div:nth-child(even)')[x].textContent = args;
                     x++;
                 }
@@ -251,9 +272,9 @@ if (ssid) {
             if (person.is == 'superManager'.split('').map(m => m.codePointAt(0)).join('-') || person.is == 'manager'.split('').map(m => m.codePointAt(0)).join('-')) {
                 employee_form.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    if (!Array.from(person.payearn).length && !Array.from(person.paydedn).length && !JSON.parse(person.structure).length) {
-                        notify('alert-circle-outline', 'No PAYE settings detected.');
-                    } else {
+                    // if (!Array.from(person.payearn).length && !Array.from(person.paydedn).length && !JSON.parse(person.structure).length) {
+                    //     notify('alert-circle-outline', 'No PAYE settings detected.');
+                    // } else {
                         loader(e.submitter);
                         let data = Object.create(null);
                         const fd = new FormData(e.target);
@@ -263,40 +284,53 @@ if (ssid) {
                             data[k] = v;
                         }
                         //calculate gpm's breakdown
-                        let dn = Object.entries(person.paydedn).map(m => {
-                            let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                            return n;
-                        });
-                        let en = Object.entries(person.payearn).map(m => {
-                            let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                            return n;
-                        });
-                        const dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-                        const earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-    
-                        let details = {
-                            'dedn': {
-                                [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
-                            },
-                            'earn': {
-                                [new Date(dt).getMonth()]: en.length ? [...en] : {}
+                        let dedn, earn, details;
+                        if (!Array.from(person.payearn).length && !Array.from(person.paydedn).length && !JSON.parse(person.structure).length) {
+                            let dn = Object.entries(person.paydedn).map(m => {
+                                let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                                return n;
+                            });
+                            let en = Object.entries(person.payearn).map(m => {
+                                let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
+                                return n;
+                            });
+                            dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                            earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+        
+                            details = {
+                                'dedn': {
+                                    [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
+                                },
+                                'earn': {
+                                    [new Date(dt).getMonth()]: en.length ? [...en] : {}
+                                }
+                            }
+                        } else {
+                            details = {
+                                'dedn': {
+                                    [new Date(dt).getMonth()]: {}
+                                },
+                                'earn': {
+                                    [new Date(dt).getMonth()]: {}
+                                }
                             }
                         }
                         data['ename'] = fd.getAll('ename');
                         data['lastMod'] = dt;
                         // console.log(data, details);
                         if (e.submitter.form.dataset.mode === 'add') {
-                            data['earn'] = earn;
-                            data['dedn'] = dedn;
-                            data['gpm'] = gpm;
+                            data['earn'] = earn || null;
+                            data['dedn'] = dedn || null;
+                            data['gpm'] = gpm || Number(fd.get('gpm'));
                             data['creatOn'] = dt;
                             try {
                                 const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
                                 await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
                                 await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
+                                /*
                                 //add to idb
                                 let delTX = idb.transaction('wkr', 'readwrite');
-                                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                                // delTX.oncomplete = (e) => console.log("");
                                 delTX.onerror = (err) => console.log(err);
                     
                                 let Store = delTX.objectStore('wkr');
@@ -304,10 +338,13 @@ if (ssid) {
                                 let delReq = Store.add(data);
                                 delReq.onsuccess = (e) => {
                                     console.log("Add succeeded.");
+                                    */
+                                    addEmployees([data]);
+                                    /*
                                 }
                                 delReq.onerror = (err) => {
                                     console.log(err);
-                                }
+                                }*/
                                 notify('checkmark-outline', 'New Employee Added.');
                                 e.target.reset();
                             } catch (err) {
@@ -316,7 +353,6 @@ if (ssid) {
                             } finally {
                                 loader(e.submitter, !1);
                                 e.target.reset();
-                                sessionStorage.removeItem('synced');
                             }
                         } else if (e.submitter.form.dataset.mode === 'edit') {
                             // Edit mode
@@ -325,9 +361,10 @@ if (ssid) {
                                 // console.log(data, details);
                                 await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                                 // await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+                                /*
                                 //update idb
                                 let delTX = idb.transaction('wkr', 'readwrite');
-                                delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                                // delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
                                 delTX.onerror = (err) => console.log(err);
                     
                                 let Store = delTX.objectStore('wkr');
@@ -339,6 +376,7 @@ if (ssid) {
                                 delReq.onerror = (err) => {
                                     console.log(err);
                                 }
+                                */
                                 notify('checkmark-outline', 'Employee Updated.');
                             } catch (err) {
                                 console.log(err);
@@ -346,27 +384,90 @@ if (ssid) {
                             } finally {
                                 loader(e.submitter, !1);
                                 e.target.reset();
-                                sessionStorage.removeItem('synced');
                             }
                         }
-                    }
+                    // }
                 });
             } else {
                 notify('alert-circle-outline', 'Permission denied.');
             }
-            // //payslip and delete btns
-            // const bottomBtns = document.querySelectorAll('.bottom > button');
-            // bottomBtns.forEach((btn, idx) => {
-            //     btn.onclick = () => {
-            //         console.log('Employee index:', empIdx);
-            //         [...document.querySelectorAll('#slip, #delpop')].reverse()[idx].showPopover();
-            //     };
-            // });
+            //choose photo file
+            let file;
+            const imgPreviewer = document.querySelector('.img');
+            document.querySelector('button#file_btn').addEventListener('click', (e) => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.addEventListener('change', () => {
+                    file = input.files[0];
+                    if (file.size <= 51200) {
+                        // mimeType = `.${file.type.split('/').at(-1)}`;
+                        if (file.type.startsWith('image/')) {
+                            const img = new FileReader();
+                            img.onloadend = (f) => {
+                                file = f.target.result;
+                                imgPreviewer.style.backgroundImage = `url('${file}')`;
+                            }
+                            img.readAsDataURL(file);
+                        } else {
+                            alert(`File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
+                            // notify('alert-circle-outline', `File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
+                        }
+                    } else {
+                        alert('Max size exceeded.');
+                        // notify('alert-circle-outline', 'Max size exceeded.');
+                    }
+                });
+            
+                input.click();
+            });
+            //upload photo file
+            document.querySelector('#upload').addEventListener('click', async (e) => {
+                e.target.disabled = true;
+                lodr.showPopover();
+                console.log(file, empID);
+
+                try {
+                    await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), {img: file});
+                    /*
+                    //successfully uploaded? get empID and update idb
+                    let imgIdb = idb.transaction('wkr', 'readwrite');
+                    imgIdb.onerror = (err) => console.log(err);
+                    let imgStore = imgIdb.objectStore('wkr');
+                    let req = imgStore.get(empID);
+                    req.onsuccess = (e) => {
+                        let r = e.target.result;
+                        r['img'] = file;
+                        let nwImg = idb.transaction('wkr', 'readwrite');
+                        nwImg.onerror = (err) => console.log(err);
+                        let nwImgStr = nwImg.objectStore('wkr');
+                        let req2 = nwImgStr.put(r);
+                        req2.onsuccess = (e) => {
+                            */
+                            document.querySelector('#picpop').hidePopover();
+                            imgPreviewer.style.backgroundImage = 'none';
+                            notify('checkmark-outline', 'Employee photo updated.');
+                            imgIcons[1].style.backgroundImage = file;
+                            /*
+                        }
+                        req2.onerror = (err) => console.log(err);
+                    }
+                    req.onerror = (e) => console.log(err);
+                    */
+                } catch (err) {
+                    console.log(err);
+                    notify('alert-circle-outline', 'Offline error.');
+                } finally {
+                    lodr.hidePopover();
+                }
+            });
         }
+        /*
         mgrReq.onerror = (err) => {
             alert("Database Get Request Error.");
             console.log(err);
         }
+        */
         //show/hide details menu
         const drpdwn = document.querySelector('.top > .drpdwn');
         document.querySelector('.top > button.ui').onclick = (e) => drpdwn.classList.toggle('on');
@@ -384,15 +485,16 @@ if (ssid) {
         //delete employee
         delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
             console.log(empID)
-            loader(false);
+            loader(e.target);
             try {
                 let fbTX = await runTransaction(db, async (tranx) => {
                     await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
                     await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
                 });
-                loader(false, !1);
+                loader(e.target, !1);
                 delpop.hidePopover();
                 notify('checkmark-outline', 'Employee deleted.');
+                /*
                 //delete from idbs
                 let mgrTx = idb.transaction('stat', 'readwrite');
                 mgrTx.oncomplete = (e) => {
@@ -419,15 +521,16 @@ if (ssid) {
                 mgrReq.onerror = (err) => {
                     console.log(err);
                 }
-                
+                */
             } catch (err) {
                 console.log(err);
                 notify('alert-circle-outline', 'Server error.')
             } finally {
-                loader(false, !1);
+                loader(e.target, !1);
             }
         });
-    }
+    // }
+    /*
     openDB.onupgradeneeded = (e) => {
         console.log("Database updated.")
     }
@@ -435,8 +538,9 @@ if (ssid) {
         console.log(err);
         alert("Database Open Error.");
     }
+    */
     
-}
+// }
 //show/hide sections
 
 // document.querySelector('#picpop').showPopover();

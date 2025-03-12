@@ -412,6 +412,9 @@ button#fm_sb > span {
     width: 7em;
     border-radius: 50%;
     border: 1px solid #fff2;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 #pcft {
     margin-top: 1em;
@@ -428,7 +431,7 @@ button#fm_sb > span {
     font-weight: 500;
 }
 #pcft > button > * {
-    color: #009578;
+    color: #01c19c;
 }
 #pcft > button:hover {
     background-color: #0003;

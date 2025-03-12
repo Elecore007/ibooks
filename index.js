@@ -277,7 +277,7 @@ success.querySelector("#crew + button").onclick = () => {
 }
 //login handler
 let idb = null;
-forms.namedItem('login').addEventListener('submit', (event) => {
+forms.namedItem('login').addEventListener('submit', async (event) => {
     event.preventDefault();
     event.submitter.disabled = true;
     lodr.showPopover();
@@ -287,6 +287,7 @@ forms.namedItem('login').addEventListener('submit', (event) => {
     let id = pbk(str);
     
     //first check indexedDB
+    /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onerror = (err) => {
         lodr.hidePopover();
@@ -323,6 +324,7 @@ forms.namedItem('login').addEventListener('submit', (event) => {
                 location.href = './p/d/dashboard.html';
             } else {
                 //check backend
+                */
                 const snap = await getDocs(query(collection(db, 'ibooks'), where('pbk', 'array-contains', id), limit(1)));
                 if (!snap.size) {
                     event.submitter.disabled = false;
@@ -335,6 +337,7 @@ forms.namedItem('login').addEventListener('submit', (event) => {
                     snapUser.forEach(doc => {
                         data = Object.assign(doc.data());
                     });
+                        /*
 
                     let tx = idb.transaction('mgr', 'readwrite');
                     tx.oncomplete = (e) => {
@@ -348,22 +351,27 @@ forms.namedItem('login').addEventListener('submit', (event) => {
                     let store = tx.objectStore('mgr');
                     let addReq = store.add(data);
                     addReq.onsuccess = (e) => {
+                        */
                         sessionStorage.setItem('ssid', id);
+                        sessionStorage.setItem('person', JSON.stringify(data)); //not-idb-desgn
                         location.href = './p/d/dashboard.html';
+                        /*
                     }
                     addReq.onerror = (err) => {
                         event.submitter.disabled = false;
                         lodr.hidePopover();
                         notice("Add Request Error.", event.target.closest('[popover]'));
                     }
+                    */
                 }
-            }
+            /*}
         }
         getReq.onerror = (err) => {
             notice("Get Request Error.");
         }
     }
-})
+    */
+});
 //bkbtn
 document.getElementById('bkbtn').onclick = () => {
     if (stp) {

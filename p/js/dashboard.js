@@ -17,15 +17,13 @@ const firebaseConfig = {
 let app = initializeApp(firebaseConfig);
 let db = getFirestore(app);
 
-const currYr = datePeriod(Date.now()).getFullYear().toString();
+let currYr = datePeriod(Date.now()).getFullYear().toString();
 
 //get ibooks config
 let id = sessionStorage.getItem('ssid'); //which is a session item
-function send() {
-
-}
 if (id) {
     let person = null, idb = null;
+    /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
         console.log("Database opened.");
@@ -43,10 +41,14 @@ if (id) {
         let getReq = store.get(id);
         getReq.onsuccess = (e) => {
             person = e.target.result;
+            */
+            person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
+
             let obj = {navigable: true, profile: [person.user, person.is]};
             window.postMessage(obj, obj);
             //use person class?
             personReady(person);
+            /*
         }
         getReq.onerror = (err) => {
             alert("Database Get Request Error.");
@@ -60,6 +62,7 @@ if (id) {
         console.log(err);
         alert("Database Open Error.");
     }
+    */
     
     const cards = document.querySelectorAll('.card');
     const paye = document.getElementById('paye');
@@ -376,7 +379,8 @@ if (id) {
                                     });
                                     //insert into indexedDB
                                     person['structure'] = structure, person['lvl'] = lvl, person['step'] = step;
-                                    await insertFromPaySetBtns(person);
+                                    // await insertFromPaySetBtns(person);
+                                    sessionStorage.setItem('person', JSON.stringify(person));   //not-idb-desgn
                                     //success notice
                                     succeeded('Salary settings updated.');
                                 } catch (err) {
@@ -457,7 +461,8 @@ if (id) {
                                         const snap = await updateDoc(doc(db, 'ibooks', who.fbid, 'users', who.uid), {[`paydedn.${sett}`]: deleteField()});
                                         delete person.paydedn[sett];
                                     }
-                                    await insertFromPaySetBtns(person);
+                                    // await insertFromPaySetBtns(person);
+                                    sessionStorage.setItem('person', JSON.stringify(person));   //not-idb-desgn
                                     payelodr.classList.remove('on');
                                     document.querySelector(`[data-prop="${sett}"]`).closest('.prll').remove();
                                     succeeded("Settings deleted.");
@@ -493,7 +498,8 @@ if (id) {
                                             person.paydedn ? person.paydedn[nm] = data[nm] : person.paydedn = { [nm]: data[nm] };
                                         }
                                         //insert into idb
-                                        await insertFromPaySetBtns(person);
+                                        // await insertFromPaySetBtns(person);
+                                        sessionStorage.setItem('person', JSON.stringify(person));   //not-idb-desgn
                                     } catch (err) {
                                         console.log(err);
                                         alert("Server error.");
@@ -508,6 +514,7 @@ if (id) {
                             temp2 = [...foils[1].children];
                         }
                     }
+                    /*
                     async function insertFromPaySetBtns(creature) {
                         let eodTX = idb.transaction('mgr', 'readwrite');
                         eodTX.oncomplete = (e) => {
@@ -521,6 +528,7 @@ if (id) {
                         eStoreReq.onsuccess = (e) => console.log("Succeeded updating 'person'.")
                         eStoreReq.onerror = (err) => console.log(err);
                     }
+                    */
                     //bak btns
                     const baks = document.querySelectorAll('button.bak');
                     baks.forEach((bak, dx) => {
