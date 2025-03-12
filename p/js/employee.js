@@ -388,147 +388,147 @@ if (ssid) {
                         }
                     // }
                 });
-            } else {
-                notify('alert-circle-outline', 'Permission denied.');
-            }
-            //choose photo file
-            let file;
-            const imgPreviewer = document.querySelector('.img');
-            document.querySelector('button#file_btn').addEventListener('click', (e) => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.addEventListener('change', () => {
-                    file = input.files[0];
-                    if (file.size <= 51200) {
-                        // mimeType = `.${file.type.split('/').at(-1)}`;
-                        if (file.type.startsWith('image/')) {
-                            const img = new FileReader();
-                            img.onloadend = (f) => {
-                                file = f.target.result;
-                                imgPreviewer.style.backgroundImage = `url('${file}')`;
+                //choose photo file
+                let file;
+                const imgPreviewer = document.querySelector('.img');
+                document.querySelector('button#file_btn').addEventListener('click', (e) => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.addEventListener('change', () => {
+                        file = input.files[0];
+                        if (file.size <= 51200) {
+                            // mimeType = `.${file.type.split('/').at(-1)}`;
+                            if (file.type.startsWith('image/')) {
+                                const img = new FileReader();
+                                img.onloadend = (f) => {
+                                    file = f.target.result;
+                                    imgPreviewer.style.backgroundImage = `url('${file}')`;
+                                }
+                                img.readAsDataURL(file);
+                            } else {
+                                alert(`File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
+                                // notify('alert-circle-outline', `File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
                             }
-                            img.readAsDataURL(file);
                         } else {
-                            alert(`File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
-                            // notify('alert-circle-outline', `File format (${file.type.split('/').at(-1).toLocaleUpperCase()}) unsupported.`);
+                            alert('Max size exceeded.');
+                            // notify('alert-circle-outline', 'Max size exceeded.');
                         }
-                    } else {
-                        alert('Max size exceeded.');
-                        // notify('alert-circle-outline', 'Max size exceeded.');
+                    });
+                
+                    input.click();
+                });
+                //upload photo file
+                document.querySelector('#upload').addEventListener('click', async (e) => {
+                    e.target.disabled = true;
+                    lodr.showPopover();
+                    console.log(file, empID);
+    
+                    try {
+                        await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), {img: file});
+                        /*
+                        //successfully uploaded? get empID and update idb
+                        let imgIdb = idb.transaction('wkr', 'readwrite');
+                        imgIdb.onerror = (err) => console.log(err);
+                        let imgStore = imgIdb.objectStore('wkr');
+                        let req = imgStore.get(empID);
+                        req.onsuccess = (e) => {
+                            let r = e.target.result;
+                            r['img'] = file;
+                            let nwImg = idb.transaction('wkr', 'readwrite');
+                            nwImg.onerror = (err) => console.log(err);
+                            let nwImgStr = nwImg.objectStore('wkr');
+                            let req2 = nwImgStr.put(r);
+                            req2.onsuccess = (e) => {
+                                */
+                                document.querySelector('#picpop').hidePopover();
+                                imgPreviewer.style.backgroundImage = 'none';
+                                notify('checkmark-outline', 'Employee photo updated.');
+                                imgIcons[1].style.backgroundImage = file;
+                                /*
+                            }
+                            req2.onerror = (err) => console.log(err);
+                        }
+                        req.onerror = (e) => console.log(err);
+                        */
+                    } catch (err) {
+                        console.log(err);
+                        notify('alert-circle-outline', 'Offline error.');
+                    } finally {
+                        lodr.hidePopover();
                     }
                 });
-            
-                input.click();
-            });
-            //upload photo file
-            document.querySelector('#upload').addEventListener('click', async (e) => {
-                e.target.disabled = true;
-                lodr.showPopover();
-                console.log(file, empID);
-
-                try {
-                    await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), {img: file});
-                    /*
-                    //successfully uploaded? get empID and update idb
-                    let imgIdb = idb.transaction('wkr', 'readwrite');
-                    imgIdb.onerror = (err) => console.log(err);
-                    let imgStore = imgIdb.objectStore('wkr');
-                    let req = imgStore.get(empID);
-                    req.onsuccess = (e) => {
-                        let r = e.target.result;
-                        r['img'] = file;
-                        let nwImg = idb.transaction('wkr', 'readwrite');
-                        nwImg.onerror = (err) => console.log(err);
-                        let nwImgStr = nwImg.objectStore('wkr');
-                        let req2 = nwImgStr.put(r);
-                        req2.onsuccess = (e) => {
-                            */
-                            document.querySelector('#picpop').hidePopover();
-                            imgPreviewer.style.backgroundImage = 'none';
-                            notify('checkmark-outline', 'Employee photo updated.');
-                            imgIcons[1].style.backgroundImage = file;
-                            /*
-                        }
-                        req2.onerror = (err) => console.log(err);
+            }
+            /*
+            mgrReq.onerror = (err) => {
+                alert("Database Get Request Error.");
+                console.log(err);
+            }
+            */
+            //show/hide details menu
+            const drpdwn = document.querySelector('.top > .drpdwn');
+            document.querySelector('.top > button.ui').onclick = (e) => drpdwn.classList.toggle('on');
+            // document.querySelector('.top > button.ui').onblur = (e) => drpdwn.classList.remove('on');
+            drpdwn.querySelectorAll('button').forEach((btn, idx) => {
+                btn.addEventListener('click', (e) => {
+                    drpdwn.classList.remove('on');
+                    if (idx) {
+                        delpop.showPopover();
+                    } else {
+                        sections.forEach((sect, idx) => idx ? sect.classList.add('on') : sect.classList.remove('on'));
                     }
-                    req.onerror = (e) => console.log(err);
+                });
+            });
+            //delete employee
+            delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
+                console.log(empID)
+                loader(e.target);
+                try {
+                    let fbTX = await runTransaction(db, async (tranx) => {
+                        await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
+                        await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
+                    });
+                    loader(e.target, !1);
+                    delpop.hidePopover();
+                    notify('checkmark-outline', 'Employee deleted.');
+                    /*
+                    //delete from idbs
+                    let mgrTx = idb.transaction('stat', 'readwrite');
+                    mgrTx.oncomplete = (e) => {
+                        let delTX = idb.transaction('wkr', 'readwrite');
+                        delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
+                        delTX.onerror = (err) => console.log(err);
+            
+                        let Store = delTX.objectStore('wkr');
+                        let delReq = Store.delete(empID);
+                        delReq.onsuccess = (e) => {
+                            console.log("'wkr' delete succeeded.");
+                        }
+                        delReq.onerror = (err) => {
+                            console.log(err);
+                        }
+                    }
+                    mgrTx.onerror = (err) => console.log(err);
+        
+                    let mgrstore = mgrTx.objectStore('stat');
+                    let mgrReq = mgrstore.delete(empID);
+                    mgrReq.onsuccess = (e) => {
+                        console.log("'mgr' delete succeeded.");
+                    }
+                    mgrReq.onerror = (err) => {
+                        console.log(err);
+                    }
                     */
                 } catch (err) {
                     console.log(err);
-                    notify('alert-circle-outline', 'Offline error.');
+                    notify('alert-circle-outline', 'Server error.')
                 } finally {
-                    lodr.hidePopover();
+                    loader(e.target, !1);
                 }
             });
-        }
-        /*
-        mgrReq.onerror = (err) => {
-            alert("Database Get Request Error.");
-            console.log(err);
-        }
-        */
-        //show/hide details menu
-        const drpdwn = document.querySelector('.top > .drpdwn');
-        document.querySelector('.top > button.ui').onclick = (e) => drpdwn.classList.toggle('on');
-        // document.querySelector('.top > button.ui').onblur = (e) => drpdwn.classList.remove('on');
-        drpdwn.querySelectorAll('button').forEach((btn, idx) => {
-            btn.addEventListener('click', (e) => {
-                drpdwn.classList.remove('on');
-                if (idx) {
-                    delpop.showPopover();
-                } else {
-                    sections.forEach((sect, idx) => idx ? sect.classList.add('on') : sect.classList.remove('on'));
-                }
-            });
-        });
-        //delete employee
-        delpop.querySelector('button:nth-child(2)').addEventListener('click', async (e) => {
-            console.log(empID)
-            loader(e.target);
-            try {
-                let fbTX = await runTransaction(db, async (tranx) => {
-                    await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID)); //subColl
-                    await tranx.delete(doc(db, 'ibooks', person.fbid, yr, empID));    //parentColl
-                });
-                loader(e.target, !1);
-                delpop.hidePopover();
-                notify('checkmark-outline', 'Employee deleted.');
-                /*
-                //delete from idbs
-                let mgrTx = idb.transaction('stat', 'readwrite');
-                mgrTx.oncomplete = (e) => {
-                    let delTX = idb.transaction('wkr', 'readwrite');
-                    delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
-                    delTX.onerror = (err) => console.log(err);
-        
-                    let Store = delTX.objectStore('wkr');
-                    let delReq = Store.delete(empID);
-                    delReq.onsuccess = (e) => {
-                        console.log("'wkr' delete succeeded.");
-                    }
-                    delReq.onerror = (err) => {
-                        console.log(err);
-                    }
-                }
-                mgrTx.onerror = (err) => console.log(err);
-    
-                let mgrstore = mgrTx.objectStore('stat');
-                let mgrReq = mgrstore.delete(empID);
-                mgrReq.onsuccess = (e) => {
-                    console.log("'mgr' delete succeeded.");
-                }
-                mgrReq.onerror = (err) => {
-                    console.log(err);
-                }
-                */
-            } catch (err) {
-                console.log(err);
-                notify('alert-circle-outline', 'Server error.')
-            } finally {
-                loader(e.target, !1);
+            } else {
+                notify('alert-circle-outline', 'Permission denied.');
             }
-        });
     // }
     /*
     openDB.onupgradeneeded = (e) => {
