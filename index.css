@@ -422,11 +422,11 @@ section:nth-of-type(2) > .pllx.on {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    height: 20px;
-    width: 20px;
+    height: 1.2em;
+    width: 1.2em;
     border-radius: 50%;
-    border: 3px solid;
-    border-color: #fff #fff3 #fff3 #fff3;
+    border: 5px solid;
+    border-color: #fff #fff9 #fff6 #fff2;
     animation: spin 1s linear infinite backwards;
 }
 #lodr:popover-open::after {

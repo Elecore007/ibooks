@@ -27,6 +27,10 @@
                     <ion-icon name="people-outline"></ion-icon>
                     <span>Employees</span>
                 </a>
+                <a href="./settings.html" data-name="isSettings">
+                    <ion-icon name="settings-outline"></ion-icon>
+                    <span>Settings</span>
+                </a>
                 <a href="./payroll.html" data-name="isPayroll">
                     <ion-icon name="wallet-outline"></ion-icon>
                     <span>Payroll</span>
@@ -68,11 +72,11 @@
                         </div>
                         <div id="bft">
                             <button type="button">
-                                <ion-icon name="log-out-outline"></ion-icon>
+                                <ion-icon name="create-outline"></ion-icon>
                                 <span>Edit Profile</span>
                             </button>
                             <button type="button">
-                                <ion-icon name="log-out-outline"></ion-icon>
+                                <ion-icon name="bag-check-outline"></ion-icon>
                                 <span>View Plan</span>
                             </button>
                             <button type="button">
@@ -173,10 +177,10 @@
                         <ion-icon name="print-outline"></ion-icon>
                         <span class="mq0">Print</span>
                     </button>
-                    <button type="button" title="Download">
+                    <!--button type="button" title="Download">
                         <ion-icon name="download-outline"></ion-icon>
                         <span class="mq0">Download</span>
-                    </button>
+                    </button-->
                     <button type="button" title="Chat">
                         <ion-icon name="chatbox-ellipses-outline"></ion-icon>
                         <span class="mq0">Chatbot</span>
@@ -244,6 +248,56 @@
                 </form>
                 <button form="nwofcr">CREATE</button>
                 <button type="reset" popovertarget="nwofr" popovertargetaction="hide">CANCEL</button>
+            </div>
+        </div>
+        <div popover="manual" id="editofr">
+            <div class="wrap">
+                <div>
+                    <div class="edhd">
+                        <span>Officer Details</span>
+                        <button type="button" popovertarget="editofr" popovertargetaction="hide">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div>
+                        <div class="omg" data-alias="Z"></div>
+                        <div class="val" data-val="Name">Teddy Miller</div>
+                        <div class="val" data-val="Is">superManager</div>
+                        <div class="val" data-val="Rank">#01</div>
+                    </div>
+                    <div id="edftr">
+                        <button type="button" id="eddel">DELETE</button>
+                        <button type="button" id="eddt" class="xx">EDIT</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="edhd">
+                        <span>Edit Officer</span>
+                        <button type="button" class="xx">
+                            <ion-icon name="arrow-back-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <form name="editofr" autocomplete="off">
+                        <div class="ipt">
+                            <input type="text" name="ofname">
+                        </div>
+                        <div class="ipt">
+                            <select name="rank">
+                                <option value="01">Officer 1</option>
+                                <option value="02">Officer 2</option>
+                                <option value="03">Officer 3</option>
+                            </select>
+                        </div>
+                        <div class="ipt">
+                            <select name="is">
+                                <option value="authofficer">Authorization</option>
+                                <option value="manager">Management</option>
+                                <option value="superManager">Admin</option>
+                            </select>
+                        </div>
+                        <button>SUBMIT</button>
+                    </form>
+                </div>
             </div>
         </div>
         <template>
@@ -338,6 +392,14 @@
             </div>
         </template>
     </div>
+    <script>
+        //show/hide officer details and edit form
+        document.querySelectorAll('.xx').forEach((btn, btx) => {
+            btn.onclick = (e) => {
+                document.querySelectorAll('.wrap > div').forEach(elem => elem.classList.toggle('on'));
+            }
+        });
+    </script>
     <script type="module" src="../../main/main.js"></script>
     <script type="module" src="../js/dashboard.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

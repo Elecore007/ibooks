@@ -2,7 +2,7 @@ import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.
 import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
-import { ssid } from "../../main/main.js";
+import { ssid, defImg } from "../../main/main.js";
 // const mainConfig = {
 //     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
 //     authDomain: "webmart-d7812.firebaseapp.com",
@@ -47,7 +47,7 @@ if (ssid) {
         }
     }
 
-    let person = null, idb = null, yr;
+    let person = null, idb = null, yr, datum;
     /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
@@ -101,7 +101,7 @@ if (ssid) {
                     const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
                     if (empRef.size) {
                         //then store copy in indexedDB
-                        let data = empRef.docs.map(m => m.data());
+                        datum = empRef.docs.map(m => m.data());
                         
                         /*
                         data.forEach(d => {
@@ -119,7 +119,7 @@ if (ssid) {
                                 */
                                 // console.log("Employees added to Database.");
                                 //populate DOM with employees using function
-                                addEmployees(data);
+                                addEmployees(datum);
                                 sessionStorage.setItem('synced', true);
                                 /*
                             }
@@ -139,7 +139,7 @@ if (ssid) {
                 let pages = Math.ceil(res.length/30);
                 const book = document.querySelector('aside:nth-child(1) > div');
                 //clear DOM
-                book.querySelectorAll('.td').forEach(td => td.remove());
+                // book.querySelectorAll('.td').forEach(td => td.remove());
                 // insert DOM
                 res.forEach(obj => {
                     book.insertAdjacentHTML('beforeend', `
@@ -158,11 +158,10 @@ if (ssid) {
                         const tdOn = book.querySelector('.td.on');
                         if (tdOn) tdOn.classList.remove('on');
                         // set edit mode and populate form
-                        let {ename, img='none', gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
+                        let {ename, img=defImg, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
                         empID = id;
                         let obj0 = [
                             ename.join(' '),
-                            // img,
                             gender,
                             dept || 'Nil',
                             post || 'Nil',
@@ -180,8 +179,8 @@ if (ssid) {
                             city || '', state || '', level || '', step || '', gpm,
                             bank, acct
                         ]
-                        console.log(img)
-                        insertEmployeeDetails(...obj0);
+                        // console.log('img', img, 'empID', empID);
+                        insertEmployeeDetails(obj0, img);
                         employeeFormMode('person-outline','Edit Employee', 'edit', obj1);
                         [td, ...sections].forEach((elem, idx) => elem.classList.toggle('on', idx === 2 ? false : true));
                     }
@@ -214,22 +213,29 @@ if (ssid) {
                 sections.forEach((sect, idx) => sect.classList.toggle('on', idx));
             }
             const bio = document.querySelector('#bio');
-            function insertEmployeeDetails(obj) {
+            function insertEmployeeDetails(obj, img) {
                 bio.querySelectorAll('div:nth-child(even)').forEach(even => even.textContent = ''); // clear old details
-                let x = 0;
-                // if (usrImg) {
-                    // imgIcons[1].style.backgroundImage = `url('${usrImg}')` || 'none';
-                // }
-                for (const args of arguments) {
+                imgIcons[1].style.backgroundImage = `url('${img}')`;
+                obj.forEach((detail, dtx) => {
                     //insert name into delpop; then insert details into bio
+                    if (!dtx) delpop.querySelector('span').textContent = `${detail}'s account?`;
+                    bio.querySelectorAll('div:nth-child(even)')[dtx].textContent = detail;
+                });
+                /*
+                let x = 0;
+                for (const args of arguments) {
                     if (!x) delpop.querySelector('span').textContent = `${args}'s account?`;
-                    // if (x === 1 && args !== 'none') {
-                    //     imgIcons[1].style.backgroundImage = `url('${args}')`;
-                    //     continue;
-                    // }
-                    bio.querySelectorAll('div:nth-child(even)')[x].textContent = args;
+                    if (x === 1 && args !== 'none') {
+                        console.log(args)
+                        
+                        
+                    } else {
+                        console.log(args);
+                        bio.querySelectorAll('div:nth-child(even)')[x].textContent = args;
+                    }
                     x++;
                 }
+                */
             }
             // add button handler
             document.querySelector('button.add').onclick = (e) => {
@@ -284,19 +290,23 @@ if (ssid) {
                             data[k] = v;
                         }
                         //calculate gpm's breakdown
-                        let dedn, earn, details;
-                        if (!Array.from(person.payearn).length && !Array.from(person.paydedn).length && !JSON.parse(person.structure).length) {
-                            let dn = Object.entries(person.paydedn).map(m => {
+                        let earn, en, dedn, dn, details;
+                        if (!Array.from(person.payearn).length) {
+                            en = Object.entries(person.payearn).map(m => {
                                 let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
                                 return n;
                             });
-                            let en = Object.entries(person.payearn).map(m => {
+                            earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                        }
+                        if (!Array.from(person.paydedn).length) {
+                            dn = Object.entries(person.paydedn).map(m => {
                                 let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
                                 return n;
                             });
                             dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-                            earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
-        
+                        }
+                        //  && !JSON.parse(person.structure).length) {
+                        if (earn > 0 && dedn > 0) {
                             details = {
                                 'dedn': {
                                     [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
@@ -317,11 +327,11 @@ if (ssid) {
                         }
                         data['ename'] = fd.getAll('ename');
                         data['lastMod'] = dt;
+                        data['earn'] = earn || gpm;
+                        data['dedn'] = dedn || null;
+                        data['gpm'] = gpm || Number(fd.get('gpm'));
                         // console.log(data, details);
                         if (e.submitter.form.dataset.mode === 'add') {
-                            data['earn'] = earn || null;
-                            data['dedn'] = dedn || null;
-                            data['gpm'] = gpm || Number(fd.get('gpm'));
                             data['creatOn'] = dt;
                             try {
                                 const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
@@ -419,43 +429,53 @@ if (ssid) {
                     input.click();
                 });
                 //upload photo file
+                const picpop = document.querySelector('#picpop');
                 document.querySelector('#upload').addEventListener('click', async (e) => {
-                    e.target.disabled = true;
-                    lodr.showPopover();
-                    console.log(file, empID);
-    
-                    try {
-                        await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), {img: file});
-                        /*
-                        //successfully uploaded? get empID and update idb
-                        let imgIdb = idb.transaction('wkr', 'readwrite');
-                        imgIdb.onerror = (err) => console.log(err);
-                        let imgStore = imgIdb.objectStore('wkr');
-                        let req = imgStore.get(empID);
-                        req.onsuccess = (e) => {
-                            let r = e.target.result;
-                            r['img'] = file;
-                            let nwImg = idb.transaction('wkr', 'readwrite');
-                            nwImg.onerror = (err) => console.log(err);
-                            let nwImgStr = nwImg.objectStore('wkr');
-                            let req2 = nwImgStr.put(r);
-                            req2.onsuccess = (e) => {
-                                */
-                                document.querySelector('#picpop').hidePopover();
-                                imgPreviewer.style.backgroundImage = 'none';
-                                notify('checkmark-outline', 'Employee photo updated.');
-                                imgIcons[1].style.backgroundImage = file;
-                                /*
+                    if (file) {
+                        e.target.disabled = true;
+                        lodr.showPopover();
+                        // console.log(file, empID);
+        
+                        try {
+                            await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), {img: file});
+                            /*
+                            //successfully uploaded? get empID and update idb
+                            let imgIdb = idb.transaction('wkr', 'readwrite');
+                            imgIdb.onerror = (err) => console.log(err);
+                            let imgStore = imgIdb.objectStore('wkr');
+                            let req = imgStore.get(empID);
+                            req.onsuccess = (e) => {
+                                let r = e.target.result;
+                                r['img'] = file;
+                                let nwImg = idb.transaction('wkr', 'readwrite');
+                                nwImg.onerror = (err) => console.log(err);
+                                let nwImgStr = nwImg.objectStore('wkr');
+                                let req2 = nwImgStr.put(r);
+                                req2.onsuccess = (e) => {
+                                    */
+                                    picpop.hidePopover();
+                                    imgPreviewer.style.backgroundImage = 'none';
+                                    notify('checkmark-outline', 'Employee photo updated.');
+                                    imgIcons[1].style.backgroundImage = file;
+                                    /*
+                                }
+                                req2.onerror = (err) => console.log(err);
                             }
-                            req2.onerror = (err) => console.log(err);
+                            req.onerror = (e) => console.log(err);
+                            */
+                        } catch (err) {
+                            console.log(err);
+                            notify('alert-circle-outline', 'Offline error.');
+                        } finally {
+                            lodr.hidePopover();
                         }
-                        req.onerror = (e) => console.log(err);
-                        */
-                    } catch (err) {
-                        console.log(err);
-                        notify('alert-circle-outline', 'Offline error.');
-                    } finally {
-                        lodr.hidePopover();
+                    } else {
+                        picpop.hidePopover();
+                        notify('alert-circle-outline', 'First choose a photo.');
+                        const toid = setTimeout(() => {
+                            picpop.showPopover();
+                            clearTimeout(toid);
+                        }, 4000);
                     }
                 });
             }

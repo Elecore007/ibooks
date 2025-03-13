@@ -1,7 +1,8 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, setDoc, doc, collection, collectionGroup, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, setDoc, deleteDoc, doc, collection, collectionGroup, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayRemove, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, datePeriod, projectConfigs } from "../../lb/wc.js";
+import { ssid, defImg } from "../../main/main.js";
 const firebaseConfig = {
     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
     authDomain: "webmart-d7812.firebaseapp.com",
@@ -20,8 +21,7 @@ let db = getFirestore(app);
 let currYr = datePeriod(Date.now()).getFullYear().toString();
 
 //get ibooks config
-let id = sessionStorage.getItem('ssid'); //which is a session item
-if (id) {
+if (ssid) {
     let person = null, idb = null;
     /*
     let openDB = indexedDB.open('ibooks', 3);
@@ -71,9 +71,19 @@ if (id) {
         cards[idx].classList.remove('ske');
         cards[idx].querySelector('div:nth-child(2)').textContent = Intl.NumberFormat('en-us', {notation: 'compact'}).format(val);
     }
+    function redoApp (config) {
+        deleteApp(app);
+        app = initializeApp(config);
+        db = getFirestore(app);
+    }
     // let ibooksConfig = null;
+    let ofrID, PBK;
     const lodr = document.getElementById('lodr');
+    const editofr = document.getElementById('editofr');
+    const editform = editofr.querySelector('form');
     async function personReady(who) {
+        let userConfig;
+        userConfig = JSON.parse(who.cfg);
         //welcome message
         document.querySelector('#confgr_paye > p > span').textContent = who.user;
         function addOfficerToDOM (off) {
@@ -87,15 +97,54 @@ if (id) {
                         <small></small>
                     </button>
                 `);
-            })
+            });
             //THEN THE HANDLER
+            document.querySelectorAll('button.ofcr').forEach((btn,btx) => {
+                btn.addEventListener('click', (e) => {
+                    let {user, bg, is, rank='None', id, pbk} = off[btx];
+                    ofrID = id, PBK = pbk;
+                    is = is.split('-').map(m => String.fromCodePoint(m)).join('');
+                    editofr.querySelector('.omg').className = 'omg';    //reset classList
+                    editofr.querySelector('.omg').classList.add(`bg${bg}`);
+                    editofr.querySelectorAll('.val').forEach((val, vtx) => val.textContent = [user, is, rank][vtx]);
+                    editform.querySelectorAll('.ipt > input, .ipt > select').forEach((elem, edx) => elem.value = [user, '01', is][edx]);
+                    editofr.showPopover();
+                });
+            });
+
+            //edit officers
+            editform.addEventListener('submit', (e) => {
+                e.submitter.disabled = true;
+                alert("To be updated...");
+            });
         }
+        //delete officers
+        document.querySelector('#eddel').addEventListener('click', async (e) => {
+            e.target.disabled = true;
+            lodr.showPopover();
+            try {
+                redoApp(firebaseConfig);
+                await deleteDoc(doc(db, 'ibooks', who.fbid, 'users', ofrID));
+                await updateDoc(doc(db, 'ibooks', who.fbid), {pbk: arrayRemove(PBK)});
+                notify('Officer deleted.', 'checkmark-outline');
+            } catch (err) {
+                console.log(err);
+            } finally {
+                editofr.hidePopover();
+                e.target.disabled = false;
+                lodr.hidePopover();
+            }
+        });
         //get auth officers
         const ofcrs = document.querySelector('#ofcrs');
         const officers = await getDocs(collection(db, 'ibooks', who.fbid, 'users'));
         if (officers.size) {
             //add to DOM
-            let dt = officers.docs.map(m => m.data());
+            let dt = officers.docs.map(m => {
+                let d = m.data();
+                d['id'] = m.id;
+                return d;
+            });
             addOfficerToDOM(dt);
             /*
             let ofcrTX = idb.transaction('mgr', 'readwrite');
@@ -149,14 +198,6 @@ if (id) {
                 // document.getElementById('edrem').showPopover();
             }
         });
-        let userConfig = JSON.parse(who.cfg);
-        // const worker = new Worker('worker.js');
-        // worker.postMessage()
-        function redoApp (config) {
-            deleteApp(app);
-            app = initializeApp(config);
-            db = getFirestore(app);
-        }
         //add caps
         document.getElementById('cap').textContent = `Cap: ${who.ibooks.quoMgrAuth[0]}`;
         try {

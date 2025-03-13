@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDoc, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, getDoc, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, orderBy, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 import { ssid } from "../../main/main.js";
 
@@ -8,6 +8,18 @@ if (ssid) {
     //open idb
     let idb = null, person = null, empID;
     let yr = new Date().getFullYear().toString();
+    let mnth = new Date().getMonth();
+    const lodr = document.getElementById('lodr');
+    const contnt = document.getElementById('content');
+    const board = document.getElementById('board');
+    const mnthMenu = document.getElementById('mnth');
+    const lis = mnthMenu.querySelectorAll('menu > li');
+    const menuBtn = mnthMenu.previousElementSibling;
+    const netDiv = document.getElementById('net');
+    const emp = document.getElementById('emp');
+    const fsc = netDiv.nextElementSibling;
+    const newpaye = document.querySelector('#newpaye');
+    const payetype = document.querySelector('#payetype');
     /*
     let openDB = indexedDB.open('ibooks', 3);
     openDB.onsuccess = (e) => {
@@ -54,7 +66,8 @@ if (ssid) {
                 const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
                 if (empRef.size) {
                     //add employees to DOM
-                    addEmployeeDOM(employees);
+                    // addEmployeeDOM(employees);
+                    addEmployeeDOM(empRef.docs);    //not-idb-desgn
                 } else {
                     notify('alert-circle-outline', 'No record.');
                 }
@@ -65,18 +78,6 @@ if (ssid) {
             }
         }
     */
-        const lodr = document.getElementById('lodr');
-        const contnt = document.getElementById('content');
-        const board = document.getElementById('board');
-        const mnthMenu = document.getElementById('mnth');
-        const lis = mnthMenu.querySelectorAll('menu > li');
-        const menuBtn = mnthMenu.previousElementSibling;
-        const netDiv = document.getElementById('net');
-        const emp = document.getElementById('emp');
-        const fsc = netDiv.nextElementSibling;
-        const newpaye = document.querySelector('#newpaye');
-        const payetype = document.querySelector('#payetype');
-        let mnth = new Date().getMonth();
 
         //listener for toggling payslip popover
         const resz = document.querySelectorAll('.resz');
@@ -103,10 +104,10 @@ if (ssid) {
             arr.forEach(v => {
                 contnt.insertAdjacentHTML('beforeend', `
                     <div class="td">
-                        <span data-abbr="${v.ename[0][0]}">${v.ename.join(' ')}</span>
-                        <span>${v.gender}</span>
-                        <span>${v.dept}</span>
-                        <span>${v.post}</span>
+                        <span data-abbr="${v.data().ename[0][0]}">${v.data().ename.join(' ')}</span>
+                        <span>${v.data().gender}</span>
+                        <span>${v.data().dept}</span>
+                        <span>${v.data().post}</span>
                     </div>
                 `);
             });
@@ -121,7 +122,8 @@ if (ssid) {
             document.querySelectorAll('.td').forEach((td, ix) => {
                 td.onclick = async function () {
                     empID = arr[ix].id;
-                    emp.textContent = arr[ix].ename.join(' ');
+                    console.log(empID);
+                    emp.textContent = arr[ix].data().ename.join(' ');
                     fsc.textContent = `Fiscal Yr: ${yr}`;
                     document.querySelector('[popover]#roll').showPopover();
                     await enterPayslip(mnth);
@@ -229,6 +231,7 @@ if (ssid) {
                         addReq.onsuccess = (e) => {
                             */
                             const {earn, dedn} = data;
+                            console.log(earn, dedn)
                             netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
                             [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
                         // }
@@ -248,15 +251,21 @@ if (ssid) {
             //calculate earn and dedn breakdown
             function setInDOM (ea, de) {
                 document.querySelectorAll('#payearn, #paydedn').forEach(elem => elem.innerHTML = '');
-                let en = ea[mnth].map(m => { 
-                    document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
-                    return Object.values(m)[0];
-                });
-                let dn = de[mnth].map(m => {
-                    document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
-                    return Object.values(m)[0];
-                });
-                return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val); //netpay                       
+                let en = 0, dn = 0;
+                if (ea?.[mnth]) {
+                    en = ea[mnth].map(m => { 
+                        document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
+                        return Object.values(m)[0];
+                    }).reduce((acc, val) => acc + val);
+                }
+                if (de?.[mnth]) {
+                    dn = de[mnth].map(m => {
+                        document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
+                        return Object.values(m)[0];
+                    }).reduce((acc, val) => acc + val);
+                }
+                return en - dn;
+                // return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val); //netpay                       
             }
         }
         /*

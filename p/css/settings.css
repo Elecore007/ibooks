@@ -39,14 +39,11 @@ aside:nth-child(1) {
     overflow-y: auto;
 }
 .td {
-    padding: .7em 1em;
+    padding: 1em;
     grid-template-columns: 50% 10% 20% 20%;
     align-items: center;
     opacity: .9;
 }
-/* .td > span {
-    text-align: center;
-} */
 .td > * {
     pointer-events: none;
 }
@@ -186,7 +183,7 @@ menu {
 #mnth > menu > li::after,
 #earded > menu > li::after {
     position: absolute;
-    left: 1.5em;
+    left: 0.5em;
     top: 50%;
     transform: translateY(-50%);
     height: 5px;
@@ -204,7 +201,7 @@ menu {
 #earded > menu > li.on {
     background-color: #0005;
 }
-#mnth > menu > li > button,
+#mnth > menu > li,
 #earded > menu > li > button {
     width: 100%;
     padding: .7em 2em;
