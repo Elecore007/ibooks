@@ -29,6 +29,7 @@ window.addEventListener('message', (e) => {
                         break;
                     case 2:
                         sessionStorage.removeItem('ssid');
+                        sessionStorage.removeItem('person');
                         location.replace('../../index.html');
                         break;
                     default:

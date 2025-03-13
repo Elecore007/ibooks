@@ -90,7 +90,7 @@ if (ssid) {
             off.forEach(ofr => {
                 ofcrs.querySelector('.obd').insertAdjacentHTML('beforeend', `
                     <button type="button" class="ofcr">
-                        <div data-alias="${ofr.user.slice(0,1)}" class="bg${ofr.bg}">
+                        <div data-alias="${ofr.user.slice(0,1)}" class="${ofr.bg}">
                             <img src="">
                         </div>
                         <span>${ofr.user}</span>
@@ -99,23 +99,43 @@ if (ssid) {
                 `);
             });
             //THEN THE HANDLER
+            const omg = editofr.querySelector('.omg');
             document.querySelectorAll('button.ofcr').forEach((btn,btx) => {
                 btn.addEventListener('click', (e) => {
                     let {user, bg, is, rank='None', id, pbk} = off[btx];
                     ofrID = id, PBK = pbk;
                     is = is.split('-').map(m => String.fromCodePoint(m)).join('');
-                    editofr.querySelector('.omg').className = 'omg';    //reset classList
-                    editofr.querySelector('.omg').classList.add(`bg${bg}`);
+                    omg.className = 'omg';    //reset classList
+                    omg.setAttribute('data-alias',`${user.slice(0,1)}`);
+                    omg.classList.add(`${bg}`);
                     editofr.querySelectorAll('.val').forEach((val, vtx) => val.textContent = [user, is, rank][vtx]);
-                    editform.querySelectorAll('.ipt > input, .ipt > select').forEach((elem, edx) => elem.value = [user, '01', is][edx]);
+                    editform.querySelectorAll('.ipt > input, .ipt > select').forEach((elem, edx) => elem.value = [user, is, rank][edx]);
                     editofr.showPopover();
                 });
             });
-
             //edit officers
-            editform.addEventListener('submit', (e) => {
+            editform.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 e.submitter.disabled = true;
-                alert("To be updated...");
+                lodr.showPopover();
+                const fd = new FormData(e.target);
+                let fb = {};
+                for (const [k, v] of fd.entries()) {
+                    fb[k] = v;
+                }
+                fb['is'] = fd.get('is').split('').map(m => m.codePointAt(m)).join('-');
+                fb['lastMod'] = serverTimestamp();
+                try {
+                    await updateDoc(doc(db, 'ibooks', who.fbid, 'users', ofrID), fb);
+                    editofr.hidePopover();
+                    notify('Officer editted.','checkmark-outline');
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    e.submitter.disabled = false;
+                    lodr.hidePopover();
+                }
+                console.log(fb)
             });
         }
         //delete officers

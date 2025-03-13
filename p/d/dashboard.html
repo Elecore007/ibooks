@@ -145,7 +145,7 @@
                                 <ion-icon name="add-outline"></ion-icon>
                                 <span>Add New</span>
                             </button>
-                            <div>
+                            <!--div>
                                 <div class="ohd">
                                     <button type="button" class="ui bckofcr">
                                         <ion-icon name="chevron-back-outline"></ion-icon>
@@ -167,7 +167,7 @@
                                         <button type="button">DELETE OFFICER</button>
                                     </div>
                                 </div>
-                            </div>
+                            </div-->
                         </section>
                         <button type="button" id="vwofc" class="mq0">View Officers</button>
                     </div>
@@ -244,6 +244,15 @@
                         <option value="">Select Role</option>
                         <option value="manager">Management</option>
                         <option value="authofficer">Authorization</option>
+                        <option value="superManager">Admin</option>
+                    </select>
+                    <select name="rank" required>
+                        <option value="">Select Rank</option>
+                        <option value="First Officer">First Officer</option>
+                        <option value="Second Officer">Second Officer</option>
+                        <option value="Third Officer">Third Officer</option>
+                        <option value="Fourth Officer">Fourth Officer</option>
+                        <option value="Main Officer">Main Officer</option>
                     </select>
                 </form>
                 <button form="nwofcr">CREATE</button>
@@ -260,10 +269,10 @@
                         </button>
                     </div>
                     <div>
-                        <div class="omg" data-alias="Z"></div>
-                        <div class="val" data-val="Name">Teddy Miller</div>
-                        <div class="val" data-val="Is">superManager</div>
-                        <div class="val" data-val="Rank">#01</div>
+                        <div class="omg" data-alias=""></div>
+                        <div class="val" data-val="Name"></div>
+                        <div class="val" data-val="Is"></div>
+                        <div class="val" data-val="Rank"></div>
                     </div>
                     <div id="edftr">
                         <button type="button" id="eddel">DELETE</button>
@@ -278,21 +287,23 @@
                         </button>
                     </div>
                     <form name="editofr" autocomplete="off">
-                        <div class="ipt">
-                            <input type="text" name="ofname">
+                        <div class="ipt" data-ttl="Name">
+                            <input type="text" name="user" required>
                         </div>
-                        <div class="ipt">
-                            <select name="rank">
-                                <option value="01">Officer 1</option>
-                                <option value="02">Officer 2</option>
-                                <option value="03">Officer 3</option>
-                            </select>
-                        </div>
-                        <div class="ipt">
+                        <div class="ipt" data-ttl="Role">
                             <select name="is">
                                 <option value="authofficer">Authorization</option>
                                 <option value="manager">Management</option>
                                 <option value="superManager">Admin</option>
+                            </select>
+                        </div>
+                        <div class="ipt" data-ttl="Rank">
+                            <select name="rank">
+                                <option value="First Officer">First Officer</option>
+                                <option value="Second Officer">Second Officer</option>
+                                <option value="Third Officer">Third Officer</option>
+                                <option value="Fourth Officer">Fourth Officer</option>
+                                <option value="Main Officer">Main Officer</option>
                             </select>
                         </div>
                         <button>SUBMIT</button>

@@ -341,9 +341,9 @@ button.add {
 }
 #nwofr form > * {
     padding: .8em 1.4em;
-    margin: .2em 1em;
-    background-color: #252525;
-    border: 1px solid #fff3;
+    margin: .2em 1.5em;
+    background-color: #30353d;
+    border: 1px solid #fff2;
     border-radius: 7px;
 }
 #nwofr > div > button {
@@ -662,14 +662,15 @@ button.add {
     opacity: .8;
     margin-bottom: 3em;
 }
+[data-val]::after, .ipt::after {
+    position: absolute;
+    opacity: .5;
+    transform: translateX(-50%);
+}
 [data-val]::after {
     content: attr(data-val);
-    position: absolute;
     left: 50%;
-    transform: translateX(-50%);
     top: -80%;
-    opacity: .5;
-    font-size: 90%;
 }
 .omg {
     width: 50px;
@@ -720,11 +721,18 @@ form:has(.ipt) {
     border-radius: 5px;
     background-color: #30353d;
     margin: 1em 0;
+    position: relative;
 }
 .ipt > * {
     padding: .7em 1em;
     width: 100%;
     display: block;
+    background-color: #30353d;
+}
+.ipt::after {
+    content: attr(data-ttl);
+    left: 1em;
+    top: -50%;
 }
 form:has(.ipt) > button {
     padding: 1em;

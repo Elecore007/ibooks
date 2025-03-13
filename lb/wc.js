@@ -1,6 +1,6 @@
 const userColor = function () {
     const rnd = Math.floor(Math.random() * 8);
-    return rnd;
+    return `bg${rnd}`;
     // return ['#663399','#b8860b55','#b8860b','#1a73e8','#1a73e855','#009578','#006f59','#ffa500'][rnd];
 }
 const pkey = function () {  //12-char long
