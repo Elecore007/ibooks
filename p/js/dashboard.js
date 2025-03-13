@@ -143,7 +143,7 @@ if (ssid) {
             e.target.disabled = true;
             lodr.showPopover();
             try {
-                redoApp(firebaseConfig);
+                // redoApp(firebaseConfig);
                 await deleteDoc(doc(db, 'ibooks', who.fbid, 'users', ofrID));
                 await updateDoc(doc(db, 'ibooks', who.fbid), {pbk: arrayRemove(PBK)});
                 notify('Officer deleted.', 'checkmark-outline');
@@ -166,51 +166,12 @@ if (ssid) {
                 return d;
             });
             addOfficerToDOM(dt);
-            /*
-            let ofcrTX = idb.transaction('mgr', 'readwrite');
-            ofcrTX.oncomplete = (e) => {
-                console.log("Officer transaction successful.");
-            }
-            ofcrTX.onerror = (err) => {
-                console.log(err)
-            }
-            let ofcrStore = ofcrTX.objectStore('mgr');
-            let reqAll = ofcrStore.getAll();
-            reqAll.onsuccess = (e) => {
-                let r = e.target.result;
-                if (r.length < officers.docs.length) {
-                    let reqdel = ofcrStore.clear();
-                    reqdel.onsuccess = (e) => {
-                        console.log("Cleared.")
-                        officers.docs.forEach(off => {
-                            let reqt = ofcrStore.add(off);
-                            reqt.onsuccess = (e) => {
-                                console.log("Add successful.");
-                            }
-                            reqt.onerror = (err) => {
-                                console.log(err);
-                            }
-                        });
-                    }
-                } else if(r.lenght === officers.docs.length) {
-                    officers.docs.forEach(off => {
-                        let reqt = ofcrStore.put(off);
-                        reqt.onsuccess = (e) => {
-                            console.log("Put successful.");
-                        }
-                        reqt.onerror = (err) => {
-                            console.log(err);
-                        }
-                    });
-                }
-            }
-            */
         } else {
             ofcrs.querySelector('.obd').insertAdjacentHTML('afterbegin', `<code><i>No officers</i></code>`);        
         }
         //configure paye
         document.querySelector('#confgr_paye button').onclick = () => paye.showPopover();
-        
+        /*
         paye.addEventListener('toggle', (e) => {
             if (e.newState === 'open') {
     
@@ -218,6 +179,14 @@ if (ssid) {
                 // document.getElementById('edrem').showPopover();
             }
         });
+        */
+        let temp1, temp2;
+        const note = document.querySelector('main > .note');
+        const payenote = paye.querySelector('.note');
+        const payelodr = document.getElementById('payelodr');
+        const foils = paye.querySelectorAll('.foil');
+        const paySetBtns = foils[0].querySelectorAll('button');
+        const foilTemps = document.querySelectorAll('#wpr > template');
         //add caps
         document.getElementById('cap').textContent = `Cap: ${who.ibooks.quoMgrAuth[0]}`;
         try {
@@ -241,19 +210,11 @@ if (ssid) {
             //get tsi
             redoApp(firebaseConfig);
         } catch (error) {
-            alert("Offline error.");
+            notify("Offline error.","alert-circle-outline");
             console.log(error);
             cards.forEach(card => card.classList.toggle('ske', false));
         }
-    
-        let temp1, temp2;
-        const note = document.querySelector('main > .note');
-        const payenote = paye.querySelector('.note');
-        const payelodr = document.getElementById('payelodr');
-        const foils = paye.querySelectorAll('.foil');
-        const paySetBtns = foils[0].querySelectorAll('button');
-        const foilTemps = document.querySelectorAll('#wpr > template');
-    
+   
         function succeeded (txt) {
             payenote.querySelector('span').textContent = txt;
             payenote.classList.add('on');
@@ -469,8 +430,8 @@ if (ssid) {
                             const surround = document.querySelector('.surround');
                             const h3s = surround.querySelectorAll('.h3');
                             const edrem = document.getElementById('edrem');
+
                             //initial population of payroll settings
-    
                             if (who?.payearn) {
                                 let eobj = Object.entries(who.payearn);
                                 eobj.forEach(obj => {
@@ -493,6 +454,10 @@ if (ssid) {
                                         </button>
                                     </div>
                                 `);
+                                //add <option>s to appropriate rollform
+                                if (!ix) {   //dedn form
+                                    rollforms[1].querySelector('select').insertAdjacentHTML('afterbegin',`<option value="${val}">% of ${n}</option>`);
+                                }
                                 //edit .prll
                                 const prll = document.querySelectorAll('.prll');
                                 prll.forEach(prll => {
@@ -540,12 +505,12 @@ if (ssid) {
                                     const fd = new FormData(e.target);
                                     let data_name = e.target.name;
                                     const nm = fd.get('rllname');
-                                    const perFlat = fd.get('rlltype');
+                                    const perFlat = Number(fd.get('rlltype'));
                                     const val = Number(fd.get('rllamt'));
                                     let data = {
-                                        [nm]: perFlat === 'per' ? val/100 : val,
+                                        [nm]: perFlat === 0 ? val : Number((val/100*perFlat).toFixed(4)),
                                     }
-                                    console.log(data_name, data);
+                                    // console.log(data_name, data);
                                     try {
                                         const update = await setDoc(doc(db, 'ibooks', who.fbid, 'users', who.uid), { [data_name]: data }, { merge: true });
                                         succeeded('Salary settings updated.');
@@ -563,7 +528,7 @@ if (ssid) {
                                         sessionStorage.setItem('person', JSON.stringify(person));   //not-idb-desgn
                                     } catch (err) {
                                         console.log(err);
-                                        alert("Server error.");
+                                        notify("Server error.", "alert-circle-outline");
                                     } finally {
                                         e.submitter.disabled = false;
                                         payelodr.classList.remove('on');
