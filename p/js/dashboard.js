@@ -102,13 +102,13 @@ if (ssid) {
             const omg = editofr.querySelector('.omg');
             document.querySelectorAll('button.ofcr').forEach((btn,btx) => {
                 btn.addEventListener('click', (e) => {
-                    let {user, bg, is, rank='None', id, pbk} = off[btx];
+                    let {user, bg, is, rank=12, id, pbk} = off[btx];
                     ofrID = id, PBK = pbk;
                     is = is.split('-').map(m => String.fromCodePoint(m)).join('');
                     omg.className = 'omg';    //reset classList
                     omg.setAttribute('data-alias',`${user.slice(0,1)}`);
                     omg.classList.add(`${bg}`);
-                    editofr.querySelectorAll('.val').forEach((val, vtx) => val.textContent = [user, is, rank][vtx]);
+                    editofr.querySelectorAll('.val').forEach((val, vtx) => val.textContent = [user, is, ['First Officer','Second Officer','Third Officer','Fourth Officer','Main Officer'][rank]][vtx]);
                     editform.querySelectorAll('.ipt > input, .ipt > select').forEach((elem, edx) => elem.value = [user, is, rank][edx]);
                     editofr.showPopover();
                 });
@@ -123,6 +123,7 @@ if (ssid) {
                 for (const [k, v] of fd.entries()) {
                     fb[k] = v;
                 }
+                fb['rank'] = Number(fd.get('rank'));
                 fb['is'] = fd.get('is').split('').map(m => m.codePointAt(m)).join('-');
                 fb['lastMod'] = serverTimestamp();
                 try {
@@ -613,7 +614,7 @@ if (ssid) {
                         data['lastMod'] = serverTimestamp();
                         data['bg'] = userColor();
                         data['pbk'] = pbk(data.email + pkey());
-                    
+                        data['rank'] = Number(fd.get('rank'));
                         // firebaseConfig = mainConfig;
                         const snap = await addDoc(collection(db, 'ibooks', who.fbid, 'users'), data);
                         const snap2 = await updateDoc(doc(db, 'ibooks', who.fbid), { pbk: arrayUnion(data.pbk) });

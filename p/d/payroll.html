@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="../../img/book-outline.svg">
     <title>ibooks | Payslip</title>
-    <link rel="stylesheet" href="../css/payslip.css">
+    <link rel="stylesheet" href="../css/payroll.css">
 </head>
 <body>
     <header>
@@ -26,20 +26,18 @@
             <span>Copy to Excel</span>
         </button>
         <button type="button" class="ui mq" data-fn="Auth Officers">
-            <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+            <ion-icon name="people-outline"></ion-icon>
             <span>Auth Officers</span>
         </button>
     </header>
-    <div id="banner">
-        <p><span>Mozilla Developer Network - Web APIs</span><br><span>Payroll</span><br><span id="issd">Wednesday Jan 31, 2057</span></p>
-    </div>
+    <div id="banner"></div>
     <main>
-        <div id="tab">
+        <div id="tab" style="display:none;">
             <div id="thd">
                 <span>#</span><span>NAME</span><span>BANK</span><span>ACCT NO</span><span>AMOUNT</span>
             </div>
             <div id="tbd">
-                <div class="td">
+                <!-- <div class="td">
                     <span>1</span><span>David Yelland Dennis Wordsworth</span><span>First Bank of New Zealand</span><span>7198019901</span><span>NGN 10,880,889,892.22</span>
                 </div>
                 <div class="td">
@@ -47,7 +45,7 @@
                 </div>
                 <div class="td">
                     <span>3</span><span>Miss Pauline Moran Lemon</span><span>Lewis & Clark Commercial Bank</span><span>01010101848</span><span>NGN 10,880,892.22</span>
-                </div>
+                </div> -->
             </div>
             <div id="tft">
                 <button type="button" class="ui">
@@ -59,40 +57,14 @@
                 </button>
             </div>
         </div>
-        <aside>
+        <aside class="ldb">
             <div id="astop">
                 <button type="button" class="ui mq">
                     <ion-icon name="chevron-back-outline"></ion-icon>
                 </button>
                 <span>Authorization Officers</span>
             </div>
-            <div id="officers">
-                <div class="ofc a">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                    <span>Paul Desmond</span>
-                    <small>D20382802T1159</small>
-                </div>
-                <div class="ofc a">
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                    <span>Stephen Wilheim</span>
-                    <small>D20242802T1159</small>
-                </div>
-                <div class="ofc ">
-                    <ion-icon name=""></ion-icon>
-                    <span>Charlie Kirk</span>
-                    <small>D20242802T1159</small>
-                </div>
-                <div class="ofc ">
-                    <ion-icon name=""></ion-icon>
-                    <span>Reuben Amorimo</span>
-                    <small>D20242802T1159</small>
-                </div>
-                <div class="ofc ">
-                    <ion-icon name=""></ion-icon>
-                    <span>Sinead Keenan</span>
-                    <small>D20242802T1159</small>
-                </div>
-            </div>
+            <div id="officers"></div>
             <button type="button" id="appr">APPROVE</button>
             <div id="cleared">
                 <span>Cleared by</span><br>
@@ -106,19 +78,22 @@
     <div popover="manual" id="login">
         <div class="wrap">
             <div><ion-icon name="lock-closed-outline"></ion-icon></div>
-            <form action="#">
-                <div class="fmi" data-fn="Access Key">
-                    <input type="password" name="ack" id="ack" placeholder="Enter key" required>
+            <form autocomplete="off">
+                <div class="fmi" data-vl="Email">
+                    <input type="email" name="email" id="email" placeholder="Enter email" required>
+                </div>
+                <div class="fmi" data-vl="Password">
+                    <input type="password" name="ack" id="ack" placeholder="Enter password" required>
                     <button type="button" class="ui">
                         <ion-icon name="eye-off-outline"></ion-icon>
                     </button>
                 </div>
                 <button>LOGIN</button>
             </form>
-            <div id="err">
+            <!-- <div id="err">
                 <ion-icon name="add-outline"></ion-icon>
                 <span>Wrong key.</span>
-            </div>
+            </div> -->
         </div>
     </div>
     <div popover="manual" id="notify">
@@ -130,10 +105,14 @@
             </div>
         </div>
     </div>
+    <div popover id="note">
+        <ion-icon name="checkmark-outline"></ion-icon>
+        <span>Message 001</span>
+    </div>
+    <div popover="manual" id="lodr"></div>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script>
-        document.querySelector('#login').showPopover();
-    </script>
+    <!-- <script type="module" src="../../main/main.js"></script> -->
+    <script type="module" src="../js/payroll.js"></script>
 </body>
 </html>

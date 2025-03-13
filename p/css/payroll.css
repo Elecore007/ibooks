@@ -40,6 +40,7 @@ header {
     position: sticky;
     top: 0;
     background-color: #fff;
+    z-index: 1;
 }
 button.ui, #banner, #tft, footer, #err {
     justify-content: center;
@@ -209,10 +210,9 @@ footer > span {
 }
 #login > .wrap {
     display: grid;
-    grid-template-rows: 40% 60%;
+    grid-template-rows: 35% 65%;
     place-items: center;
     width: 350px;
-    aspect-ratio: 1/1;
 }
 .wrap > div {
     height: 3em;
@@ -260,12 +260,13 @@ form[disabled] {
     border-radius: 7px;
 }
 .fmi {
-    display: grid;
-    grid-template-columns: 77% 23%;
-    align-items: center;
     position: relative;
+    display: flex;
+    align-items: center;
+    margin: 2em 0 !important;
 }
 .fmi > input {
+    flex: 1;
     padding: 1em;
 }
 .fmi > button {
@@ -277,7 +278,7 @@ form[disabled] {
     scale: 1.3;
 }
 .fmi::after {
-    content: attr(data-fn);
+    content: attr(data-vl);
     position: absolute;
     left: 0;
     bottom: 110%;
@@ -310,12 +311,49 @@ aside {
     position: fixed;
     right: 5em;
     top: 12vh;
+    transform: translateX(0%);
     height: 76vh;
     width: 420px;
     padding: 2em;
     box-shadow: 0 8px 24px #09234722;
     background-color: #fff;
     border-radius: 24px;
+    overflow: hidden;
+    transition: transform .3s;
+}
+aside::before, aside::after {
+    z-index: 1;
+    position: absolute;
+}
+aside::before {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
+}
+aside::after {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    border: 5px solid transparent;
+    border-color: #1a73e8 #1a73e888 #1a73e866 #1a73e844;
+    animation: 1s linear infinite forwards;
+}
+aside.ldb::before {
+    content: '';
+}
+aside.lda::after {
+    content: '';
+    animation-name: roll;
+}
+@keyframes roll {
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
 }
 #astop {
     display: flex;
@@ -336,9 +374,9 @@ aside {
     column-gap: 2em;
     row-gap: .2em;
     margin: 2em 0;
-    transform: scale(.8);
+    transform: scale(.9);
     transform-origin: center;
-    opacity: .3;
+    opacity: .7;
     transition: .2s;
 }
 .ofc.a {
@@ -408,6 +446,24 @@ aside {
 #msg + div > button:hover {
     background-color: #09234711;
 }
+#note {
+    height: fit-content;
+    width: fit-content;
+    left: 50%;
+    top: -7em;
+    padding: 1.5em 2em;
+    box-shadow: 0 8px 24px #0003;
+    background-color: #444;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    border-radius: 8px;
+    transition: top .3s;
+}
+#note > * {
+    color: #fff;
+}
 .mq {
     display: none !important;
 }
@@ -435,8 +491,12 @@ aside {
         top: 0;
         height: 100%;
         width: 100%;
+        transform: translateX(100%);
         border-radius: 0;
         padding: 1em;
+    }
+    aside.on {
+        transform: translateX(0);
     }
     #officers {
         padding: 1em;

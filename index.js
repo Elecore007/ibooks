@@ -28,23 +28,7 @@ qsnapshot.forEach((doc) => {
     [adminID, cfgUsed] = [doc.id, doc.data().cfgUsed];
 });
 lodr.hidePopover();
-/*
-import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, initializeFirestore, addDoc, and, setDoc, collection, collectionGroup, deleteDoc, deleteField, disableNetwork, doc, enableNetwork, getCountFromServer, getDoc, getDocs, increment, limit, memoryLocalCache, onSnapshot, or, orderBy, persistentLocalCache, persistentMultipleTabManager, query, runTransaction, serverTimestamp, startAfter, updateDoc, where, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDW147JTSQ5DLcYIKppxOFOpcdC56umCsw",
-        authDomain: "webmart-d7812.firebaseapp.com",
-        projectId: "webmart-d7812",
-        storageBucket: "webmart-d7812.appspot.com",
-        messagingSenderId: "570156229824",
-        appId: "1:570156229824:web:e119840f5621e13184f925",
-        measurementId: "G-BN80W5M1EJ"
-    };
-    let app = initializeApp(firebaseConfig);
-    let db = getFirestore(app);
-*/
 class ibooks {
     constructor(plan) {
         this.name = plan;

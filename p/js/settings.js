@@ -197,57 +197,23 @@ if (ssid) {
             board.classList.add('on');  //loader
             lis.forEach((li, ix) => li.classList.toggle('on', ix === m));
             menuBtn.querySelector('span').textContent = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'][m];
-            /*
-            //check idb for data
-            let statTX = idb.transaction('stat', 'readwrite');
-            statTX.oncomplete = (e) => {}
-            statTX.onerror = (err) => {
-                console.log(err);
-            }
-            let statStore = statTX.objectStore('stat');
-            let statReq = statStore.get(empID);
-            statReq.onsuccess = async (e) => {
-                const res = e.target.result;
-                if (res) {
-                    const {earn, dedn} = res;
-                    netDiv.querySelector('span').innerHTML = '&#8358; ' + setInDOM(earn, dedn);
-                    board.classList.remove('on');   //loader
-                    [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
-                } else {
-                    */
-                    //check backend for data
-                    try {
-                        const statRef = await getDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID));
-                        let data = statRef.data();
-                        data['id'] = empID;
-                        /*
-                        statTX = idb.transaction('stat', 'readwrite');
-                        statTX.oncomplete = (e) => {}
-                        statTX.onerror = (err) => {
-                            console.log(err);
-                        }
-                        statStore = statTX.objectStore('stat');
-                        let addReq = statStore.add(data);
-                        addReq.onsuccess = (e) => {
-                            */
-                            const {earn, dedn} = data;
-                            console.log(earn, dedn)
-                            netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(earn, dedn);
-                            [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
-                        // }
-                        // addReq.onerror = (err) => console.error(err);
-                    } catch (err) {
-                        console.error(err);
-                    } finally {
-                        board.classList.remove('on');   //loader
-                    }
-                    /*
-                }
-            }
-            statReq.onerror = (err) => {
+            //check backend for data
+            try {
+                const statRef = await getDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID));
+                let data = statRef.data();
+                data['id'] = empID;
+                let bookearn = person.payearn, bookdedn = person.paydedn;
+                let {earn, dedn} = data;
+                bookearn = Object.assign(bookearn, earn?.[mnth] || {});
+                bookdedn = Object.assign(bookdedn, dedn?.[mnth] || {});
+                console.log(bookearn, bookdedn);
+                netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn);
+                [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
+            } catch (err) {
                 console.error(err);
+            } finally {
+                board.classList.remove('on');   //loader
             }
-            */
             //calculate earn and dedn breakdown
             function setInDOM (ea, de) {
                 document.querySelectorAll('#payearn, #paydedn').forEach(elem => elem.innerHTML = '');
