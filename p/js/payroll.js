@@ -20,6 +20,7 @@ let yr = new Date().getFullYear().toString();
 let mth = new Date().getMonth();
 
 //login query
+const main = document.querySelector('main');
 const note = document.getElementById('note');
 const banner = document.getElementById('banner');
 const aside = document.querySelector('aside');
@@ -44,9 +45,12 @@ let pbk = function pbkString(str) {
 loginPop.querySelector('form').addEventListener('submit', async (e) => {
     e.preventDefault();
     e.submitter.disabled = true;
-    
+
+    loginPop.hidePopover();
+    main.classList.add('lda');
+    aside.classList.add('lda');
+
     try {
-        aside.classList.add('lda');
         const fd = new FormData(e.target);
 
         const thepbk = pbk(fd.get('email') + fd.get('ack'));
@@ -63,7 +67,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             const snapOfficers = await getDocs(query(collection(db, 'ibooks', person.id, 'users'), orderBy('rank')));
             //update aside DOM
             aside.classList.remove('lda','ldb');
-            console.log('person id', person.id);
+            // console.log('person id', person.id);
             snapOfficers.docs.forEach(offr => {
                 let d = offr.data();
                 document.querySelector('#officers').insertAdjacentHTML('beforeend', `
@@ -91,22 +95,25 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             } else {
                 throw new Error("Empty record.", {cause: "local"});
             }
-            console.log(bio)
+            // console.log(bio)
             // const prom = bio.map(async ({id}) => {
-            //     const docSnap = await getDoc(doc(db, 'ibooks', person.id, yr, id, 'paye', id));
+            //     let docSnap = await getDoc(doc(db, 'ibooks', person.id, yr, id, 'paye', id));
             //     paye.push(docSnap.data());
             // });
-            // Promise.allSettled(prom);
-            // for await (let {id} of bio) {
-            const pyeRef = doc(db, 'ibooks', person.id, yr, 'HAO1Ay0nyRgjlseFRanW', 'paye', 'HAO1Ay0nyRgjlseFRanW');
-            console.log(pyeRef)
-                const pye = getDoc(doc(db, 'ibooks', person.id, yr, 'HAO1Ay0nyRgjlseFRanW', 'paye', 'HAO1Ay0nyRgjlseFRanW'));
-                console.log(pye, pye.exists());
-                // paye.push(pye);
-            // }
-            console.log(paye);
+            // await Promise.allSettled(prom);
+            // console.log(paye);
 
+            //insert bio into DOM
+            main.classList.remove('lda');
             tab.removeAttribute('style');
+            const tbd = tab.querySelector('#tbd');
+            bio.forEach((b, bx) => {
+                tbd.insertAdjacentHTML('beforeend', `
+                    <div class="td">
+                        <span>${bx+1}</span><span>${b.ename.join(' ')}</span><span>${b.bank}</span><span>${b.acct}</span><span>${Intl.NumberFormat('en-us', {style: 'currency', currency: 'NGN'}).format(b.earn - b.dedn)}</span>
+                    </div>
+                `);
+            });
             //header action btn listeners
             document.querySelectorAll('[data-fn]').forEach((btn, btx) => {
                 btn.addEventListener('click', (e) => {
@@ -132,6 +139,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             notfcatn('alert-circle-outline','Offline error.');
             console.log(err);
         }
+        loginPop.showPopover();
     } finally {
         e.submitter.disabled = false;
     }

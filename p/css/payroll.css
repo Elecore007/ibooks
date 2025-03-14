@@ -156,6 +156,9 @@ header > button.ui > ion-icon {
 #issd {
     font-size: 95%;
 }
+main {
+    position: relative;
+}
 #tab {
     padding: 1em;
     font-size: 80%;
@@ -209,17 +212,19 @@ footer > span {
     overflow: hidden;
 }
 #login > .wrap {
-    display: grid;
-    grid-template-rows: 35% 65%;
-    place-items: center;
     width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 .wrap > div {
-    height: 3em;
-    width: 3em;
+    margin: 2em;
     display: flex;
     align-items: center;
     justify-content: center;
+    column-gap: 1em;
+    opacity: .8;
 }
 .wrap > div > ion-icon {
     scale: 1.7;
@@ -263,7 +268,7 @@ form[disabled] {
     position: relative;
     display: flex;
     align-items: center;
-    margin: 2em 0 !important;
+    margin: 3em 0 !important;
 }
 .fmi > input {
     flex: 1;
@@ -321,7 +326,7 @@ aside {
     overflow: hidden;
     transition: transform .3s;
 }
-aside::before, aside::after {
+aside::before, aside::after, main::after {
     z-index: 1;
     position: absolute;
 }
@@ -332,7 +337,7 @@ aside::before {
     width: 100%;
     background-color: #fff;
 }
-aside::after {
+aside::after, main::after {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
@@ -346,7 +351,7 @@ aside::after {
 aside.ldb::before {
     content: '';
 }
-aside.lda::after {
+aside.lda::after, main.lda::after {
     content: '';
     animation-name: roll;
 }
@@ -525,9 +530,6 @@ aside.lda::after {
         height: 100%;
         width: 100%;
         border-radius: 0;
-    }
-    .wrap > form {
-        align-self: flex-start;
     }
     #err {
         height: auto;
