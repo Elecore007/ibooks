@@ -545,3 +545,29 @@ aside.lda::after, main.lda::after {
         transform: translateY(-4em);
     }
 }
+@media print {
+    #note, button#appr {
+        display: none;
+    }
+    #banner, main {
+        width: 100%;
+        margin: 0;
+    }
+    aside {
+        position: relative;
+        right: 0;
+        top: 0;
+        /* margin: 0 auto; */
+        height: auto;
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        border-top: 1px solid #ccc;
+    }
+    #officers {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-around;
+    }
+}

@@ -1,7 +1,7 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, doc, collection, collectionGroup, getDoc, getDocs, setDoc, increment, updateDoc, query, where, limit, orderBy, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { userColor, pkey, projectConfigs } from "./lb/wc.js";
-
+/*** REQUIRES AN INDEX FOR snapCompany and snapEmployees ***/
 const firebaseConfig = {
     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
     authDomain: "webmart-d7812.firebaseapp.com",
@@ -27,7 +27,20 @@ const aside = document.querySelector('aside');
 const loginPop = document.querySelector('#login');
 
 loginPop.showPopover();
-
+//view pwds
+/*
+const eye = document.querySelector('.gp > button');
+eye.onclick = () => {
+    const input = eye.previousElementSibling;
+    if (input.type === 'text') {
+        eye.firstElementChild.setAttribute('name','eye-off-outline');
+        input.setAttribute('type', 'password');
+    } else {
+        eye.firstElementChild.setAttribute('name','eye-outline');
+        input.setAttribute('type', 'text');
+    }
+}
+*/
 function redoApp (config) {
     deleteApp(app);
     app = initializeApp(config);
@@ -87,7 +100,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             let companyConfig = JSON.parse(person.cfg);
             redoApp(companyConfig);
             let bio = [], paye = [];
-            const snapEmployees = await getDocs(query(collection(db, 'ibooks', person.id, yr), orderBy('bank')));
+            const snapEmployees = await getDocs(query(collection(db, 'ibooks', person.id, yr), orderBy('bank'), orderBy('ename')));
             if (snapEmployees.size) {
                 snapEmployees.docs.forEach(emp => {
                     bio.push({'id': emp.id, ...emp.data()});
