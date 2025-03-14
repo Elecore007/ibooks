@@ -129,17 +129,19 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             });
             //header action btn listeners
             document.querySelectorAll('[data-fn]').forEach((btn, btx) => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', async (e) => {
+                    btn.disabled = true;
                     const val = btn.getAttribute('data-fn').toLowerCase();
                     if (val === 'print') {
-                        console.log('Print');
+                        window.print();
                     } else if (val === 'download') {
-                        console.log('Download');
+                        await generatePDF();
                     } else if (val === 'copy to excel') {
                         console.log("Copy to Excel.")
                     } else if (val === 'auth officers') {
                         aside.classList.toggle('on');
                     }
+                    btn.disabled = false;
                 });
             });
         } else {
@@ -167,4 +169,25 @@ function notfcatn (ico, txt) {
         note.hidePopover();
         clearTimeout(toid);
     }, 4500);
+}
+/* GENERATING PDF */
+//CDN
+async function generatePDF () {
+    console.log('Download PDF');
+
+    /*
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text(document.querySelector('body').children, 100, 100);
+    doc.save("newfile.pdf");
+    */
+    // const body = document.body;
+    // var opt = {
+    //     margin: 1,
+    //     filename: 'mypdf.pdf',
+    //     html2canvas: {scale: 2},
+    //     jsPDF: {unit: 'in', /*format: [dw, dh],*/ orientation: 'portrait',/* hotfixes: ['px_scaling']*/}
+    // }
+    
+    // await html2pdf().set(opt).from(body).save();
 }

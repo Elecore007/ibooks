@@ -6,7 +6,7 @@ import { ssid } from "../../main/main.js";
 if (ssid) {
     let app, db, employees;
     //open idb
-    let idb = null, person = null, empID;
+    let idb = null, person = null, empID, gross;
     let yr = new Date().getFullYear().toString();
     let mnth = new Date().getMonth();
     const lodr = document.getElementById('lodr');
@@ -20,64 +20,24 @@ if (ssid) {
     const fsc = netDiv.nextElementSibling;
     const newpaye = document.querySelector('#newpaye');
     const payetype = document.querySelector('#payetype');
-    /*
-    let openDB = indexedDB.open('ibooks', 3);
-    openDB.onsuccess = (e) => {
-        console.log("Database opened.");
-        idb = e.target.result;
-        //get user info
-        let tx = idb.transaction('mgr','readonly');
-        tx.oncomplete = (e) => {
-            console.log("Get Transaction completed.");
-        }
-        tx.onerror = (err) => {
-            alert("Get Transaction failed.");
-            console.log(err);
-        }
-        let mgrStore = tx.objectStore('mgr');
-        let mgrReq = mgrStore.get(ssid);
-        mgrReq.onsuccess = (e) => {
-            person = e.target.result;
-            */
-            person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
+    
+    person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
 
-            let obj = {navigable: true, profile: [person.user, person.is]};
-            window.postMessage(obj, obj);
+    let obj = {navigable: true, profile: [person.user, person.is]};
+    window.postMessage(obj, obj);
 
-            const fbConfig = JSON.parse(person.cfg);
-            app = initializeApp(fbConfig);
-            db = getFirestore(app);
-            /*
-            //get employee info, else from firebase
-            let txe = idb.transaction('wkr', 'readwrite');
-            txe.oncomplete = (e) => {
-                console.log("Get Employee Transaction Completed.");
-            }
-            txe.onerror = (err) => {
-                alert("Get Employee Transaction failed.");
-                console.log(err);
-            }
-            let txeStore = txe.objectStore('wkr');
-            let Req = txeStore.getAll();
-            Req.onsuccess = (e) => {
-                employees = e.target.result;
-                */
+    const fbConfig = JSON.parse(person.cfg);
+    app = initializeApp(fbConfig);
+    db = getFirestore(app);
 
-                const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
-                if (empRef.size) {
-                    //add employees to DOM
-                    // addEmployeeDOM(employees);
-                    addEmployeeDOM(empRef.docs);    //not-idb-desgn
-                } else {
-                    notify('alert-circle-outline', 'No record.');
-                }
-            // }
-            /*
-            Req.onerror = (err) => {
-                console.log(err);
-            }
-        }
-    */
+    const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
+    if (empRef.size) {
+        //add employees to DOM
+        // addEmployeeDOM(employees);
+        addEmployeeDOM(empRef.docs);    //not-idb-desgn
+    } else {
+        // notify('alert-circle-outline', 'No record.');
+    }
 
         //listener for toggling payslip popover
         const resz = document.querySelectorAll('.resz');
@@ -121,8 +81,8 @@ if (ssid) {
             //add handler for .td
             document.querySelectorAll('.td').forEach((td, ix) => {
                 td.onclick = async function () {
-                    empID = arr[ix].id;
-                    console.log(empID);
+                    empID = arr[ix].id, gross = arr[ix].data().gpm;
+                    // console.log(empID, arr[ix].data().gpm);
                     emp.textContent = arr[ix].data().ename.join(' ');
                     fsc.textContent = `Fiscal Yr: ${yr}`;
                     document.querySelector('[popover]#roll').showPopover();
@@ -206,8 +166,8 @@ if (ssid) {
                 let {earn, dedn} = data;
                 bookearn = Object.assign(bookearn, earn?.[mnth] || {});
                 bookdedn = Object.assign(bookdedn, dedn?.[mnth] || {});
-                console.log(bookearn, bookdedn);
-                netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn);
+                // console.log(bookearn, bookdedn);
+                netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn, gross);
                 [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
             } catch (err) {
                 console.error(err);
@@ -215,19 +175,20 @@ if (ssid) {
                 board.classList.remove('on');   //loader
             }
             //calculate earn and dedn breakdown
-            function setInDOM (ea, de) {
+            function setInDOM (ea, de, gp) {
                 document.querySelectorAll('#payearn, #paydedn').forEach(elem => elem.innerHTML = '');
-                let en = 0, dn = 0;
-                if (ea?.[mnth]) {
-                    en = ea[mnth].map(m => { 
-                        document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
-                        return Object.values(m)[0];
+                let en = 0, dn = 0, ex = Object.entries(ea), dx = Object.entries(de);
+                // console.log(ex, dx);
+                if (ex.length) {
+                    en = ex.map(m => { 
+                        document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(m[1]*gp)}</span>`);
+                        return m[1]*gp;
                     }).reduce((acc, val) => acc + val);
                 }
-                if (de?.[mnth]) {
-                    dn = de[mnth].map(m => {
-                        document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${Object.keys(m)[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(Object.values(m)[0])}</span>`);
-                        return Object.values(m)[0];
+                if (dx.length) {
+                    dn = dx.map(m => {
+                        document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(m[1]*gp)}</span>`);
+                        return m[1]*gp;
                     }).reduce((acc, val) => acc + val);
                 }
                 return en - dn;

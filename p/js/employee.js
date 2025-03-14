@@ -285,34 +285,33 @@ if (ssid) {
                         let data = Object.create(null);
                         const fd = new FormData(e.target);
                         const dt = Date.now();
-        
                         for (const [k, v] of fd.entries()) {
                             data[k] = v;
                         }
+                        data['gpm'] = gpm || Number(fd.get('gpm'));
+
                         //calculate gpm's breakdown
-                        let earn, en, dedn, dn, details;
+                        let earn, en = {}, dedn, dn = {}, details;
                         if (!Array.from(person.payearn).length) {
-                            en = Object.entries(person.payearn).map(m => {
-                                let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                                return n;
-                            });
-                            earn = en.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                            for (const [k, v] of Object.entries(person.payearn)) {
+                                en[k] = v;  //greater than 2 signifies it is NOT a percentage
+                            }
+                            earn = Object.entries(en).map(m => Object.values(m[1]) > 2 ? Object.values(m[1]) : data['gpm']*Object.values(m)[1]).reduce((acc, val) => acc + val);
                         }
                         if (!Array.from(person.paydedn).length) {
-                            dn = Object.entries(person.paydedn).map(m => {
-                                let n = {[m[0]]: Number.isInteger(m[1]) ? m[1] : data['gpm']*m[1]};
-                                return n;
-                            });
-                            dedn = dn.map(m => Object.values(m)[0]).reduce((acc, val) => acc + val);
+                            for (const [k, v] of Object.entries(person.paydedn)) {
+                                dn[k] = v;
+                            }
+                            dedn = Object.entries(dn).map(m => Object.values(m[1]) > 2 ? Object.values(m[1]) : data['gpm']*Object.values(m)[1]).reduce((acc, val) => acc + val);
                         }
                         //  && !JSON.parse(person.structure).length) {
                         if (earn > 0 && dedn > 0) {
                             details = {
                                 'dedn': {
-                                    [new Date(dt).getMonth()]: dn.length ? [...dn] : {}
+                                    [new Date(dt).getMonth()]: dn
                                 },
                                 'earn': {
-                                    [new Date(dt).getMonth()]: en.length ? [...en] : {}
+                                    [new Date(dt).getMonth()]: en
                                 }
                             }
                         } else {
@@ -329,32 +328,16 @@ if (ssid) {
                         data['lastMod'] = dt;
                         data['earn'] = earn || gpm;
                         data['dedn'] = dedn || null;
-                        data['gpm'] = gpm || Number(fd.get('gpm'));
-                        // console.log(data, details);
+                        // console.log(data['earn'], data['dedn'], details);
+
                         if (e.submitter.form.dataset.mode === 'add') {
                             data['creatOn'] = dt;
                             try {
                                 const snapAdd = await addDoc(collection(db, 'ibooks', person.fbid, yr), data);
                                 await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
                                 await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
-                                /*
-                                //add to idb
-                                let delTX = idb.transaction('wkr', 'readwrite');
-                                // delTX.oncomplete = (e) => console.log("");
-                                delTX.onerror = (err) => console.log(err);
-                    
-                                let Store = delTX.objectStore('wkr');
-                                data['id'] = snapAdd.id;
-                                let delReq = Store.add(data);
-                                delReq.onsuccess = (e) => {
-                                    console.log("Add succeeded.");
-                                    */
-                                    addEmployees([data]);
-                                    /*
-                                }
-                                delReq.onerror = (err) => {
-                                    console.log(err);
-                                }*/
+
+                                addEmployees([data]);
                                 notify('checkmark-outline', 'New Employee Added.');
                                 e.target.reset();
                             } catch (err) {
@@ -370,23 +353,7 @@ if (ssid) {
                                 for (const a of ['level','step']) delete data[a];
                                 // console.log(data, details);
                                 await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
-                                // await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
-                                /*
-                                //update idb
-                                let delTX = idb.transaction('wkr', 'readwrite');
-                                // delTX.oncomplete = (e) => sessionStorage.removeItem('synced');
-                                delTX.onerror = (err) => console.log(err);
-                    
-                                let Store = delTX.objectStore('wkr');
-                                data['id'] = empID;
-                                let delReq = Store.put(data);
-                                delReq.onsuccess = (e) => {
-                                    console.log("Update succeeded.");
-                                }
-                                delReq.onerror = (err) => {
-                                    console.log(err);
-                                }
-                                */
+                                await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
                                 notify('checkmark-outline', 'Employee Updated.');
                             } catch (err) {
                                 console.log(err);

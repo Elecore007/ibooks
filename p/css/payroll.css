@@ -546,7 +546,7 @@ aside.lda::after, main.lda::after {
     }
 }
 @media print {
-    #note, button#appr {
+    #note, button#appr, button[data-fn] {
         display: none;
     }
     #banner, main {
@@ -557,7 +557,6 @@ aside.lda::after, main.lda::after {
         position: relative;
         right: 0;
         top: 0;
-        /* margin: 0 auto; */
         height: auto;
         width: 100%;
         border-radius: 0;
