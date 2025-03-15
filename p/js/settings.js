@@ -166,7 +166,7 @@ if (ssid) {
                 let {earn, dedn} = data;
                 bookearn = Object.assign(bookearn, earn?.[mnth] || {});
                 bookdedn = Object.assign(bookdedn, dedn?.[mnth] || {});
-                console.log(bookearn, bookdedn);
+                // console.log(bookearn, bookdedn);
                 netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn, gross);
                 [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
             } catch (err) {
