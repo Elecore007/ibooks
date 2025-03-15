@@ -291,7 +291,7 @@ if (ssid) {
                         data['gpm'] = gpm || Number(fd.get('gpm'));
 
                         //calculate gpm's breakdown
-                        let earn, en = {}, dedn, dn = {}, details;
+                        let earn = 0, en = {}, dedn = 0, dn = {}, details;
                         if (!Array.from(person.payearn).length) {
                             for (const [k, v] of Object.entries(person.payearn)) {
                                 en[k] = v;  //greater than 2 signifies it is NOT a percentage
@@ -325,9 +325,9 @@ if (ssid) {
                             }
                         }
                         data['ename'] = fd.getAll('ename');
-                        data['lastMod'] = dt;
-                        data['earn'] = earn || gpm;
+                        data['earn'] = earn - dedn || gpm;
                         data['dedn'] = dedn || null;
+                        data['lastMod'] = dt;
                         // console.log(data['earn'], data['dedn'], details);
 
                         if (e.submitter.form.dataset.mode === 'add') {

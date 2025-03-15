@@ -166,7 +166,7 @@ if (ssid) {
                 let {earn, dedn} = data;
                 bookearn = Object.assign(bookearn, earn?.[mnth] || {});
                 bookdedn = Object.assign(bookdedn, dedn?.[mnth] || {});
-                // console.log(bookearn, bookdedn);
+                console.log(bookearn, bookdedn);
                 netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn, gross);
                 [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
             } catch (err) {
@@ -180,15 +180,17 @@ if (ssid) {
                 let en = 0, dn = 0, ex = Object.entries(ea), dx = Object.entries(de);
                 // console.log(ex, dx);
                 if (ex.length) {
-                    en = ex.map(m => { 
-                        document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(m[1]*gp)}</span>`);
-                        return m[1]*gp;
+                    en = ex.map(m => {
+                        let out = m[1] > 2 ? m[1] : m[1]*gp;
+                        document.getElementById('payearn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(out)}</span>`);
+                        return out;
                     }).reduce((acc, val) => acc + val);
                 }
                 if (dx.length) {
                     dn = dx.map(m => {
-                        document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(m[1]*gp)}</span>`);
-                        return m[1]*gp;
+                        let out = m[1] > 2 ? m[1] : m[1]*gp;
+                        document.getElementById('paydedn').insertAdjacentHTML('beforeend', `<span>${m[0]}</span><span>&#8358; ${Intl.NumberFormat('en-us', { notation: 'standard' }).format(out)}</span>`);
+                        return out;
                     }).reduce((acc, val) => acc + val);
                 }
                 return en - dn;
