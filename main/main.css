@@ -406,13 +406,13 @@ footer {
     left: 50%;
     top: 50%;
     border-radius: 50%;
-    transform: translate(-50%, -50%) rotate(0deg);
+    transform: translate(-50%, -50%);
     border: 3px solid;
     border-color: #fff #fff3 #fff3 #fff3;
-    animation: 1s linear infinite backwards;
+    animation: 1s linear infinite forwards;
 }
 #lodr:popover-open::after {
-animation-name: spin;
+    animation-name: spin;
 }
 @keyframes spin {
     100% {

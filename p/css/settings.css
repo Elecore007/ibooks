@@ -110,9 +110,9 @@ aside:nth-child(1) {
 }
 #board.on::after {
     content: '';
-    animation-name: spin;
+    animation-name: turner;
 }
-@keyframes spin {
+@keyframes turner {
     100% {
         transform: translate(-50%, 0) rotate(360deg);
     }
