@@ -153,6 +153,68 @@ aside:nth-child(1) {
 #board > div:nth-child(1) > button:not(:nth-of-type(2)):hover {
     background-color: #fff1;
 }
+#expired > .wrap {
+    --wrap-wdh: 35%;
+    width: 320px;
+    padding: 2em;
+    border-radius: 14px;
+    background-color: #0003;
+    position: relative;
+    overflow: hidden;
+}
+#expired > .wrap::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0009;
+}
+#expired > .wrap::before {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 3px;
+    width: var(--wrap-wdh);
+    background-color: #fff;
+    z-index: 1;
+    transition: width .5s;
+}
+#expired > .wrap.on::after, #expired > .wrap.on::before {
+    content: '';
+}
+#expired > .wrap.fin::before {
+    background-color: #009578;
+}
+#expired > .wrap > ion-icon {
+    display: block;
+    margin: 0 auto 1em;
+    color: #b8860b;
+    scale: 1.5;
+}
+#expired > .wrap > p {
+    margin: 2em 0;
+    opacity: .8;
+    text-align: justify;
+}
+#expired > .wrap > p > span {
+    font-weight: 500;
+}
+#expired > .wrap > button {
+    display: inline-block;
+    width: 40%;
+    margin: 0px calc(5% - 2px);
+    padding: .8em 0;
+    border-radius: 24px;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+#expired > .wrap > button:nth-of-type(2) {
+    color: #b8860b;
+}
+#expired > .wrap > button:hover {
+    border-color: #b8860b;
+}
 #mnth, #earded {
     height: fit-content;
     width: fit-content;

@@ -21,15 +21,20 @@ let mth = new Date().getMonth();
 
 //login query
 const main = document.querySelector('main');
+const tab = document.getElementById('tab');
+const tbd = tab.querySelector('#tbd');
 const note = document.getElementById('note');
 const banner = document.getElementById('banner');
 const aside = document.querySelector('aside');
 const loginPop = document.querySelector('#login');
 
+//initialize name of csv file
+const dt= new Date();
+let payfile = 'ibooks-D'.concat(dt.getFullYear(),dt.getMonth(),dt.getDate());
 loginPop.showPopover();
+
 //view pwds
-/*
-const eye = document.querySelector('.gp > button');
+const eye = loginPop.querySelector('button.eye');
 eye.onclick = () => {
     const input = eye.previousElementSibling;
     if (input.type === 'text') {
@@ -40,7 +45,7 @@ eye.onclick = () => {
         input.setAttribute('type', 'text');
     }
 }
-*/
+
 function redoApp (config) {
     deleteApp(app);
     app = initializeApp(config);
@@ -96,7 +101,6 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             document.getElementById('cleared').querySelector('span:nth-of-type(2)').textContent = clearanceOffr.data().user;
 
             //get employees
-            const tab = document.getElementById('tab');
             let companyConfig = JSON.parse(person.cfg);
             redoApp(companyConfig);
             let bio = [], paye = [];
@@ -119,7 +123,6 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             //insert bio into DOM
             main.classList.remove('lda');
             tab.removeAttribute('style');
-            const tbd = tab.querySelector('#tbd');
             bio.forEach((b, bx) => {
                 tbd.insertAdjacentHTML('beforeend', `
                     <div class="td">
@@ -137,7 +140,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
                     } else if (val === 'download') {
                         await generatePDF();
                     } else if (val === 'copy to excel') {
-                        console.log("Copy to Excel.")
+                        await csvfile(payfile);
                     } else if (val === 'auth officers') {
                         aside.classList.toggle('on');
                     }
@@ -170,11 +173,17 @@ function notfcatn (ico, txt) {
         clearTimeout(toid);
     }, 4500);
 }
+//check online presence
+window.addEventListener('offline', (e) => {
+    console.log("You've gone offline.");
+});
+window.addEventListener('online', (e) => {
+    console.log("You're back online.");
+});
 /* GENERATING PDF */
 //CDN
 async function generatePDF () {
-    console.log('Download PDF');
-
+    console.log(navigator.onLine);
     /*
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -190,4 +199,22 @@ async function generatePDF () {
     // }
     
     // await html2pdf().set(opt).from(body).save();
+}
+async function csvfile (filename) {
+    let txt = '';
+    tbd.querySelectorAll('.td').forEach(td => {
+        txt += td.innerText.replaceAll('\n','\t');
+        txt += '\n';
+    });
+    // console.log(txt)
+    const blob = new Blob([txt], {type: 'txt'});
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename + blob.type;
+    a.click();
+
+    a.remove();
+    URL.revokeObjectURL(url);
 }

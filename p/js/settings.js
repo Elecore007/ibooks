@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDoc, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, orderBy, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, deleteField, getDoc, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, orderBy, writeBatch, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 import { ssid } from "../../main/main.js";
 
@@ -177,6 +177,9 @@ if (ssid) {
             //update idb
         });
         //set up payslip
+        const expiredPop = document.querySelector('#expired');
+        let expiredEarn = [], expiredDedn = [];
+        let txt = [], expEarn = 0, expDedn = 0;
         async function enterPayslip (m) {
             board.classList.add('on');  //loader
             lis.forEach((li, ix) => li.classList.toggle('on', ix === m));
@@ -187,9 +190,10 @@ if (ssid) {
                 let data = statRef.data();
                 data['id'] = empID;
                 let bookearn = person.payearn, bookdedn = person.paydedn;
-                let {earn, dedn} = data;
+                let {earn, dedn, xen=null, xdn=null} = data;
                 bookearn = Object.assign(bookearn, earn?.[mnth] || {});
                 bookdedn = Object.assign(bookdedn, dedn?.[mnth] || {});
+                extraPaye(bookearn, xen, 0), extraPaye(bookdedn, xdn, 1);
                 // console.log(bookearn, bookdedn);
                 netDiv.querySelector('span').innerHTML = '&#8358;' + setInDOM(bookearn, bookdedn, gross);
                 [menuBtn, mnthMenu.nextElementSibling].forEach(elem => elem.style.pointerEvents = 'all');
@@ -197,6 +201,24 @@ if (ssid) {
                 console.error(err);
             } finally {
                 board.classList.remove('on');   //loader
+                // console.log(expiredEarn, expiredDedn);
+                txt = [], expEarn = 0, expDedn = 0;
+                if (expiredEarn.length) {
+                    expiredEarn.forEach(exp => {
+                        expEarn += exp[1];
+                        txt.push(exp[0]);
+                    });
+                }
+                if (expiredDedn.length) {
+                    expiredDedn.forEach(exp => {
+                        expDedn += exp[1];
+                        txt.push(exp[0]);
+                    });
+                }
+                let tense = txt.length > 1 ? 1 : 0; //singular=0, plural=1
+                expiredPop.querySelector('p').innerHTML = `<span>${txt.join(', ').toUpperCase()}</span> ${['has','have'][tense]} been achieved. You must remove ${['it','them'][tense]}, else ${['it','they'][tense]} will be factored in the next payroll.`;
+                expiredPop.showPopover();
+                console.log(expEarn, expDedn);
             }
             //calculate earn and dedn breakdown
             function setInDOM (ea, de, gp) {
@@ -220,6 +242,46 @@ if (ssid) {
                 return en - dn;
                 // return en.reduce((acc, val) => acc + val) - dn.reduce((acc, val) => acc + val); //netpay                       
             }
+            //calculate extra paye
+            function extraPaye (type, val, idfyer) {
+                if (val) {
+                    for (const x in val) {
+                        if (val[x][1] < Date.now()) {   //meaning the paye has NOT expired
+                            type[x] = val[x][0];
+                        } else {
+                            if (idfyer) {
+                                expiredEarn.push([x, val[x][0]]);
+                            } else {
+                                expiredDedn.push([x, val[x][0]]);
+                            }
+                        }
+                    }
+                }
+            }
+            //update expired paye
+            const expiredWrap = expiredPop.querySelector('.wrap');
+            const expiredBtns = expiredWrap.querySelectorAll('button');
+            expiredBtns[1].addEventListener('click', async (e) => {
+                expiredBtns.forEach(btn => btn.disabled = true);
+                expiredWrap.classList.add('on');
+
+                try {
+                    const batch = writeBatch(db);
+                    //update main earn and dedn
+                    batch.update(doc(db, 'ibooks', person.fbid, yr, empID), {'earn': increment(-expEarn), 'dedn': increment(-expDedn)});
+                    //update paye extra earn and dedn
+                    txt.forEach(t => {
+                        batch.update(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), {})
+                    });
+                    await batch.commit();
+                    expiredWrap.classList.replace('on','fin');
+                } catch (err) {
+                    console.log(err);
+                } finally {
+                    expiredBtns.forEach(btn => btn.disabled = false);
+                    
+                }
+            });
         }
 }
 

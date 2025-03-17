@@ -140,7 +140,7 @@
                                 </button>
                             </div>
                             <div>
-                                <button type="button" class="on">GROSS PER MONTH</button>
+                                <button type="button" class="on">EARNINGS</button>
                                 <button type="button">DEDUCTIONS</button>
                                 <div id="payearn"></div>
                                 <div id="paydedn"></div>
@@ -148,6 +148,14 @@
                             <div>
                                 <small id="net">Net Pay: <span></span></small>
                                 <small>Fiscal Yr. 2025</small>
+                            </div>
+                        </div>
+                        <div popover="manual" id="expired">
+                            <div class="wrap">
+                                <ion-icon name="alert-circle-outline"></ion-icon>
+                                <p></p>
+                                <button type="button" popovertarget="expired" popovertargetaction="hide">CANCEL</button>
+                                <button type="button">REMOVE</button>
                             </div>
                         </div>
                     </div>
@@ -371,7 +379,6 @@
     <script type="module" src="../js/settings.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <!-- <script type="module" src="../../lb/wc.js"></script> -->
     <script>
         document.querySelectorAll('.g1 > div').forEach(btn => {
             btn.onclick = (e) => {
@@ -379,8 +386,10 @@
             }
         });
         //resize window
-        const mnthBtn = document.querySelector('#board > div:nth-child(1) > button:nth-of-type(2)');
-        
+        // const mnthBtn = document.querySelector('#board > div:nth-child(1) > button:nth-of-type(2)');
+        // document.querySelector('#roll').showPopover();
+        // document.querySelector('#board').classList.remove('on')
+        // document.querySelector('#expired').showPopover();
     </script>
 </body>
 </html>
