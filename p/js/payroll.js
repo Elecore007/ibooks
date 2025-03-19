@@ -173,13 +173,7 @@ function notfcatn (ico, txt) {
         clearTimeout(toid);
     }, 4500);
 }
-//check online presence
-window.addEventListener('offline', (e) => {
-    console.log("You've gone offline.");
-});
-window.addEventListener('online', (e) => {
-    console.log("You're back online.");
-});
+
 /* GENERATING PDF */
 //CDN
 async function generatePDF () {

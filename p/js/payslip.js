@@ -1,0 +1,121 @@
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getFirestore, doc, collection, collectionGroup, getDoc, getDocs, setDoc, increment, updateDoc, query, where, limit, orderBy, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+// import { userColor, pkey, projectConfigs } from "./lb/wc.js";
+/*** REQUIRES AN INDEX FOR snapCompany and snapEmployees ***/
+const firebaseConfig = {
+    apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
+    authDomain: "webmart-d7812.firebaseapp.com",
+    projectId: "webmart-d7812",
+    storageBucket: "webmart-d7812.appspot.com",
+    messagingSenderId: "570156229824",
+    appId: "1:570156229824:web:6c9f1f5e4438e5b284f925",
+    measurementId: "G-TFYJV323WC"
+};
+
+// Initialize Firebase
+let app = initializeApp(firebaseConfig);
+let db = getFirestore(app);
+let company;
+let yr = new Date().getFullYear().toString();
+let mth = new Date().getMonth();
+
+const note = document.getElementById('note');
+const brake = document.querySelector('.break');
+const comp = document.querySelector('.comp');
+const myforms = document.forms;
+
+//initialize name of csv file
+// const dt= new Date();
+// let payfile = 'ibooks-D'.concat(dt.getFullYear(),dt.getMonth(),dt.getDate());
+// loginPop.showPopover();
+
+//view pwds
+const eyes = document.querySelectorAll('button.eye');
+eyes.forEach(eye => {
+    eye.onclick = () => {
+        const input = eye.previousElementSibling;
+        if (input.type === 'text') {
+            eye.firstElementChild.setAttribute('name','eye-off-outline');
+            input.setAttribute('type', 'password');
+        } else {
+            eye.firstElementChild.setAttribute('name','eye-outline');
+            input.setAttribute('type', 'text');
+        }
+    }
+});
+
+function redoApp (config) {
+    deleteApp(app);
+    app = initializeApp(config);
+    db = getFirestore(app);
+}
+// create binary string pbk
+let pbk = function pbkString(str) {
+    try {
+        return btoa(str);
+    } catch (err) {
+        notfcatn('alert-circle-outline', 'Invalid text input.');
+    }
+};
+// notification
+function notify (txt, ico, timeOut=0) {
+    note.querySelector('ion-icon').setAttribute('name', ico);
+    note.querySelector('span').textContent = txt;
+    note.showPopover();
+    if (timeOut) {
+        const toid = setTimeout(() => {
+            note.hidePopover();
+            clearTimeout(toid);
+        }, timeOut);
+    }
+}
+//login handler
+let logPhase = 0;
+myforms.namedItem('uform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    e.submitter.disabled = true;
+    e.submitter.classList.add('on');
+
+    const fd = new FormData(e.target);
+    const email = fd.get('cem').trim(), uid = fd.get('uid');
+    //check company email
+    if (!logPhase) {
+        try {
+            if (email !== '') {
+                const q = query(collection(db, 'ibooks'), where('email', '==', email), limit(1));
+                const snapEmail = await getDocs(q);
+                if (snapEmail.size) {
+                    company = snapEmail.docs[0].data();
+                    comp.textContent = company.company;
+                    e.target.querySelector('[type="email"]').toggleAttribute('readonly', true);
+                    [comp, brake].forEach(elem => elem.classList.add('on'));
+                    redoApp(JSON.parse(company.cfg));
+                    logPhase = 1;
+                } else {
+                    throw Error('No such email exists.', {cause: 'Unknown email.'});
+                }
+            } else {
+                throw Error('Invalid email address.', {cause: 'Invalid value.'});
+            }
+        } catch (err) {
+            console.log(err);
+            if ('cause' in err) {
+                notify(err.message,'alert-circle-outline', 4000);
+            }
+        } finally {
+            e.submitter.classList.remove('on');
+            e.submitter.disabled = false;
+        }
+    } else {
+        if (uid !== '') {
+
+        }
+    }
+});
+//listen for offline and online status
+window.addEventListener('offline', (e) => {
+    notify("You are offline.", "cloud-offline-outline.");
+});
+window.addEventListener('online', (e) => {
+    notify("You are back online.", "cloud-done-outline.", 4000);
+});

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="../../img/book-outline.svg">
+    <link rel="stylesheet" href="../css/payslip.css">
+    <title>ibooks | Payslip</title>
+</head>
+<body>
+    <main>
+        <header>
+            <ion-icon name="book-outline"></ion-icon>
+            <p>ibooks</p>
+        </header>
+        <form name="uform" autocomplete="off">
+            <div class="comp">INSO Professional Services (Chartered Accountants) Inc.</div>
+            <label for="cem">Company Email</label>
+            <div class="ipt">
+                <input type="email" name="cem" id="cem" placeholder="Enter Company Email">
+            </div>
+            <br class="break">
+            <label for="uid">User ID</label>
+            <div class="ipt">
+                <input type="password" name="uid" placeholder="Enter your ID">
+                <button type="button" class="dfx eye">
+                    <ion-icon name="eye-off-outline"></ion-icon>
+                </button>
+            </div>
+            <button class="dfx sbt">
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+                <!-- <span>View Slip</span> -->
+            </button>
+        </form>
+        <footer>
+            <span>Dynamax | 2025</span>
+        </footer>
+    </main>
+    <div popover id="note">
+        <div>
+            <ion-icon></ion-icon>
+            <span></span>
+        </div>
+    </div>
+    <div popover="manual" id="slip">
+        <div class="wrap">
+            <!-- <button type="button" id="close" popovertarget="slip" popovertargetaction="hide">Close</button> -->
+            <div class="head">
+                <div class="cpny">INSO Professional Services (Chartered Accountants) Inc.</div>
+                <div id="person">
+                    <ion-icon name="person-outline"></ion-icon>
+                    <div id="prof">
+                        <p>Terry Jones</p>
+                        <p>User ID</p>
+                        <p>Teacher</p>
+                        <button type="button" popovertarget="chpd" popovertargetaction="show">Change Password</button>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="ea">
+                    <div><span>Earnings</span><span>&#8358;</span></div>
+                    <span>Earn One</span><span>30000</span>
+                    <span>Earn Two</span><span>739990</span>
+                </div>
+                <div class="de">
+                    <div><span>Deductions</span><span>&#8358;</span></div>
+                    <span>Dedn One</span><span>30000</span>
+                    <span>Dedn One</span><span>30000</span>
+                </div>
+            </div>
+            <div class="tail">
+                <div id="gpm">
+                    <div>GPM</div>
+                    <div class="big">&#8358; 1, 070, 000</div>
+                </div>
+                <div id="gpm">
+                    <div>NET</div>
+                    <div class="big">&#8358; 1, 070, 000</div>
+                </div>
+                <button type="button" id="save">Save as PDF</button>
+            </div>
+        </div>
+        <div popover="manual" id="chpd">
+            <div class="wrap">
+                <div class="hd">
+                    <button type="button" class="dfx" popovertarget="chpd" popovertargetaction="hide">
+                        <ion-icon name="chevron-back-outline"></ion-icon>
+                    </button>
+                    <span>Change Password</span>
+                </div>
+                <form name="chpd">
+                    <div class="ipt">
+                        <input type="password" name="password" placeholder="Current Password" required>
+                        <button type="button" class="dfx eye">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="ipt">
+                        <input type="password" name="newpass" placeholder="New Password" required>
+                        <button type="button" class="dfx eye">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <div class="ipt">
+                        <input type="password" name="confirmpass" placeholder="Confirm Password" required>
+                        <button type="button" class="dfx eye">
+                            <ion-icon name="eye-off-outline"></ion-icon>
+                        </button>
+                    </div>
+                    <button type="button" id="change">CHANGE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- <script>
+        document.querySelector('#slip').showPopover();
+    </script> -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script type="module" src="../js/payslip.js"></script>
+</body>
+</html>
