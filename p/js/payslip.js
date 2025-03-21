@@ -17,7 +17,7 @@ let app = initializeApp(firebaseConfig);
 let db = getFirestore(app);
 let company, person;
 let yr = new Date().getFullYear().toString();
-let mth = new Date().getMonth() - 1;
+let mth = new Date().getMonth();
 
 const note = document.getElementById('note');
 const brake = document.querySelector('.break');
@@ -118,7 +118,7 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
     } else {
         if (uid !== '') {
             try {
-                const q1 = query(collection(db, 'ibooks', company.id, yr));
+                const q1 = query(collection(db, 'ibooks', company.id, yr), where('uid', '==', uid), limit(1));
                 const userSnap = await getDocs(q1);
                 if (userSnap.size) {
                     person = userSnap.docs[0].data();
@@ -184,7 +184,7 @@ myforms.namedItem('chpd').addEventListener('submit', async (e) => {
 function updateSlip (user, stat) {
     const today = Date.now();
     const { ename, dept, post, lastMod } = user;
-    cpny.insertAdjacentHTML('beforeend', `<br><small>${lastMod}</small>`);
+    cpny.insertAdjacentHTML('beforeend', `<br><small>${Intl.DateTimeFormat('en-US', {dateStyle: 'full'}).format(lastMod)}</small>`);
     [post, dept, ename.join(' ')].forEach(val => {
         document.getElementById('prof').insertAdjacentHTML('afterbegin', `<p>${val}</p>`)
     });
@@ -192,35 +192,40 @@ function updateSlip (user, stat) {
     let earnHTML = '<div><span>Earnings</span><span>&#8358;</span></div>',
         dednHTML = '<div><span>Deductions</span><span>&#8358;</span></div>';
     let totearn = 0, totdedn = 0;
-    let {earn, dedn, oen=null, odn=null} = stat;
+    let {earn, dedn, xen, xdn} = stat;
     //calculate earnings
-    earn = Object.entries(earn[mth]);
-    dedn = Object.entries(dedn[mth]);
-    if (oen) {
-        for (const p in oen) {
-            if (oen[p][1] < today) {
-                totearn += oen[p][0];
-                earn.push({[p]: oen[p][0]});
+    earn = earn[mth] || earn[mth-1];
+    dedn = dedn[mth] || dedn[mth-1];
+    console.log(earn, dedn, xen, xdn)
+    /*
+    if (xen) {
+        for (const p in xen) {
+            if (xen[p][1] < today) {
+                totearn += xen[p][0];
+                earn.push({[p]: xen[p][0]});
             }
         }
     }
-    if (odn) {
-        for (const p in odn) {
-            if (odn[p][1] < today) {
-                totdedn += odn[p][0];
-                dedn.push({[p]: odn[p][0]});
+    if (xdn) {
+        for (const p in xdn) {
+            if (xdn[p][1] < today) {
+                totdedn += xdn[p][0];
+                dedn.push({[p]: xdn[p][0]});
             }
         }
     }
-    for (const [k, v] of earn) {
+    */
+    for (const o in earn) {
+        const v = Number((earn[o] < 2 ? earn[o]*user.gpm : earn[o]).toFixed(2));
         totearn += v;
-        earnHTML += `<span>${k}</span><span>${v}</span>`;
+        earnHTML += `<span>${o}</span><span>${Intl.NumberFormat('en-US', {notation: 'standard'}).format(v)}</span>`;
     }
-    for (const [k, v] of dedn) {
+    for (const o in dedn) {
+        const v = Number((dedn[o] < 2 ? dedn[o]*user.gpm : dedn[o]).toFixed(2));
         totdedn += v;
-       dednHTML += `<span>${k}</span><span>${v}</span>`;
+       dednHTML += `<span>${o}</span><span>${Intl.NumberFormat('en-US', {notation: 'standard'}).format(v)}</span>`;
     }
-    [earnHTML, dednHTML].forEach(html => slip.querySelector('.body').insertAdjacentHTML('beforeend', html));
+    slip.querySelector('.wrap > .body').innerHTML = `<div class="ea">${earnHTML}</div>` + `<div class="de">${dednHTML}</div>`;
     [totearn, totdedn, user.gpm, totearn - totdedn].forEach((val, vdx) => bigs[vdx].innerHTML = `&#8358; ${Intl.NumberFormat('en-us', {notation: 'standard'}).format(val)}`);
 }
 //listen for offline and online status

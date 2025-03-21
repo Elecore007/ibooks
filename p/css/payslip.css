@@ -262,6 +262,11 @@ footer > span {
     text-align: center;
     font-size: 85%;
     opacity: .7;
+    font-weight: 500;
+}
+.cpny > small {
+    display: block;
+    padding: 1em;
 }
 #person {
     display: flex;
@@ -424,6 +429,9 @@ footer > span {
         width: 100% !important;
         height: 100%;
         border-radius: 0;
+    }
+    #slip > .wrap {
+        padding: 1em;
     }
     #note {
         width: 95%;

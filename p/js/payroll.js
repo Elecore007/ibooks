@@ -126,7 +126,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             bio.forEach((b, bx) => {
                 tbd.insertAdjacentHTML('beforeend', `
                     <div class="td">
-                        <span>${bx+1}</span><span>${b.ename.join(' ')}</span><span>${b.bank}</span><span>${b.acct}</span><span>${Intl.NumberFormat('en-us', {style: 'currency', currency: 'NGN'}).format(b.earn - b.dedn)}</span>
+                        <span>${bx+1}</span><span>${b.ename.join(' ')}</span><span>${b.bank}</span><span>${b.acct}</span><span>${Intl.NumberFormat('en-us', {style: 'currency', currency: 'NGN'}).format(b.earn)}</span>
                     </div>
                 `);
             });
