@@ -15,13 +15,18 @@ const firebaseConfig = {
 // Initialize Firebase
 let app = initializeApp(firebaseConfig);
 let db = getFirestore(app);
-let company;
+let company, person;
 let yr = new Date().getFullYear().toString();
-let mth = new Date().getMonth();
+let mth = new Date().getMonth() - 1;
 
 const note = document.getElementById('note');
 const brake = document.querySelector('.break');
 const comp = document.querySelector('.comp');
+const cpny = document.querySelector('.cpny');
+const slip = document.getElementById('slip');
+const bigs = slip.querySelectorAll('.tail .big');
+const chpd = document.getElementById('chpd');
+const success = document.getElementById('success');
 const myforms = document.forms;
 
 //initialize name of csv file
@@ -50,6 +55,7 @@ function redoApp (config) {
     db = getFirestore(app);
 }
 // create binary string pbk
+/*
 let pbk = function pbkString(str) {
     try {
         return btoa(str);
@@ -57,6 +63,7 @@ let pbk = function pbkString(str) {
         notfcatn('alert-circle-outline', 'Invalid text input.');
     }
 };
+*/
 // notification
 function notify (txt, ico, timeOut=0) {
     note.querySelector('ion-icon').setAttribute('name', ico);
@@ -86,7 +93,8 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
                 const snapEmail = await getDocs(q);
                 if (snapEmail.size) {
                     company = snapEmail.docs[0].data();
-                    comp.textContent = company.company;
+                    company['id'] = snapEmail.docs[0].id;
+                    [comp, cpny].forEach(elem => elem.textContent = company.company);
                     e.target.querySelector('[type="email"]').toggleAttribute('readonly', true);
                     [comp, brake].forEach(elem => elem.classList.add('on'));
                     redoApp(JSON.parse(company.cfg));
@@ -98,9 +106,10 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
                 throw Error('Invalid email address.', {cause: 'Invalid value.'});
             }
         } catch (err) {
-            console.log(err);
             if ('cause' in err) {
                 notify(err.message,'alert-circle-outline', 4000);
+            } else {
+                console.log(err);
             }
         } finally {
             e.submitter.classList.remove('on');
@@ -108,10 +117,112 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
         }
     } else {
         if (uid !== '') {
-
+            try {
+                const q1 = query(collection(db, 'ibooks', company.id, yr));
+                const userSnap = await getDocs(q1);
+                if (userSnap.size) {
+                    person = userSnap.docs[0].data();
+                    //update slip
+                    slip.querySelector('.wrap').classList.add('on');
+                    slip.showPopover();
+                    const snapStat = await getDoc(doc(db, 'ibooks', company.id, yr, person.id, 'paye', person.id));
+                    slip.querySelector('.wrap').classList.remove('on');
+                    updateSlip(person, snapStat.data());
+                } else {
+                    throw Error("Incorrect ID.", {cause: 'Wrong ID.'});
+                }
+            } catch (err) {
+                if ('cause' in err) {
+                    notify(err.message,'alert-circle-outline', 4000);
+                } else {
+                    console.log(err);
+                }
+            } finally {
+                e.submitter.classList.remove('on');
+                e.submitter.disabled = false;
+            }
         }
     }
 });
+myforms.namedItem('chpd').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const fd = new FormData(e.target);
+    const oldPwd = fd.get('pass');
+    const currPwd = fd.get('newpass');
+    const confmPwd = fd.get('confirmpass');
+    if (user.uid !== oldPwd) return notify("Incorrect ID.", "alert-circle-outline", 4000);
+    if (currPwd !== confmPwd) return notify("ID mismatch.", "alert-circle-outline", 4000);
+    e.submitter.disabled = true;
+    chpd.querySelector('.wrap').classList.add('on');
+    //check if ID is taken
+    try {
+        const duplicateID = await getDocs(query(collection(db, 'ibooks', company.id, yr), where('uid', '==', currPwd)));
+        if (duplicateID.size) throw Error("User ID already taken.", {cause: 'Duplicate User ID.'});
+        await updateDoc(doc(db, 'ibooks', company.id, yr, person.id), {'uid': confmPwd});
+        chpd.querySelector('.wrap').classList.remove('on');
+        success.querySelector('ion-icon').setAttribute('name', 'checkmark-outline');
+        success.querySelector('div').textContent = 'Your ID has been changed successfully.';
+        success.classList.add('on');
+        const tid = setTimeout(() => {
+            success.classList.remove('on');
+            e.target.reset();
+            chpd.hidePopover();
+            clearTimeout(tid);
+        });
+    } catch (err) {
+        if ('cause' in err) {
+            notify(err.message, "alert-circle-outline", 4000);
+        } else {
+            console.log(err);
+        }
+    } finally {
+        e.submitter.disabled = false;
+        chpd.querySelector('.wrap').classList.remove('on');
+    }
+});
+function updateSlip (user, stat) {
+    const today = Date.now();
+    const { ename, dept, post, lastMod } = user;
+    cpny.insertAdjacentHTML('beforeend', `<br><small>${lastMod}</small>`);
+    [post, dept, ename.join(' ')].forEach(val => {
+        document.getElementById('prof').insertAdjacentHTML('afterbegin', `<p>${val}</p>`)
+    });
+    //.body earnings and deductions
+    let earnHTML = '<div><span>Earnings</span><span>&#8358;</span></div>',
+        dednHTML = '<div><span>Deductions</span><span>&#8358;</span></div>';
+    let totearn = 0, totdedn = 0;
+    let {earn, dedn, oen=null, odn=null} = stat;
+    //calculate earnings
+    earn = Object.entries(earn[mth]);
+    dedn = Object.entries(dedn[mth]);
+    if (oen) {
+        for (const p in oen) {
+            if (oen[p][1] < today) {
+                totearn += oen[p][0];
+                earn.push({[p]: oen[p][0]});
+            }
+        }
+    }
+    if (odn) {
+        for (const p in odn) {
+            if (odn[p][1] < today) {
+                totdedn += odn[p][0];
+                dedn.push({[p]: odn[p][0]});
+            }
+        }
+    }
+    for (const [k, v] of earn) {
+        totearn += v;
+        earnHTML += `<span>${k}</span><span>${v}</span>`;
+    }
+    for (const [k, v] of dedn) {
+        totdedn += v;
+       dednHTML += `<span>${k}</span><span>${v}</span>`;
+    }
+    [earnHTML, dednHTML].forEach(html => slip.querySelector('.body').insertAdjacentHTML('beforeend', html));
+    [totearn, totdedn, user.gpm, totearn - totdedn].forEach((val, vdx) => bigs[vdx].innerHTML = `&#8358; ${Intl.NumberFormat('en-us', {notation: 'standard'}).format(val)}`);
+}
 //listen for offline and online status
 window.addEventListener('offline', (e) => {
     notify("You are offline.", "cloud-offline-outline.");

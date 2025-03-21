@@ -142,8 +142,6 @@ button.eye {
 }
 button.sbt {
     position: relative;
-    /* background-color: #1a73e8;
-    background-color: initial; */
     height: 3.5em;
     width: 3.5em;
     margin: 2em auto;
@@ -324,19 +322,23 @@ footer > span {
 .tail {
     padding: 1em;
     border-top: 1px dashed #ccc;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
 }
 .tail > div {
+    flex: 1 0 40%;
     margin-bottom: 1em;
     opacity: .8;
+    font-size: 90%;
+    text-align: center;
 }
 .tail > div > div:not(.big) {
     font-weight: 500;
 }
-.big {
-    font-size: 110%;
-}
 #save {
+    flex: 1 0 100%;
     padding: 1em 2em;
 }
 #save, #change {
@@ -365,6 +367,9 @@ footer > span {
 .hd > button:hover {
     background-color: #f0f8ff;
 }
+.hd > button > ion-icon {
+    font-size: 100%;
+}
 #chpd > .wrap > form {
     padding: 1em 2em;
 }
@@ -373,6 +378,41 @@ footer > span {
     width: 100%;
     margin: 1em auto;
     padding: 1.2em 0;
+}
+#success {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    background-color: #fff;
+    z-index: -1;
+    opacity: 0;
+}
+#success > * {
+    color: #009578;
+    opacity: 0;
+    transition: .3s;
+}
+#success.on {
+    z-index: 1;
+    opacity: 1;
+}
+#success.on > * {
+    opacity: 1;
+}
+#success > ion-icon {
+    transition-delay: .5s;
+}
+#success > div {
+    width: 80%;
+    text-align: center;
+    transition-delay: .7s;
 }
 @media (width < 412px) {
     main {

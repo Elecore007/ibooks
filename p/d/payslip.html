@@ -70,15 +70,23 @@
                 </div>
             </div>
             <div class="tail">
-                <div id="gpm">
+                <div>
+                    <div>Tot. Earn.</div>
+                    <div class="big"></div>
+                </div>
+                <div>
+                    <div>Tot. Ded.</div>
+                    <div class="big"></div>
+                </div>
+                <div>
                     <div>GPM</div>
-                    <div class="big">&#8358; 1, 070, 000</div>
+                    <div class="big"></div>
                 </div>
-                <div id="gpm">
+                <div>
                     <div>NET</div>
-                    <div class="big">&#8358; 1, 070, 000</div>
+                    <div class="big"></div>
                 </div>
-                <button type="button" id="save">Save as PDF</button>
+                <button type="button" id="save" style="display: none;">Save as PDF</button>
             </div>
         </div>
         <div popover="manual" id="chpd">
@@ -87,28 +95,32 @@
                     <button type="button" class="dfx" popovertarget="chpd" popovertargetaction="hide">
                         <ion-icon name="chevron-back-outline"></ion-icon>
                     </button>
-                    <span>Change Password</span>
+                    <span>Change ID</span>
                 </div>
                 <form name="chpd">
                     <div class="ipt">
-                        <input type="password" name="password" placeholder="Current Password" required>
+                        <input type="password" name="pass" placeholder="Current ID" required>
                         <button type="button" class="dfx eye">
                             <ion-icon name="eye-off-outline"></ion-icon>
                         </button>
                     </div>
                     <div class="ipt">
-                        <input type="password" name="newpass" placeholder="New Password" required>
+                        <input type="password" name="newpass" placeholder="New ID" minlength="8" required>
                         <button type="button" class="dfx eye">
                             <ion-icon name="eye-off-outline"></ion-icon>
                         </button>
                     </div>
                     <div class="ipt">
-                        <input type="password" name="confirmpass" placeholder="Confirm Password" required>
+                        <input type="password" name="confirmpass" placeholder="Confirm ID" minlength="8" required>
                         <button type="button" class="dfx eye">
                             <ion-icon name="eye-off-outline"></ion-icon>
                         </button>
                     </div>
-                    <button type="button" id="change">CHANGE</button>
+                    <button id="change">CHANGE</button>
+                    <div id="success">
+                        <ion-icon name="checkmark-outline"></ion-icon>
+                        <div>Your ID has been changed successfully.</div>
+                    </div>
                 </form>
             </div>
         </div>
