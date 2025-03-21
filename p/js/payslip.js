@@ -116,8 +116,8 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
             e.submitter.disabled = false;
         }
     } else {
-        if (uid !== '') {
-            try {
+        try {
+            if (uid !== '') {
                 const q1 = query(collection(db, 'ibooks', company.id, yr), where('uid', '==', uid), limit(1));
                 const userSnap = await getDocs(q1);
                 if (userSnap.size) {
@@ -131,16 +131,18 @@ myforms.namedItem('uform').addEventListener('submit', async (e) => {
                 } else {
                     throw Error("Incorrect ID.", {cause: 'Wrong ID.'});
                 }
-            } catch (err) {
-                if ('cause' in err) {
-                    notify(err.message,'alert-circle-outline', 4000);
-                } else {
-                    console.log(err);
-                }
-            } finally {
-                e.submitter.classList.remove('on');
-                e.submitter.disabled = false;
+            } else {
+                throw Error("Please enter your ID.", {cause: 'No ID.'});
             }
+        } catch (err) {
+            if ('cause' in err) {
+                notify(err.message,'alert-circle-outline', 4000);
+            } else {
+                console.log(err);
+            }
+        } finally {
+            e.submitter.classList.remove('on');
+            e.submitter.disabled = false;
         }
     }
 });
@@ -151,7 +153,7 @@ myforms.namedItem('chpd').addEventListener('submit', async (e) => {
     const oldPwd = fd.get('pass');
     const currPwd = fd.get('newpass');
     const confmPwd = fd.get('confirmpass');
-    if (user.uid !== oldPwd) return notify("Incorrect ID.", "alert-circle-outline", 4000);
+    if (person.uid !== oldPwd) return notify("Incorrect ID.", "alert-circle-outline", 4000);
     if (currPwd !== confmPwd) return notify("ID mismatch.", "alert-circle-outline", 4000);
     e.submitter.disabled = true;
     chpd.querySelector('.wrap').classList.add('on');
@@ -161,6 +163,7 @@ myforms.namedItem('chpd').addEventListener('submit', async (e) => {
         if (duplicateID.size) throw Error("User ID already taken.", {cause: 'Duplicate User ID.'});
         await updateDoc(doc(db, 'ibooks', company.id, yr, person.id), {'uid': confmPwd});
         chpd.querySelector('.wrap').classList.remove('on');
+        person['id'] = confmPwd;
         success.querySelector('ion-icon').setAttribute('name', 'checkmark-outline');
         success.querySelector('div').textContent = 'Your ID has been changed successfully.';
         success.classList.add('on');
@@ -169,7 +172,7 @@ myforms.namedItem('chpd').addEventListener('submit', async (e) => {
             e.target.reset();
             chpd.hidePopover();
             clearTimeout(tid);
-        });
+        }, 3000);
     } catch (err) {
         if ('cause' in err) {
             notify(err.message, "alert-circle-outline", 4000);
@@ -196,25 +199,22 @@ function updateSlip (user, stat) {
     //calculate earnings
     earn = earn[mth] || earn[mth-1];
     dedn = dedn[mth] || dedn[mth-1];
-    console.log(earn, dedn, xen, xdn)
-    /*
+
     if (xen) {
         for (const p in xen) {
-            if (xen[p][1] < today) {
-                totearn += xen[p][0];
-                earn.push({[p]: xen[p][0]});
+            if (xen[p][1] > today) {
+                earn[p] = xen[p][0];
             }
         }
     }
     if (xdn) {
         for (const p in xdn) {
-            if (xdn[p][1] < today) {
-                totdedn += xdn[p][0];
-                dedn.push({[p]: xdn[p][0]});
+            if (xdn[p][1] > today) {
+                dedn[p] = xdn[p][0];
             }
         }
     }
-    */
+
     for (const o in earn) {
         const v = Number((earn[o] < 2 ? earn[o]*user.gpm : earn[o]).toFixed(2));
         totearn += v;
