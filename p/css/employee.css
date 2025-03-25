@@ -46,9 +46,32 @@ button.add > ion-icon {
     width: 1.5em;
 }
 aside:nth-child(1) {
+    position: relative;
     padding: 1em 0;
     font-size: 90%;
     overflow: hidden;
+}
+aside:nth-child(1)::before, aside:nth-child(1)::after {
+    position: absolute;
+    z-index: 1;
+}
+aside:nth-child(1)::after {
+    height: 100%;
+    width: 100%;
+}
+aside:nth-child(1)::before {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 2em;
+    width: 2em;
+    border-radius: 50%;
+    border: 2px solid;
+    border-color: #fff2 #fff2 #fff2 #fff;
+    animation: spin 1s linear infinite forwards;
+}
+aside:nth-child(1).on::before, aside:nth-child(1).on::after {
+    content: '';
 }
 aside:nth-child(1) > * {
     align-items: stretch;

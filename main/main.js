@@ -19,10 +19,10 @@ window.addEventListener('message', (e) => {
         document.querySelectorAll('#bft > button').forEach((btn, idx) => {
             btn.addEventListener('click', (e) => {
                 btn.disabled = true;
-                lodr.showPopover();
+                // lodr.showPopover();
                 switch (idx) {
                     case 0:
-                        console.log("Edit profile href.");
+                        location.href = location.origin + '/p/d/profile.html';
                         break;
                     case 1:
                         console.log("View plan href.");

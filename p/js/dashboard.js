@@ -23,47 +23,13 @@ let currYr = datePeriod(Date.now()).getFullYear().toString();
 //get ibooks config
 if (ssid) {
     let person = null, idb = null;
-    /*
-    let openDB = indexedDB.open('ibooks', 3);
-    openDB.onsuccess = (e) => {
-        console.log("Database opened.");
-        idb = e.target.result;
-        //get user info
-        let tx = idb.transaction('mgr','readonly');
-        tx.oncomplete = (e) => {
-            console.log("Get Transaction completed.");
-        }
-        tx.onerror = (err) => {
-            alert("Get Transaction failed.");
-            console.log(err);
-        }
-        let store = tx.objectStore('mgr');
-        let getReq = store.get(id);
-        getReq.onsuccess = (e) => {
-            person = e.target.result;
-            */
-            person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
+    person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
 
-            let obj = {navigable: true, profile: [person.user, person.is]};
-            window.postMessage(obj, obj);
-            //use person class?
-            personReady(person);
-            /*
-        }
-        getReq.onerror = (err) => {
-            alert("Database Get Request Error.");
-            console.log(err);
-        }
-    }
-    openDB.onupgradeneeded = (e) => {
-        console.log("Database updated.")
-    }
-    openDB.onerror = (err) => {
-        console.log(err);
-        alert("Database Open Error.");
-    }
-    */
-    
+    let obj = {navigable: true, profile: [person.user, person.is]};
+    window.postMessage(obj, obj);
+    //use person class?
+    personReady(person);
+
     const cards = document.querySelectorAll('.card');
     const paye = document.getElementById('paye');
     

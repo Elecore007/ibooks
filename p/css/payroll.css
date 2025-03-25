@@ -570,3 +570,11 @@ aside.lda::after, main.lda::after {
         justify-content: space-around;
     }
 }
+/*
+Shows page number in margin box at top-right corner
+@page {
+    @top-right {
+        content: "Page " counter(pageNumber);
+    }
+}
+*/

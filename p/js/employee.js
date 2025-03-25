@@ -1,26 +1,15 @@
 import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, and, Timestamp, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { getFirestore, addDoc, doc, collection, getDocs, setDoc, getAggregateFromServer, getCountFromServer, increment, runTransaction, sum, updateDoc, query, where, limit, startAfter, and, Timestamp, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, banks, datePeriod, projectConfigs } from "../../lb/wc.js";
 import { ssid, defImg } from "../../main/main.js";
-// const mainConfig = {
-//     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
-//     authDomain: "webmart-d7812.firebaseapp.com",
-//     projectId: "webmart-d7812",
-//     storageBucket: "webmart-d7812.appspot.com",
-//     messagingSenderId: "570156229824",
-//     appId: "1:570156229824:web:6c9f1f5e4438e5b284f925",
-//     measurementId: "G-TFYJV323WC"
-// };
-// let firebaseConfig = mainConfig;
 
-// Initialize Firebase
-// let app = initializeApp(firebaseConfig);
-// let db = getFirestore(app);
 let app, db;
 
 const _enum = document.getElementById('enum');
 const enumBtns = _enum.querySelectorAll('button');
+const aside = document.querySelectorAll('aside');
+
 let empIdx = 0, empID;
 
 //get ibooks config
@@ -46,8 +35,7 @@ if (ssid) {
             lodr.hidePopover();
         }
     }
-
-    let person = null, idb = null, yr, datum;
+    let person = null, idb = null, yr, datum = [];
     person = JSON.parse(sessionStorage.getItem('person'));  //not-idb-desgn
     yr = datePeriod(Date.now()).getFullYear().toString();
 
@@ -57,56 +45,82 @@ if (ssid) {
     const fbConfig = JSON.parse(person.cfg);
     app = initializeApp(fbConfig);
     db = getFirestore(app);
-    // personReady(person);
-    const empRef = await getDocs(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'));
-    if (empRef.size) {
-        //then store copy in indexedDB
-        datum = empRef.docs.map(m => m.data());
-        addEmployees(datum);
-    } else {
-        notify('alert-circle-outline', 'No record.');
+
+    function lodasd(bool) {
+        aside[0].classList.toggle('on', bool);
     }
+    lodasd(true);
+    const allSnap = await getCountFromServer(collection(db, 'ibooks', person.fbid, yr));
+    const all = allSnap.data().count;
+    
+    // personReady(person);
+    let pages = 0;
+    let lastSnapped = null, eq, visiblePage = 0;
+    const page_limit = 2;
+    async function getData() {
+        lodasd(true);
+        lastSnapped ? eq = query(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'), startAfter(lastSnapped), limit(page_limit)) : eq = query(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'), limit(page_limit));
+        const empRef = await getDocs(eq);
+        lastSnapped = empRef.docs[empRef.docs.length - 1];
+        if (empRef.size) {
+            // then store copy in indexedDB
+            // datum = empRef.docs.map(m => m.data());
+            empRef.docs.forEach(f => datum.push(f.data()));
+            //formula for pagination: start=visiblePage-1*page_limit, end=page_limit * visiblePage
+            addEmployees('next');
+        } else {
+            notify('alert-circle-outline', 'No record.');
+        }
+        lodasd(false);
+        // console.log("Data from server.");
+    }
+    await getData();
     //add employees to DOM
-    function addEmployees (res) {
-        let pages = Math.ceil(res.length/30);
+    function addEmployees (move_page) {
+        sections.forEach(section => section.classList.toggle('on', false));
+        move_page === 'previous' ? visiblePage-- : visiblePage++;
+        let start = (visiblePage-1) * page_limit, end = page_limit * visiblePage;
+        let dataNow = datum.slice(start, end);
+        pages = Math.ceil(all/2);
         const book = document.querySelector('aside:nth-child(1) > div');
         //clear DOM
-        // book.querySelectorAll('.td').forEach(td => td.remove());
+        const tds = book.querySelectorAll('.td');
+        if (tds.length) tds.forEach(td => td.remove());
         // insert DOM
-        res.forEach(obj => {
+        dataNow.forEach(obj => {
             book.insertAdjacentHTML('beforeend', `
                 <div class="td">
-                    <span data-abbr="${obj.ename[1].slice(0,1)}">${obj.ename.join(' ')}</span>
-                    <span>${obj.gender}</span>
-                    <span>${obj.dept}</span>
-                    <span>${obj.post}</span>
+                <span data-abbr="${obj.ename[1].slice(0,1)}">${obj.ename.join(' ')}</span>
+                <span>${obj.gender}</span>
+                <span>${obj.dept}</span>
+                <span>${obj.post}</span>
                 </div>
-            `);
-        });
-        // attach their handlers
-        book.querySelectorAll('.td').forEach((td, ix) => {
-            td.onclick = (e) => {
-                empIdx = ix; //Is this even useful again???
-                const tdOn = book.querySelector('.td.on');
-                if (tdOn) tdOn.classList.remove('on');
-                // set edit mode and populate form
-                let {ename, img=defImg, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = res[ix];
-                empID = id;
-                let obj0 = [
-                    ename.join(' '),
-                    gender,
-                    dept || 'Nil',
-                    post || 'Nil',
-                    city && state ? `${city}, ${state}` : 'Nil',
-                    uid || 'Nil',
-                    resume || 'Nil',
-                    level || 'Nil',
-                    step || 'Nil',
-                    bank,
-                    acct
-                ]
-                let obj1 = [
-                    ename[0], ename[1], ename[2] || '',
+                `);
+            });
+            // attach their handlers
+            book.querySelectorAll('.td').forEach((td, ix) => {
+                td.onclick = (e) => {
+                    empIdx = ix; //Is this even useful again???
+                    const tdOn = book.querySelector('.td.on');
+                    if (tdOn) tdOn.classList.remove('on');
+                    // set edit mode and populate form
+                    let {ename, img=defImg, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = dataNow[ix];
+                    empID = id;
+                    let obj0 = [
+                        ename.join(' '),
+                        gender,
+                        dept || 'Nil',
+                        post || 'Nil',
+                        city && state ? `${city}, ${state}` : 'Nil',
+                        uid || 'Nil',
+                        resume || 'Nil',
+                        level || 'Nil',
+                        step || 'Nil',
+                        bank,
+                        acct
+                    ]
+                    let obj1 = [
+                        ename[0], ename[1], ename[2] || '',
                     gender, dept || '', post || '', resume || '', uid, 
                     city || '', state || '', level || '', step || '', gpm,
                     bank, acct
@@ -118,7 +132,7 @@ if (ssid) {
             }
         });
         // set pages
-        _enum.querySelector('span').innerHTML = `Page <i>1</i> of ${pages}`;
+        _enum.querySelector('span').innerHTML = `Page <i>${visiblePage}</i> of ${pages}`;
     }
     // continues from main
     const employee_form = document.querySelector('#employee_form');
@@ -128,9 +142,19 @@ if (ssid) {
             <option value="${bank}">${bank}</option>
         `);
     });
-    enumBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            aside[0].querySelector('div').scrollTop = 0;
+    //custom event for visiblePage max-reached
+    // const event = new CustomEvent('custom:visible_page');
+    //pagination
+    enumBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', async (e) => {
+            btn.disabled = true;
+            if (idx && visiblePage < pages) {  //idx here stands for chevron-forward
+                datum.length !== all ? await getData() : addEmployees('next');
+            } else if (!idx && visiblePage > 1) {
+                addEmployees('previous');
+            }
+            btn.disabled = false;
+            // aside[0].querySelector('div').scrollTop = 0;
         });
     });
     //show/hide sections
@@ -253,7 +277,10 @@ if (ssid) {
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
                         await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
 
-                        addEmployees([data]);
+                        data['id'] = snapAdd.id;
+                        datum.push(data);
+                        all++;
+                        addEmployees('next');
                         notify('checkmark-outline', 'New Employee Added.');
                         e.target.reset();
                     } catch (err) {
@@ -266,7 +293,7 @@ if (ssid) {
                 } else if (e.submitter.form.dataset.mode === 'edit') {
                     // Edit mode
                     try {
-                        for (const a of ['level','step']) delete data[a];
+                        // for (const a of ['level','step']) delete data[a];
                         // console.log(data, details);
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
