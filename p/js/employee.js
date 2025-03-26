@@ -51,11 +51,10 @@ if (ssid) {
     }
     lodasd(true);
     const allSnap = await getCountFromServer(collection(db, 'ibooks', person.fbid, yr));
-    const all = allSnap.data().count;
+    let all = allSnap.data().count;
     
     // personReady(person);
-    let pages = 0;
-    let lastSnapped = null, eq, visiblePage = 0;
+    let start, end, pages = 0, lastSnapped = null, eq, visiblePage = 0;
     const page_limit = 2;
     async function getData() {
         lodasd(true);
@@ -79,7 +78,7 @@ if (ssid) {
     function addEmployees (move_page) {
         sections.forEach(section => section.classList.toggle('on', false));
         move_page === 'previous' ? visiblePage-- : visiblePage++;
-        let start = (visiblePage-1) * page_limit, end = page_limit * visiblePage;
+        start = (visiblePage-1) * page_limit, end = page_limit * visiblePage;
         let dataNow = datum.slice(start, end);
         pages = Math.ceil(all/2);
         const book = document.querySelector('aside:nth-child(1) > div');
@@ -149,7 +148,7 @@ if (ssid) {
         btn.addEventListener('click', async (e) => {
             btn.disabled = true;
             if (idx && visiblePage < pages) {  //idx here stands for chevron-forward
-                datum.length !== all ? await getData() : addEmployees('next');
+                datum.length < all ? await getData() : addEmployees('next');
             } else if (!idx && visiblePage > 1) {
                 addEmployees('previous');
             }
@@ -277,9 +276,10 @@ if (ssid) {
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id), { 'id': snapAdd.id });
                         await setDoc(doc(db, 'ibooks', person.fbid, yr, snapAdd.id, 'paye', snapAdd.id), details);
 
-                        data['id'] = snapAdd.id;
-                        datum.push(data);
                         all++;
+                        data['id'] = snapAdd.id;
+                        datum.splice(start,0,data);
+                        visiblePage--;
                         addEmployees('next');
                         notify('checkmark-outline', 'New Employee Added.');
                         e.target.reset();
@@ -392,6 +392,15 @@ if (ssid) {
             });
             loader(e.target, !1);
             delpop.hidePopover();
+
+            all--;
+            const deletedIdx = datum.findIndex(({id}) => id === empID);
+            // console.log(deletedIdx);
+            datum.splice(deletedIdx, 1,);
+            // console.log('Datum length: ', datum.length);
+            
+            document.querySelector('aside .td.on').remove();
+            document.querySelector('section.on').classList.remove('on');
             notify('checkmark-outline', 'Employee deleted.');
         } catch (err) {
             console.log(err);
