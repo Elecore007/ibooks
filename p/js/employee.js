@@ -10,7 +10,7 @@ const _enum = document.getElementById('enum');
 const enumBtns = _enum.querySelectorAll('button');
 const aside = document.querySelectorAll('aside');
 
-let empIdx = 0, empID;
+let /*empIdx = 0,*/ empID;
 
 //get ibooks config
 if (ssid) {
@@ -18,13 +18,15 @@ if (ssid) {
     const delpop = document.querySelector('#delpop');
     const sections = document.querySelectorAll('section');
     const imgIcons = document.querySelectorAll('.umg');     //manager icon, employee icon
-    function notify(ico, txt) {
+    function notify(ico, txt, out=true) {
         mainNote.querySelector('ion-icon').setAttribute('name', ico);
         mainNote.querySelector('span').textContent = txt;
         mainNote.classList.add('on');
-        setTimeout(() => {
-            mainNote.classList.remove('on');
-        }, 4500);
+        if (out) {
+            setTimeout(() => {
+                mainNote.classList.remove('on');
+            }, 4500);
+        }
     }
     function loader (s, l=!0) {
         if (l) {
@@ -54,7 +56,7 @@ if (ssid) {
     let all = allSnap.data().count;
     
     // personReady(person);
-    let start, end, pages = 0, lastSnapped = null, eq, visiblePage = 0;
+    let start, end, dataNow, pages = 0, lastSnapped = null, eq, visiblePage = 0;
     const page_limit = 2;
     async function getData() {
         lodasd(true);
@@ -79,8 +81,11 @@ if (ssid) {
         sections.forEach(section => section.classList.toggle('on', false));
         move_page === 'previous' ? visiblePage-- : visiblePage++;
         start = (visiblePage-1) * page_limit, end = page_limit * visiblePage;
-        let dataNow = datum.slice(start, end);
+        dataNow = datum.slice(start, end);
         pages = Math.ceil(all/2);
+        // console.log('start: ', start, '\nand end: ', end);
+        // console.log('datum', datum);
+        // console.log('dataNow', dataNow);
         const book = document.querySelector('aside:nth-child(1) > div');
         //clear DOM
         const tds = book.querySelectorAll('.td');
@@ -89,40 +94,40 @@ if (ssid) {
         dataNow.forEach(obj => {
             book.insertAdjacentHTML('beforeend', `
                 <div class="td">
-                <span data-abbr="${obj.ename[1].slice(0,1)}">${obj.ename.join(' ')}</span>
-                <span>${obj.gender}</span>
-                <span>${obj.dept}</span>
-                <span>${obj.post}</span>
+                    <span data-abbr="${obj.ename[1].slice(0,1)}">${obj.ename.join(' ')}</span>
+                    <span>${obj.gender}</span>
+                    <span>${obj.dept}</span>
+                    <span>${obj.post}</span>
                 </div>
-                `);
-            });
-            // attach their handlers
-            book.querySelectorAll('.td').forEach((td, ix) => {
-                td.onclick = (e) => {
-                    empIdx = ix; //Is this even useful again???
-                    const tdOn = book.querySelector('.td.on');
-                    if (tdOn) tdOn.classList.remove('on');
-                    // set edit mode and populate form
-                    let {ename, img=defImg, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = dataNow[ix];
-                    empID = id;
-                    let obj0 = [
-                        ename.join(' '),
-                        gender,
-                        dept || 'Nil',
-                        post || 'Nil',
-                        city && state ? `${city}, ${state}` : 'Nil',
-                        uid || 'Nil',
-                        resume || 'Nil',
-                        level || 'Nil',
-                        step || 'Nil',
-                        bank,
-                        acct
-                    ]
-                    let obj1 = [
-                        ename[0], ename[1], ename[2] || '',
-                    gender, dept || '', post || '', resume || '', uid, 
-                    city || '', state || '', level || '', step || '', gpm,
-                    bank, acct
+            `);
+        });
+        // attach their handlers
+        book.querySelectorAll('.td').forEach((td, ix) => {
+            td.onclick = (e) => {
+                // empIdx = ix; //Is this even useful again???
+                const tdOn = book.querySelector('.td.on');
+                if (tdOn) tdOn.classList.remove('on');
+                // set edit mode and populate form
+                let {ename, img=defImg, gender, dept, post, resume, id, city, state, level, step, gpm, bank, acct, uid} = dataNow[ix];
+                empID = id;
+                let obj0 = [
+                    ename.join(' '),
+                    gender,
+                    dept || 'Nil',
+                    post || 'Nil',
+                    city && state ? `${city}, ${state}` : 'Nil',
+                    uid || 'Nil',
+                    resume || 'Nil',
+                    level || 'Nil',
+                    step || 'Nil',
+                    bank,
+                    acct
+                ]
+                let obj1 = [
+                    ename[0], ename[1], ename[2] || '',
+                gender, dept || '', post || '', resume || '', uid, 
+                city || '', state || '', level || '', step || '', gpm,
+                bank, acct
                 ]
                 // console.log('img', img, 'empID', empID);
                 insertEmployeeDetails(obj0, img);
@@ -293,10 +298,25 @@ if (ssid) {
                 } else if (e.submitter.form.dataset.mode === 'edit') {
                     // Edit mode
                     try {
-                        // for (const a of ['level','step']) delete data[a];
-                        // console.log(data, details);
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID), data);
                         await updateDoc(doc(db, 'ibooks', person.fbid, yr, empID, 'paye', empID), details);
+
+                        const editedIdx = datum.findIndex(({id}) => id === empID);
+                        data['id'] = empID;
+                        datum.splice(editedIdx, 1, data);
+                        dataNow = datum.slice(start, end);
+                        document.querySelectorAll('aside .td.on > span').forEach((sp, ix) => {
+                            if (!ix) {
+                                sp.setAttribute('data-abbr', `${data.ename[1].slice(0,1)}`);
+                                sp.textContent = `${data.ename.join(' ')}`;
+                            } else {
+                                sp.textContent = [`${data.gender}`,`${data.dept}`,`${data.post}`][ix-1];    //+1 because first sp has been solved
+                            }
+                        });
+                        // console.log('start: ', start, '\nand end: ', end);
+                        // console.log('datum length: ', datum.length);
+                        document.querySelector('aside .td.on').classList.remove('on');
+                        document.querySelector('section.on').classList.remove('on');
                         notify('checkmark-outline', 'Employee Updated.');
                     } catch (err) {
                         console.log(err);
@@ -396,7 +416,7 @@ if (ssid) {
             all--;
             const deletedIdx = datum.findIndex(({id}) => id === empID);
             // console.log(deletedIdx);
-            datum.splice(deletedIdx, 1,);
+            datum.splice(deletedIdx, 1);
             // console.log('Datum length: ', datum.length);
             
             document.querySelector('aside .td.on').remove();
@@ -408,6 +428,13 @@ if (ssid) {
         } finally {
             loader(e.target, !1);
         }
+    });
+    //online-offline listener
+    window.addEventListener('offline', (e) => {
+        notify('alert-circle-outline', "You're offline.", null);
+    });
+    window.addEventListener('online', (e) => {
+        mainNote.classList.remove('on');
     });
 } else {
     notify('alert-circle-outline', 'Permission denied.');
