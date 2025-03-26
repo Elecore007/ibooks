@@ -97,6 +97,9 @@
                         <button type="button">Settings</button>
                         <div id="slider"></div>
                     </div-->
+                    <div id="hdtd">
+                        <span>NAME</span><span>GPM</span><span>EARNINGS</span><span>DEDUCTIONS</span>
+                    </div>
                     <div id="content"></div>
                     <div id="roll" popover="manual">
                         <div id="board" class="on">
@@ -365,6 +368,15 @@
                 </aside>
             </div>
             <footer>
+                <div id="enum">
+                    <button type="button" class="ui">
+                        <ion-icon name="chevron-back-outline"></ion-icon>
+                    </button>
+                    <span></span>
+                    <button type="button" class="ui">
+                        <ion-icon name="chevron-forward-outline"></ion-icon>
+                    </button>
+                </div>
                 <div id="athr"><span>Powered by <i>Dynamax</i></span>|<span>2025</span></div>
             </footer>
             <div class="note">
@@ -385,7 +397,7 @@
                 if (e.target.tagName == 'BUTTON') document.querySelector('#popgear').showPopover();
             }
         });
-        //resize window
+        // resize window
         // const mnthBtn = document.querySelector('#board > div:nth-child(1) > button:nth-of-type(2)');
         // document.querySelector('#roll').showPopover();
         // document.querySelector('#board').classList.remove('on')

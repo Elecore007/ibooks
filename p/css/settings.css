@@ -1,13 +1,57 @@
-.td:hover, .td.on, .gears > .g0 > button:hover, .g1 > div:hover, #newgear > div, #newpaye > div, .fdset {
+.td:hover, .td.on, .gears > .g0 > button:hover, .g1 > div:hover, #enum > button:hover, #newgear > div, #newpaye > div, .fdset {
     background-color: #0003;
 }
-aside:nth-child(1), .gears, .td {
+#enum, button.ui {
+    display: flex;
+}
+#enum, button.ui {
+    align-items: center;
+}
+#enum, button.ui {
+    justify-content: center;
+}
+#enum {
+    gap: 2em;
+}
+#enum > button {
+    height: 3em;
+    width: 3em;
+    border-radius: 50%;
+}
+#enum > span i{
+    font-size: 120%;
+}
+aside:nth-child(1), .gears, #hdtd, .td {
     display: grid;
 }
 aside:nth-child(1) {
     grid-template-rows: minmax(3em, auto) 1fr;
     overflow: hidden;
+    position: relative;
 }
+aside:nth-child(1)::before, aside:nth-child(1)::after {
+    position: absolute;
+    z-index: 1;
+}
+aside:nth-child(1)::after {
+    height: 100%;
+    width: 100%;
+}
+aside:nth-child(1)::before {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 2em;
+    width: 2em;
+    border-radius: 50%;
+    border: 2px solid;
+    border-color: #fff2 #fff2 #fff2 #fff;
+    animation: spin 1s linear infinite forwards;
+}
+aside:nth-child(1).on::before, aside:nth-child(1).on::after {
+    content: '';
+}
+/*
 #pages {
     padding: 0 1em;
     position: relative;
@@ -18,13 +62,14 @@ aside:nth-child(1) {
     opacity: .7;
     transition: color .2s;
 }
-/* #pages > button:hover,
+#pages > button:hover,
 #pages > button.on {
     color: var(--pry-bg-clr);
-} */
+}
 #pages > button.on {
     font-weight: 500;
 }
+*/
 #slider {
     position: absolute;
     left: 0;
@@ -38,15 +83,19 @@ aside:nth-child(1) {
     padding: 2em 0;
     overflow-y: auto;
 }
-.td {
+#hdtd, .td {
     padding: 1em;
     grid-template-columns: 50% 10% 20% 20%;
     align-items: center;
     opacity: .9;
 }
+#hdtd > span {
+    font-weight: 500;
+}
 .td > * {
     pointer-events: none;
 }
+#hdtd > span:nth-child(1),
 .td > span:nth-child(1) {
     position: relative;
     text-align: left;

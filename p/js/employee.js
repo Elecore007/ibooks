@@ -59,6 +59,7 @@ if (ssid) {
     let start, end, dataNow, pages = 0, lastSnapped = null, eq, visiblePage = 0;
     const page_limit = 2;
     async function getData() {
+        if (!navigator.onLine) return;
         lodasd(true);
         lastSnapped ? eq = query(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'), startAfter(lastSnapped), limit(page_limit)) : eq = query(collection(db, 'ibooks', person.fbid, yr), orderBy('ename'), limit(page_limit));
         const empRef = await getDocs(eq);
@@ -83,9 +84,7 @@ if (ssid) {
         start = (visiblePage-1) * page_limit, end = page_limit * visiblePage;
         dataNow = datum.slice(start, end);
         pages = Math.ceil(all/2);
-        // console.log('start: ', start, '\nand end: ', end);
-        // console.log('datum', datum);
-        // console.log('dataNow', dataNow);
+
         const book = document.querySelector('aside:nth-child(1) > div');
         //clear DOM
         const tds = book.querySelectorAll('.td');
@@ -94,7 +93,7 @@ if (ssid) {
         dataNow.forEach(obj => {
             book.insertAdjacentHTML('beforeend', `
                 <div class="td">
-                    <span data-abbr="${obj.ename[1].slice(0,1)}">${obj.ename.join(' ')}</span>
+                    <span data-abbr="${obj.ename[0][0]}">${obj.ename.join(' ')}</span>
                     <span>${obj.gender}</span>
                     <span>${obj.dept}</span>
                     <span>${obj.post}</span>
@@ -336,7 +335,7 @@ if (ssid) {
             input.accept = 'image/*';
             input.addEventListener('change', () => {
                 file = input.files[0];
-                if (file.size <= 51200) {
+                if (file.size <= 512000) {
                     // mimeType = `.${file.type.split('/').at(-1)}`;
                     if (file.type.startsWith('image/')) {
                         const img = new FileReader();

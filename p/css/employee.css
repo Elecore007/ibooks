@@ -284,7 +284,7 @@ button#fm_sb > span {
 .bottom > button > span {
     line-height: 1;
 }
-#enum > button, #enum + span > button {
+#enum > button/*, #enum + span > button*/ {
     height: 3em;
     width: 3em;
     border-radius: 50%;
@@ -292,11 +292,13 @@ button#fm_sb > span {
 #enum > span i {
     font-size: 120%;
 }
+/*
 #enum + span {
     display: flex;
     align-items: center;
     gap: 3em;
 }
+*/
 #slip, .wrp {
     height: 100%;
     width: 100%;
@@ -486,7 +488,7 @@ button#fm_sb > span {
 .bg0::after, #pchd > .pdfx:hover {
     background-color: #663399 !important;
 }
-.bg1::after, #pcmn > .pdfx, #dftr > button:hover, #enum > button:hover, #enum + span > button:hover {
+.bg1::after, #pcmn > .pdfx, #dftr > button:hover/*, #enum > button:hover, #enum + span > button:hover*/ {
     background-color: #b8860b55 !important;
 }
 .bg2::after, #pcmn > .pdfx:hover {
