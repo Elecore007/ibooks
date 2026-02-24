@@ -16,7 +16,8 @@ const firebaseConfig = {
 let app = initializeApp(firebaseConfig);
 let db = getFirestore(app);
 let company, person;
-let yr = new Date().getFullYear().toString();
+let yr = (new Date().getFullYear() - 1).toString();
+
 let mth = new Date().getMonth();
 
 const note = document.getElementById('note');

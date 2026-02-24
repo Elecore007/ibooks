@@ -98,7 +98,8 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             });
             //clearance officer
             const clearanceOffr = snapOfficers.docs[0];
-            document.getElementById('cleared').querySelector('span:nth-of-type(2)').textContent = clearanceOffr.data().user;
+            // console.log(clearanceOffr.data())
+            // document.getElementById('cleared').querySelector('span:nth-of-type(2)').textContent = clearanceOffr.data().user;
 
             //get employees
             let companyConfig = JSON.parse(person.cfg);
@@ -157,7 +158,7 @@ loginPop.querySelector('form').addEventListener('submit', async (e) => {
             notfcatn('alert-circle-outline','Offline error.');
             console.log(err);
         }
-        loginPop.showPopover();
+        // loginPop.showPopover();
     } finally {
         e.submitter.disabled = false;
     }

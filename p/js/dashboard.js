@@ -2,7 +2,7 @@ import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.
 import { getFirestore, addDoc, setDoc, deleteDoc, doc, collection, collectionGroup, deleteField, getDocs, getAggregateFromServer, getCountFromServer, arrayRemove, arrayUnion, increment, sum, updateDoc, query, where, and, Timestamp, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 // import { getStorage, getDownloadURL, getBlob, ref, uploadBytes, uploadBytesResumable, uploadString } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 import { userColor, pkey, datePeriod, projectConfigs } from "../../lb/wc.js";
-import { ssid, defImg } from "../../main/main.js";
+import { ssid } from "../../main/main.js";
 const firebaseConfig = {
     apiKey: "AIzaSyBAr1U_sHtQc8WGzwQfwmxCT2QyIkwdQ1k",
     authDomain: "webmart-d7812.firebaseapp.com",
