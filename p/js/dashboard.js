@@ -18,8 +18,7 @@ const firebaseConfig = {
 let app = initializeApp(firebaseConfig);
 let db = getFirestore(app);
 
-let currYr = datePeriod(Date.now()).getFullYear().toString();
-
+let currYr = (datePeriod(Date.now()).getFullYear() - 1).toString();
 //get ibooks config
 if (ssid) {
     let person = null, idb = null;
@@ -102,7 +101,6 @@ if (ssid) {
                     e.submitter.disabled = false;
                     lodr.hidePopover();
                 }
-                console.log(fb)
             });
         }
         //delete officers
